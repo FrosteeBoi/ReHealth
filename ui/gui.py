@@ -201,7 +201,7 @@ class App:
 
         messagebox.showinfo("Success", "Registration complete! You can now log in.")
 
-        # Clear registration fields and reset UI to login mode
+        # Clears registration fields and reset UI to allow the user to login
         self.sex_label.grid_forget()
         self.sex_entry.grid_forget()
         self.dob_label.grid_forget()
