@@ -16,7 +16,9 @@ def quote_maker():
         "'Remember to take breaks.'",
         "'A lesson without pain is meaningless.'",
         "'Welcome back.'",
-        "'Make your dreams a reality.'"
+        "'Make your dreams a reality.'",
+        "'Just do it.'",
+        "'One day or day one.'"
     ]
     return random.choice(quote_list)
 
@@ -163,12 +165,12 @@ class App:
             messagebox.showerror("Error", "Password should mix uppercase, lowercase, numbers, and special characters.")
             return
 
-        # Validate sex input
+        # Validates sex format
         if sex_input not in ("Male", "Female"):
             messagebox.showerror("Error", "Sex must be 'Male' or 'Female'.")
             return
 
-        # Validate date of birth format
+        # Validates date of birth format
         try:
             dob_date = datetime.strptime(dob_input, "%d/%m/%Y").date()
         except ValueError:
