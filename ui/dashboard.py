@@ -6,3 +6,4 @@ import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
+import App
