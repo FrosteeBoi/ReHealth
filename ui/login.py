@@ -63,13 +63,13 @@ class App:
         self.login_label.grid(row=0, column=0, pady=(10, 5))
         self.quote_label.grid(row=1, column=0, pady=(0, 15), padx=10)
 
-        self.username_label.grid(row=2, column=0, sticky="w", padx=10, pady=(5, 0))
-        self.username_entry.grid(row=3, column=0, sticky="ew", padx=10, pady=(0, 50))
+        self.username_label.grid(row=2, column=0, sticky="w", padx=10, pady=(15, 0))
+        self.username_entry.grid(row=3, column=0, sticky="ew", padx=10, pady=(0, 25))
 
-        self.password_label.grid(row=4, column=0, sticky="w", padx=10, pady=(50, 0))
-        self.password_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(0, 10))
+        self.password_label.grid(row=4, column=0, sticky="w", padx=10, pady=(15, 0))
+        self.password_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(0, 25))
 
-        self.login_button.grid(row=6, column=0, padx=10, pady=(100, 0), sticky="ew")
+        self.login_button.grid(row=6, column=0, padx=10, pady=(10), sticky="ew")
 
     def login_func(self):
         username_attempt = self.username_entry.get()
@@ -130,11 +130,21 @@ class App:
         self.mainframe.grid_rowconfigure((1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), weight=0)
 
         # Shows registration widgets
-        self.sex_label.grid(row=7, column=0, sticky="ew", padx=10, pady=(5, 0))
-        self.sex_entry.grid(row=8, column=0, padx=10, pady=(0, 10), sticky="ew")
 
-        self.dob_label.grid(row=9, column=0, sticky="ew", padx=10, pady=(5, 0))
-        self.dob_entry.grid(row=10, column=0, padx=10, pady=(0, 10), sticky="ew")
+        self.login_label.grid(row=0, column=0, pady=(10, 5))
+        self.quote_label.grid(row=1, column=0, pady=(0, 15), padx=10)
+
+        self.username_label.grid(row=2, column=0, sticky="w", padx=10, pady=(15, 0))
+        self.username_entry.grid(row=3, column=0, sticky="ew", padx=10, pady=(0, 25))
+
+        self.password_label.grid(row=4, column=0, sticky="w", padx=10, pady=(15, 0))
+        self.password_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(0, 25))
+
+        self.sex_label.grid(row=7, column=0, sticky="ew", padx=10, pady=(15, 0))
+        self.sex_entry.grid(row=8, column=0, padx=10, pady=(0, 25), sticky="ew")
+
+        self.dob_label.grid(row=9, column=0, sticky="ew", padx=10, pady=(15, 0))
+        self.dob_entry.grid(row=10, column=0, padx=10, pady=(0, 25), sticky="ew")
 
         # Hides login button and shows register button
         self.login_button.grid_forget()
