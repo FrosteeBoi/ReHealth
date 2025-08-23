@@ -27,7 +27,7 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("ReHealth")
-        self.root.geometry("340x440")
+        self.root.geometry("490x630")
 
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
@@ -35,12 +35,12 @@ class App:
         self.mainframe = tb.Frame(self.root)
         self.mainframe.grid(row=0, column=0, sticky="nsew")
 
-        self.mainframe.grid_rowconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)
+        self.mainframe.grid_rowconfigure((2, 4, 6), weight=0)
         self.mainframe.grid_columnconfigure(0, weight=1)
 
         # Login widgets
-        self.login_label = tb.Label(self.mainframe, text="ReHealth Login", font=("roboto", 12, "bold"))
-        self.quote_label = tb.Label(self.mainframe, text=quote_maker(), font=("roboto", 11, "italic"), wraplength=300,
+        self.login_label = tb.Label(self.mainframe, text="ReHealth Login", font=("roboto", 15, "bold"))
+        self.quote_label = tb.Label(self.mainframe, text=quote_maker(), font=("roboto", 11, "italic"),
                                     justify="center")
         self.username_label = tb.Label(self.mainframe, text="Username", font=("roboto", 12, "bold"))
         self.username_entry = tb.Entry(self.mainframe)
@@ -60,15 +60,16 @@ class App:
         self.register_button = tb.Button(self.mainframe, text="REVOLUTIONISE FITNESS", command=self.register_submit)
 
         # Places all the widgets excluding registration ones
-        self.login_label.grid(row=0, column=0, pady=(10, 10))
+        self.login_label.grid(row=0, column=0, pady=(10, 5))
         self.quote_label.grid(row=1, column=0, pady=(0, 15), padx=10)
-        self.username_label.grid(row=2, column=0, sticky="w", padx=20)
-        self.username_entry.grid(row=3, column=0, padx=20, sticky="ew")
 
-        self.password_label.grid(row=4, column=0, sticky="w", padx=20, pady=(10, 0))
-        self.password_entry.grid(row=5, column=0, padx=20, sticky="ew")
+        self.username_label.grid(row=2, column=0, sticky="w", padx=10, pady=(5, 0))
+        self.username_entry.grid(row=3, column=0, sticky="ew", padx=10, pady=(0, 50))
 
-        self.login_button.grid(row=6, column=0, pady=20, padx=20, sticky="ew")
+        self.password_label.grid(row=4, column=0, sticky="w", padx=10, pady=(50, 0))
+        self.password_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(0, 10))
+
+        self.login_button.grid(row=6, column=0, padx=10, pady=(100, 0), sticky="ew")
 
     def login_func(self):
         username_attempt = self.username_entry.get()
@@ -124,16 +125,20 @@ class App:
         self.sex_entry.delete(0, 'end')
         self.dob_entry.delete(0, 'end')
 
-        # Shows registration widgets
-        self.sex_label.grid(row=7, column=0, sticky="w", padx=20, pady=(10, 0))
-        self.sex_entry.grid(row=8, column=0, padx=20, sticky="ew")
+        # configures weight of all the rows
 
-        self.dob_label.grid(row=9, column=0, sticky="w", padx=20, pady=(10, 0))
-        self.dob_entry.grid(row=10, column=0, padx=20, sticky="ew")
+        self.mainframe.grid_rowconfigure((1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), weight=0)
+
+        # Shows registration widgets
+        self.sex_label.grid(row=7, column=0, sticky="ew", padx=10, pady=(5, 0))
+        self.sex_entry.grid(row=8, column=0, padx=10, pady=(0, 10), sticky="ew")
+
+        self.dob_label.grid(row=9, column=0, sticky="ew", padx=10, pady=(5, 0))
+        self.dob_entry.grid(row=10, column=0, padx=10, pady=(0, 10), sticky="ew")
 
         # Hides login button and shows register button
         self.login_button.grid_forget()
-        self.register_button.grid(row=11, column=0, pady=20, padx=20, sticky="ew")
+        self.register_button.grid(row=11, column=0, padx=10, pady=10, sticky="ew")
 
     def register_submit(self):
         username_input = self.username_entry.get().strip()
@@ -210,7 +215,7 @@ class App:
         self.dob_entry.grid_forget()
         self.register_button.grid_forget()
 
-        self.login_button.grid(row=6, column=0, pady=20, padx=20, sticky="ew")
+        self.login_button.grid(row=6, column=0, pady=10, padx=10, sticky="ew")
         self.username_entry.delete(0, 'end')
         self.password_entry.delete(0, 'end')
         self.sex_entry.delete(0, 'end')
