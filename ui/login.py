@@ -6,6 +6,7 @@ import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
+from dashboard import Dashboard
 
 
 def quote_maker():
@@ -97,6 +98,9 @@ class App:
 
             if fetched_user.password_check(password_attempt):
                 messagebox.showinfo("Success", "Login successful!")
+                # Hides the login frame to switch to dashboard
+                self.mainframe.grid_forget()
+                Dashboard(self.root, fetched_user)
             else:
                 self.login_failed()
         else:

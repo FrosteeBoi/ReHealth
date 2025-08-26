@@ -19,3 +19,20 @@ class Dashboard:
         # Dashboard widgets
         self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 15, "bold"))
 
+        self.metrics_label = tb.Label(self.dashframe, text="Measurements", font=("roboto", 12, "bold"))
+
+        self.food_label = tb.Label(self.dashframe, text="Food", font=("roboto", 12, "bold"))
+
+        self.workout_label = tb.Label(self.dashframe, text="Workouts", font=("roboto", 12, "bold"))
+
+        self.sleep_label = tb.Label(self.dashframe, text="Sleep", font=("roboto", 12, "bold"))
+
+        self.steps_label = tb.Label(self.dashframe, text="Steps", font=("roboto", 12, "bold"))
+
+
+root = tb.Window(themename="darkly")
+app = Dashboard(root)
+root.mainloop()
+
+
+
