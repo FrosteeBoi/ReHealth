@@ -13,7 +13,7 @@ class Dashboard:
         self.root = root
         self.user = user
         self.dashframe = tb.Frame(self.root)
-        self.dashframe.grid(row=0, column=0, sticky="nsew")
+        self.dashframe.grid(row=0, column=0, sticky="n")
         self.root.geometry("490x630")
 
         # Makes root expandable
@@ -21,12 +21,13 @@ class Dashboard:
         self.root.grid_columnconfigure(0, weight=1)
 
         # Label that welcomes user
-        self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 15, "bold"))
-        self.dash_label.grid(row=0, column=0, columnspan=5, pady=(20, 100))
+        self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 18, "bold"))
+        self.dash_label.grid(row=0, column=0, pady=(20, 275), sticky="n")
+
 
         # Bottom frame for tabs
         self.tab_frame = tb.Frame(self.dashframe)
-        self.tab_frame.grid(row=1, column=0, sticky="s", pady=(100, 20))
+        self.tab_frame.grid(row=1, column=0, sticky="n", pady=(275, 20), padx=5)
 
         # Creates buttons for the tabs
         self.measurements_button = tb.Button(self.tab_frame, text="Measurements", command=self.show_measurements)
