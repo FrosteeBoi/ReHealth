@@ -6,7 +6,6 @@ import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
-from ui.login import App
 
 
 class Dashboard:
@@ -14,25 +13,47 @@ class Dashboard:
         self.root = root
         self.user = user
         self.dashframe = tb.Frame(self.root)
-        self.dashframe.grid(row=0, column = 0, sticky="nsew")
+        self.dashframe.grid(row=0, column=0, sticky="nsew")
+        self.root.geometry("490x630")
 
-        # Dashboard widgets
+        # Makes root expandable
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
+        # Label that welcomes user
         self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 15, "bold"))
+        self.dash_label.grid(row=0, column=0, columnspan=5, pady=(20, 100))
 
-        self.metrics_label = tb.Label(self.dashframe, text="Measurements", font=("roboto", 12, "bold"))
+        # Bottom frame for tabs
+        self.tab_frame = tb.Frame(self.dashframe)
+        self.tab_frame.grid(row=1, column=0, sticky="s", pady=(100, 20))
 
-        self.food_label = tb.Label(self.dashframe, text="Food", font=("roboto", 12, "bold"))
+        # Creates buttons for the tabs
+        self.measurements_button = tb.Button(self.tab_frame, text="Measurements", command=self.show_measurements)
+        self.food_button = tb.Button(self.tab_frame, text="Food", command=self.show_food)
+        self.workout_button = tb.Button(self.tab_frame, text="Workouts", command=self.show_workouts)
+        self.sleep_button = tb.Button(self.tab_frame, text="Sleep", command=self.show_sleep)
+        self.steps_button = tb.Button(self.tab_frame, text="Steps", command=self.show_steps)
 
-        self.workout_label = tb.Label(self.dashframe, text="Workouts", font=("roboto", 12, "bold"))
+        # Grids the buttons
+        self.measurements_button.grid(row=0, column=0, padx=5)
+        self.food_button.grid(row=0, column=1, padx=5)
+        self.workout_button.grid(row=0, column=2, padx=5)
+        self.sleep_button.grid(row=0, column=3, padx=5)
+        self.steps_button.grid(row=0, column=4, padx=5)
 
-        self.sleep_label = tb.Label(self.dashframe, text="Sleep", font=("roboto", 12, "bold"))
+    # Placeholder methods for each tab
+    def show_measurements(self):
+        print("Show metrics")
 
-        self.steps_label = tb.Label(self.dashframe, text="Steps", font=("roboto", 12, "bold"))
+    def show_food(self):
+        print("Show food")
 
+    def show_workouts(self):
+        print("Show workouts")
 
-root = tb.Window(themename="darkly")
-app = Dashboard(root)
-root.mainloop()
+    def show_sleep(self):
+        print("Show sleep")
 
-
-
+    def show_steps(self):
+        print("Show steps")

@@ -70,7 +70,7 @@ class App:
         self.password_label.grid(row=4, column=0, sticky="w", padx=10, pady=(15, 0))
         self.password_entry.grid(row=5, column=0, sticky="ew", padx=10, pady=(0, 25))
 
-        self.login_button.grid(row=6, column=0, padx=10, pady=(10), sticky="ew")
+        self.login_button.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
     def login_func(self):
         username_attempt = self.username_entry.get()
