@@ -24,7 +24,6 @@ class Dashboard:
         self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 18, "bold"))
         self.dash_label.grid(row=0, column=0, pady=(20, 275), sticky="n")
 
-
         # Bottom frame for tabs
         self.tab_frame = tb.Frame(self.dashframe)
         self.tab_frame.grid(row=1, column=0, sticky="n", pady=(275, 20), padx=5)
@@ -58,3 +57,16 @@ class Dashboard:
 
     def show_steps(self):
         print("Show steps")
+
+
+class TestUser:
+    def __init__(self, username):
+        self.username = username
+
+
+if __name__ == "__main__":
+
+    root = tb.Window(themename="darkly")
+    test_user = TestUser("TestUser")
+    app = Dashboard(root, test_user)
+    root.mainloop()
