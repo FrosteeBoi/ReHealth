@@ -5,7 +5,7 @@ from logic.user import User
 import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
-import sqlite3
+from measurement import Measurement
 
 
 class Dashboard:
@@ -22,11 +22,11 @@ class Dashboard:
 
         # Label that welcomes user
         self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 18, "bold"))
-        self.dash_label.grid(row=0, column=0, pady=(20, 275), sticky="n")
+        self.dash_label.grid(row=0, column=0, pady=(20, 50), sticky="n")
 
         # Bottom frame for tabs
         self.tab_frame = tb.Frame(self.dashframe)
-        self.tab_frame.grid(row=1, column=0, sticky="n", pady=(275, 20), padx=5)
+        self.tab_frame.grid(row=4, column=0, sticky="n", pady=(420, 20), padx=5)
 
         # Creates buttons for the tabs
         self.measurements_button = tb.Button(self.tab_frame, text="Measurements", command=self.show_measurements)
@@ -35,6 +35,11 @@ class Dashboard:
         self.sleep_button = tb.Button(self.tab_frame, text="Sleep", command=self.show_sleep)
         self.steps_button = tb.Button(self.tab_frame, text="Steps", command=self.show_steps)
 
+        # Creates the visual displays
+        self.dash_steps = tb.Label(self.dashframe, text="Steps: 6767")
+        self.dash_cals = tb.Label(self.dashframe, text="Calories: 6767")
+        self.dash_sleep = tb.Label(self.dashframe, text="Sleep: 6767")
+
         # Grids the buttons
         self.measurements_button.grid(row=0, column=0, padx=5)
         self.food_button.grid(row=0, column=1, padx=5)
@@ -42,9 +47,14 @@ class Dashboard:
         self.sleep_button.grid(row=0, column=3, padx=5)
         self.steps_button.grid(row=0, column=4, padx=5)
 
+        # Grids the visual displays:
+        self.dash_steps.grid(row=1, column=0)
+        self.dash_cals.grid(row=2, column=0)
+        self.dash_sleep.grid(row=3, column=0)
+
     # Placeholder methods for each tab
     def show_measurements(self):
-        print("Show metrics")
+        Measurement(self.root, self.user)
 
     def show_food(self):
         print("Show food")
