@@ -47,7 +47,7 @@ class Measurement:
         self.height_button = tb.Button(self.measureframe, text="Add")
         self.height_button.grid(row=1, column=2)
 
-        self.weight_button =
+
 
 
 
