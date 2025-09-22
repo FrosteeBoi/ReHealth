@@ -9,7 +9,18 @@ from measurement import Measurement
 
 
 class Dashboard:
+    """
+    A class to create a dashboard gui that can access other parts of the application
+    """
+
     def __init__(self, root, user: User):
+        """
+        Initialise the Dashboard GUI.
+
+        Args:
+            root (Tk): The main tkinter window.
+            user (User): The user object containing user information.
+        """
         self.root = root
         self.user = user
         self.dashframe = tb.Frame(self.root)
@@ -20,62 +31,94 @@ class Dashboard:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
-        # Label that welcomes user
-        self.dash_label = tb.Label(self.dashframe, text=f"Hello {self.user.username}", font=("roboto", 18, "bold"))
+        # Welcome label
+        self.dash_label = tb.Label(
+            self.dashframe,
+            text=f"Hello {self.user.username}",
+            font=("roboto", 18, "bold")
+        )
         self.dash_label.grid(row=0, column=0, pady=(20, 50), sticky="n")
 
-        # Bottom frame for tabs
+        # Bottom frame for tab buttons
         self.tab_frame = tb.Frame(self.dashframe)
         self.tab_frame.grid(row=4, column=0, sticky="n", pady=(420, 20), padx=5)
 
-        # Creates buttons for the tabs
-        self.measurements_button = tb.Button(self.tab_frame, text="Measurements", command=self.show_measurements)
-        self.food_button = tb.Button(self.tab_frame, text="Food", command=self.show_food)
-        self.workout_button = tb.Button(self.tab_frame, text="Workouts", command=self.show_workouts)
-        self.sleep_button = tb.Button(self.tab_frame, text="Sleep", command=self.show_sleep)
-        self.steps_button = tb.Button(self.tab_frame, text="Steps", command=self.show_steps)
+        # Tab buttons
+        self.measurements_button = tb.Button(
+            self.tab_frame,
+            text="Measurements",
+            command=self.show_measurements
+        )
+        self.food_button = tb.Button(
+            self.tab_frame,
+            text="Food",
+            command=self.show_food
+        )
+        self.workout_button = tb.Button(
+            self.tab_frame,
+            text="Workouts",
+            command=self.show_workouts
+        )
+        self.sleep_button = tb.Button(
+            self.tab_frame,
+            text="Sleep",
+            command=self.show_sleep
+        )
+        self.steps_button = tb.Button(
+            self.tab_frame,
+            text="Steps",
+            command=self.show_steps
+        )
 
-        # Creates the visual displays
+        # Visual displays
         self.dash_steps = tb.Label(self.dashframe, text="Steps: 6767")
         self.dash_cals = tb.Label(self.dashframe, text="Calories: 6767")
         self.dash_sleep = tb.Label(self.dashframe, text="Sleep: 6767")
 
-        # Grids the buttons
+        # Grid buttons
         self.measurements_button.grid(row=0, column=0, padx=5)
         self.food_button.grid(row=0, column=1, padx=5)
         self.workout_button.grid(row=0, column=2, padx=5)
         self.sleep_button.grid(row=0, column=3, padx=5)
         self.steps_button.grid(row=0, column=4, padx=5)
 
-        # Grids the visual displays:
+        # Grid visual displays
         self.dash_steps.grid(row=1, column=0)
         self.dash_cals.grid(row=2, column=0)
         self.dash_sleep.grid(row=3, column=0)
 
     # Placeholder methods for each tab
     def show_measurements(self):
+        """Display the Measurements tab."""
         Measurement(self.root, self.user)
 
     def show_food(self):
+        """Display the Food tab."""
         print("Show food")
 
     def show_workouts(self):
+        """Display the Workouts tab."""
         print("Show workouts")
 
     def show_sleep(self):
+        """Display the Sleep tab."""
         print("Show sleep")
 
     def show_steps(self):
+        """Display the Steps tab."""
         print("Show steps")
 
 
 class TestUser:
+    """
+    A simple test user class for standalone testing of the Dashboard.
+    """
+
     def __init__(self, username):
         self.username = username
 
 
 if __name__ == "__main__":
-
     root = tb.Window(themename="darkly")
     test_user = TestUser("TestUser")
     app = Dashboard(root, test_user)
