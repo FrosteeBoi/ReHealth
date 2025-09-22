@@ -14,6 +14,7 @@ weight, and calculating BMI in a tkinter-based GUI.
 """
 
 
+
 class Measurement:
     """
     Class created to record measurements like user height.
@@ -71,14 +72,17 @@ class Measurement:
         self.weight_entry.grid(row=2, column=1, padx=(0, 0), pady=(0, 50))
 
         # Buttons and BMI display
-        self.bmi_display = tb.Label(self.measureframe, text="BMI")
+        self.bmi_display = tb.Label(self.measureframe, text="B")
         self.bmi_display.grid(row=3, column=1, padx=(0, 0), pady=(0, 50))
 
-        self.height_button = tb.Button(self.measureframe, text="Add")
+        self.height_button = tb.Button(self.measureframe, text="Add", command=)
         self.height_button.grid(row=1, column=2)
 
-        self.weight_button = tb.Button(self.measureframe, text="Add")
+        self.weight_button = tb.Button(self.measureframe, text="Add", command=)
         self.weight_button.grid(row=2, column=2, pady=(0, 50))
+
+        # BMI handling
+
 
 
 if __name__ == "__main__":
