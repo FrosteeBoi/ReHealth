@@ -10,16 +10,12 @@ from ui.measurement import Measurement
 
 class Dashboard:
     """
-    A class to create a dashboard gui that can access other parts of the application
+    Create a class for a dashboard gui that can access other parts of the application
     """
 
     def __init__(self, root, user: User):
         """
-        Initialise the Dashboard GUI.
-
-        Args:
-            root (Tk): The main tkinter window.
-            user (User): The user object containing user information.
+        initialises the dashboard gui
         """
         self.root = root
         self.user = user
@@ -31,7 +27,7 @@ class Dashboard:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
-        # Welcome label
+        # Welcome label created
         self.dash_label = tb.Label(
             self.dashframe,
             text=f"Hello {self.user.username}",
@@ -39,11 +35,11 @@ class Dashboard:
         )
         self.dash_label.grid(row=0, column=0, pady=(20, 50), sticky="n")
 
-        # Bottom frame for tab buttons
+        # Bottom frame made for tab buttons
         self.tab_frame = tb.Frame(self.dashframe)
         self.tab_frame.grid(row=4, column=0, sticky="n", pady=(420, 20), padx=5)
 
-        # Tab buttons
+        # Tab buttons made
         self.measurements_button = tb.Button(
             self.tab_frame,
             text="Measurements",
@@ -75,14 +71,14 @@ class Dashboard:
         self.dash_cals = tb.Label(self.dashframe, text="Calories: 6767")
         self.dash_sleep = tb.Label(self.dashframe, text="Sleep: 6767")
 
-        # Grid buttons
+        # Grids the buttons
         self.measurements_button.grid(row=0, column=0, padx=5)
         self.food_button.grid(row=0, column=1, padx=5)
         self.workout_button.grid(row=0, column=2, padx=5)
         self.sleep_button.grid(row=0, column=3, padx=5)
         self.steps_button.grid(row=0, column=4, padx=5)
 
-        # Grid visual displays
+        # Grids the visual displays
         self.dash_steps.grid(row=1, column=0)
         self.dash_cals.grid(row=2, column=0)
         self.dash_sleep.grid(row=3, column=0)
