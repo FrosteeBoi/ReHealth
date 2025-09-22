@@ -5,7 +5,7 @@ from logic.user import User
 import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
-from measurement import Measurement
+from ui.measurement import Measurement
 
 
 class Dashboard:

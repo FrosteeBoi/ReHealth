@@ -8,7 +8,7 @@ def save_user_to_db(user):
     :param user:
     :return:
     """
-    connection = sqlite3.connect(r"C:\Users\frost\PycharmProjects\ReHealth\db\rehealth_db.db")
+    connection = sqlite3.connect("db/rehealth_db.db")
     cursor = connection.cursor()
 
     cursor.execute("""

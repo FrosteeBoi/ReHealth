@@ -6,7 +6,7 @@ import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
-from dashboard import Dashboard
+from ui.dashboard import Dashboard
 
 
 def quote_maker():
@@ -76,7 +76,7 @@ class App:
         username_attempt = self.username_entry.get()
         password_attempt = self.password_entry.get()
 
-        connection = sqlite3.connect(r"C:\Users\frost\PycharmProjects\ReHealth\db\rehealth_db.db")
+        connection = sqlite3.connect("db/rehealth_db.db")
         cursor = connection.cursor()
 
         cursor.execute("""
@@ -200,7 +200,7 @@ class App:
         hashed_password = User.password_hasher(password_input)
 
         # Checks if username already exists
-        connection = sqlite3.connect(r"C:\Users\frost\PycharmProjects\ReHealth\db\rehealth_db.db")
+        connection = sqlite3.connect("db/rehealth_db.db")
         cursor = connection.cursor()
         cursor.execute("SELECT Username FROM User WHERE Username = ?", (username_input,))
         if cursor.fetchone():

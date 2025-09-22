@@ -21,7 +21,7 @@ connection.close()
 import sqlite3
 
 def initialize_db():
-    connection = sqlite3.connect(r"C:\Users\frost\PycharmProjects\ReHealth\db\rehealth_db.db")
+    connection = sqlite3.connect("db/rehealth_db.db")
     connection.execute("PRAGMA foreign_keys = ON")
     cursor = connection.cursor()
 
