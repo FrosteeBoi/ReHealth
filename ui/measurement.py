@@ -7,12 +7,10 @@ from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
 
-
 """
 This module contains the Measurement class for recording user height,
 weight, and calculating BMI in a tkinter-based GUI.
 """
-
 
 
 class Measurement:
@@ -29,6 +27,8 @@ class Measurement:
         self.measureframe = tb.Frame(self.root)
         self.measureframe.grid(row=0, column=0, sticky="n")
         self.root.geometry("490x630")
+        self.height_val = 0
+        self.weight_val = 0
 
         # Makes root expandable
         self.root.grid_rowconfigure(0, weight=1)
@@ -75,14 +75,31 @@ class Measurement:
         self.bmi_display = tb.Label(self.measureframe, text="B")
         self.bmi_display.grid(row=3, column=1, padx=(0, 0), pady=(0, 50))
 
-        self.height_button = tb.Button(self.measureframe, text="Add", command=)
+        self.height_button = tb.Button(self.measureframe, text="Add", command=self.height_inc)
         self.height_button.grid(row=1, column=2)
 
-        self.weight_button = tb.Button(self.measureframe, text="Add", command=)
+        self.weight_button = tb.Button(self.measureframe, text="Add", command=self.weight_inc)
         self.weight_button.grid(row=2, column=2, pady=(0, 50))
 
-        # BMI handling
+    def height_inc(self):
+        try:
+            value = float(self.height_entry.get())
+            self.height_val += value
+            self.height_entry.delete(0, 'end')
+            self.height_entry.insert(0, str(self.height_val))
+        except ValueError:
+            messagebox.showerror("Failed input", "Please enter your height as a number in cm.")
 
+    def weight_inc(self):
+        try:
+            value = float(self.weight_entry.get())
+            self.weight_val += value
+            self.weight_entry.delete(0, 'end')
+            self.weight_entry.insert(0, str(self.weight_val))
+        except ValueError:
+            messagebox.showerror("Failed input", "Please enter your weight as a number in kg.")
+
+        # BMI handling
 
 
 if __name__ == "__main__":
