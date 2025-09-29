@@ -48,38 +48,44 @@ class Measurement:
             text="Record Your Height:",
             font=("roboto", 18, "bold")
         )
-        self.height_label.grid(row=1, column=0, pady=(50, 50), padx=(0, 0))
+        self.height_label.grid(row=4, column=0, pady=(50, 50), padx=(0, 0))
 
         self.weight_label = tb.Label(
             self.measureframe,
             text="Record Your Weight:",
             font=("roboto", 18, "bold")
         )
-        self.weight_label.grid(row=2, column=0, padx=(0, 0), pady=(0, 50))
+        self.weight_label.grid(row=5, column=0, padx=(0, 0), pady=(0, 50))
+
+        self.height_value_label = tb.Label(self.measureframe, text=f"Height: {self.height_val}")
+        self.height_value_label.grid(row=2, column=0, columnspan=2, pady=(10, 10))
+
+        self.weight_value_label = tb.Label(self.measureframe, text=f"Weight: {self.weight_val}")
+        self.weight_value_label.grid(row=3, column=0, columnspan=2, pady=(10, 10))
 
         self.bmi_label = tb.Label(
             self.measureframe,
             text="Body Mass Index:",
             font=("roboto", 18, "bold")
         )
-        self.bmi_label.grid(row=3, column=0, pady=(0, 50))
+        self.bmi_label.grid(row=6, column=0, pady=(0, 50))
 
         # Entries for user input
         self.height_entry = tb.Entry(self.measureframe)
-        self.height_entry.grid(row=1, column=1, padx=(0, 0), pady=(50, 50))
+        self.height_entry.grid(row=4, column=1, padx=(0, 0), pady=(50, 50))
 
         self.weight_entry = tb.Entry(self.measureframe)
-        self.weight_entry.grid(row=2, column=1, padx=(0, 0), pady=(0, 50))
+        self.weight_entry.grid(row=5, column=1, padx=(0, 0), pady=(0, 50))
 
         # Buttons and BMI display
         self.bmi_display = tb.Label(self.measureframe, text="B")
-        self.bmi_display.grid(row=3, column=1, padx=(0, 0), pady=(0, 50))
+        self.bmi_display.grid(row=6, column=1, padx=(0, 0), pady=(0, 50))
 
         self.height_button = tb.Button(self.measureframe, text="Add", command=self.height_inc)
-        self.height_button.grid(row=1, column=2)
+        self.height_button.grid(row=4, column=2)
 
         self.weight_button = tb.Button(self.measureframe, text="Add", command=self.weight_inc)
-        self.weight_button.grid(row=2, column=2, pady=(0, 50))
+        self.weight_button.grid(row=5, column=2, pady=(0, 50))
 
     def height_inc(self):
         try:

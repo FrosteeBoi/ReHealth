@@ -78,7 +78,7 @@ class Dashboard:
         self.sleep_button.grid(row=0, column=3, padx=5)
         self.steps_button.grid(row=0, column=4, padx=5)
 
-        # Grids the visual displays
+        # Grids the  visual displays
         self.dash_steps.grid(row=1, column=0)
         self.dash_cals.grid(row=2, column=0)
         self.dash_sleep.grid(row=3, column=0)
