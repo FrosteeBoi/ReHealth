@@ -6,7 +6,7 @@ import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
-
+from logic.calculations import bmi_calc
 """
 This module contains the Measurement class for recording user height,
 weight, and calculating BMI in a tkinter-based GUI.
@@ -42,57 +42,55 @@ class Measurement:
         )
         self.measure_label.grid(row=0, column=0, pady=(0, 0), padx=(0, 0), sticky="n")
 
-        # Height, weight and BMI labels
+        # Height, weight and BMI labels and placing
         self.height_label = tb.Label(
             self.measureframe,
             text="Record Your Height:",
             font=("roboto", 18, "bold")
         )
-        self.height_label.grid(row=4, column=0, pady=(50, 50), padx=(0, 0))
+        self.height_label.grid(row=5, column=0, pady=(50, 50), padx=(0, 0))
 
         self.weight_label = tb.Label(
             self.measureframe,
             text="Record Your Weight:",
             font=("roboto", 18, "bold")
         )
-        self.weight_label.grid(row=5, column=0, padx=(0, 0), pady=(0, 50))
+        self.weight_label.grid(row=6, column=0, padx=(0, 0), pady=(0, 50))
 
-        self.height_value_label = tb.Label(self.measureframe, text=f"Height: {self.height_val}")
+        self.height_value_label = tb.Label(self.measureframe, font=("roboto", 18, "bold"), text=f"Height: {self.height_val}")
         self.height_value_label.grid(row=2, column=0, columnspan=2, pady=(10, 10))
 
-        self.weight_value_label = tb.Label(self.measureframe, text=f"Weight: {self.weight_val}")
+        self.weight_value_label = tb.Label(self.measureframe, font=("roboto", 18, "bold"), text=f"Weight: {self.weight_val}")
         self.weight_value_label.grid(row=3, column=0, columnspan=2, pady=(10, 10))
 
         self.bmi_label = tb.Label(
             self.measureframe,
-            text="Body Mass Index:",
+            text="BMI:",
             font=("roboto", 18, "bold")
         )
-        self.bmi_label.grid(row=6, column=0, pady=(0, 50))
+        self.bmi_label.grid(row=4, column=0, pady=(10, 10), columnspan=2)
 
         # Entries for user input
         self.height_entry = tb.Entry(self.measureframe)
-        self.height_entry.grid(row=4, column=1, padx=(0, 0), pady=(50, 50))
+        self.height_entry.grid(row=5, column=1, padx=(0, 0), pady=(50, 50))
 
         self.weight_entry = tb.Entry(self.measureframe)
-        self.weight_entry.grid(row=5, column=1, padx=(0, 0), pady=(0, 50))
+        self.weight_entry.grid(row=6, column=1, padx=(0, 0), pady=(0, 50))
 
-        # Buttons and BMI display
-        self.bmi_display = tb.Label(self.measureframe, text="B")
-        self.bmi_display.grid(row=6, column=1, padx=(0, 0), pady=(0, 50))
+        # Buttons made and placed
 
         self.height_button = tb.Button(self.measureframe, text="Add", command=self.height_inc)
-        self.height_button.grid(row=4, column=2)
+        self.height_button.grid(row=5, column=2)
 
         self.weight_button = tb.Button(self.measureframe, text="Add", command=self.weight_inc)
-        self.weight_button.grid(row=5, column=2, pady=(0, 50))
+        self.weight_button.grid(row=6, column=2, pady=(0, 50))
 
     def height_inc(self):
         try:
             value = float(self.height_entry.get())
             self.height_val += value
             self.height_entry.delete(0, 'end')
-            self.height_entry.insert(0, str(self.height_val))
+            self.height_value_label.config(text=f"Height: {self.height_val} cm")
         except ValueError:
             messagebox.showerror("Failed input", "Please enter your height as a number in cm.")
 
@@ -101,11 +99,16 @@ class Measurement:
             value = float(self.weight_entry.get())
             self.weight_val += value
             self.weight_entry.delete(0, 'end')
-            self.weight_entry.insert(0, str(self.weight_val))
+            self.weight_value_label.config(text=f"Weight: {self.weight_val} kg")
         except ValueError:
             messagebox.showerror("Failed input", "Please enter your weight as a number in kg.")
 
         # BMI handling
+    def bmi_inc(self):
+        try:
+            value = bmi_calc(69, 174)
+        except ValueError:
+            messagebox.showerror("Failed input, Error in calculating BMI")
 
 
 if __name__ == "__main__":
