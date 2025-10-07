@@ -7,6 +7,7 @@ from datetime import datetime, date
 from db.db_handler import save_user_to_db
 import sqlite3
 from ui.dashboard import Dashboard
+import os
 
 
 def quote_maker():
@@ -105,12 +106,14 @@ class App:
         username_attempt = self.username_entry.get()
         password_attempt = self.password_entry.get()
 
-        connection = sqlite3.connect("db/rehealth_db.db")
+        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+        db_path = os.path.abspath(db_path)
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
 
         cursor.execute(
             """
-            SELECT Username, Password, Sex, DateOfBirth, JoinDate
+            SELECT UserID, Username, Password, Sex, DateOfBirth, JoinDate
             FROM User WHERE Username = ?
         """, (username_attempt, ))
         result = cursor.fetchone()
@@ -118,11 +121,13 @@ class App:
         connection.close()
 
         if result:
-            fetched_user = User(username=result[0],
-                                password=result[1],
-                                sex=result[2],
-                                dob=result[3],
-                                join_date=result[4])
+            fetched_user = User(username=result[1],
+                                password=result[2],
+                                sex=result[3],
+                                dob=result[4],
+                                join_date=result[5],
+                                user_id=result[0])
+
 
             if fetched_user.password_check(password_attempt):
                 messagebox.showinfo("Success", "Login successful!")

@@ -6,12 +6,13 @@ class User:
     The class represents the user's login details
     """
 
-    def __init__(self, username, password, sex, dob, join_date):
+    def __init__(self, username, password, sex, dob, join_date, user_id=None):
         self.username = username
         self.password = password
         self.sex = sex
         self.dob = dob
         self.join_date = join_date
+        self.user_id = user_id
 
     @staticmethod
     def password_hasher(password):

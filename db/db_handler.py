@@ -1,4 +1,6 @@
 import sqlite3
+from datetime import date
+import os
 
 
 def save_user_to_db(user):
@@ -36,3 +38,17 @@ def save_user_to_db(user):
     connection.close()
 
 
+def save_metrics(user_id, height, weight):
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+    connection = sqlite3.connect(db_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO MetricsTracking (UserID, Height, Weight, MetricDate)
+        VALUES (?, ?, ?, ?)
+    """, (user_id, height, weight, date.today()))
+
+    connection.commit()
+    connection.close()

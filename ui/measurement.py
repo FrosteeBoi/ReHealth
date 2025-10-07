@@ -2,6 +2,7 @@ import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
 from logic.calculations import bmi_calc
+from db.db_handler import save_metrics
 
 
 class Measurement:
@@ -21,9 +22,10 @@ class Measurement:
         self.root.geometry("490x630")
 
         # Initialises measurement values as empty strings
-        self.height_val = ""
-        self.weight_val = ""
-        self.bmi_val = ""
+        self.height_val = 0
+
+        self.weight_val = 0
+        self.bmi_val = 0
 
         # Makes root expandable
         self.root.grid_rowconfigure(0, weight=1)
@@ -117,15 +119,21 @@ class Measurement:
         Calculates BMI using given values
         """
         try:
-            value = bmi_calc(69, 174 / 100)
+            value = bmi_calc(self.weight_val, self.height_val)
             self.bmi_val = value
             self.bmi_label.config(text=f"BMI: {self.bmi_val}")
+
+            # Saves metrics to the database
+            save_metrics(self.user.user_id, float(self.height_val), float(self.weight_val))
+            messagebox.showinfo("Saved", "Measurement data saved successfully.")
+
         except (ValueError, ZeroDivisionError):
-            messagebox.showerror("Failed input", "Error in calculating BMI.")
+            messagebox.showerror("Failed input", "Error in calculating BMI or saving data.")
+
 
 
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
-    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
+    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025", )
     app = Measurement(root, test_user)
     root.mainloop()
