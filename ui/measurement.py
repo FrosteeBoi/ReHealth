@@ -20,6 +20,7 @@ class Measurement:
         self.measureframe = tb.Frame(self.root)
         self.measureframe.grid(row=0, column=0, sticky="n")
         self.root.geometry("490x630")
+        self.root.title("ReHealth")
 
         # Initialises measurement values as empty strings
         self.height_val = 0

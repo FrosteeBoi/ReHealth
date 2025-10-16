@@ -6,6 +6,7 @@ import re
 from datetime import datetime, date
 from db.db_handler import save_user_to_db
 from ui.measurement import Measurement
+from ui.steps import Steps
 
 
 class Dashboard:
@@ -22,6 +23,7 @@ class Dashboard:
         self.dashframe = tb.Frame(self.root)
         self.dashframe.grid(row=0, column=0, sticky="n")
         self.root.geometry("490x630")
+        self.root.title("ReHealth")
 
         # Makes root expandable
         self.root.grid_rowconfigure(0, weight=1)
@@ -102,7 +104,7 @@ class Dashboard:
 
     def show_steps(self):
         """Display the Steps tab."""
-        print("Show steps")
+        Steps(self.root, self.user)
 
 
 class TestUser:
