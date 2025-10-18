@@ -4,6 +4,7 @@ from logic.user import User
 from logic.calculations import bmi_calc
 from db.db_handler import save_metrics
 
+
 class Steps:
     """
     Class created to record measurements like user height, weight,
@@ -25,20 +26,19 @@ class Steps:
         self.root.grid_columnconfigure(0, weight=1)
 
         # initialises variables
-
         self.step_count = 0
+
         # Labels
         self.steps_label = tb.Label(
             self.stepframe,
             text=f"{self.user.username}'s Steps",
             font=("roboto", 18, "bold")
         )
-
         self.steps_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(15, 0))
 
         self.count_label = tb.Label(
             self.stepframe,
-            text=f"Total Steps Today: {self.step_count}",
+            text=f"{self.step_count}",
             font=("roboto", 18, "bold")
         )
         self.count_label.grid(row=1, column=0, pady=(50, 50), padx=(15, 0), columnspan=2)
@@ -51,7 +51,6 @@ class Steps:
         self.step_record.grid(row=2, column=0, pady=(0, 50))
 
         # Entry and Button initialised
-
         self.step_entry = tb.Entry(self.stepframe)
         self.step_entry.grid(row=2, column=1, padx=(10, 0), pady=(0, 50))
 
@@ -62,18 +61,20 @@ class Steps:
         """
         Increments the amount of steps
         """
-
         try:
             value = int(self.step_entry.get())
             self.step_count = str(value)
             self.step_entry.delete(0, 'end')
-            self.count_label.config(text=f"Total Steps Today: {self.step_count}")
+            self.count_label.config(text=f"{self.step_count}")
+
+            # Saves steps to the database
+            save_steps(self.user.user_id, self.step_count, 10000)
         except ValueError:
             messagebox.showerror("Failed input", "Please enter your steps as an integer.")
 
 
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
-    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025", )
+    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Steps(root, test_user)
     root.mainloop()

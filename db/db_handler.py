@@ -10,7 +10,9 @@ def save_user_to_db(user):
     :param user:
     :return:
     """
-    connection = sqlite3.connect("db/rehealth_db.db")
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+    connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -49,6 +51,29 @@ def save_metrics(user_id, height, weight):
         INSERT INTO MetricsTracking (UserID, Height, Weight, MetricDate)
         VALUES (?, ?, ?, ?)
     """, (user_id, height, weight, date.today()))
+
+    connection.commit()
+    connection.close()
+
+def save_steps(user_id, step_count, step_goal):
+    """
+    Saves the user's daily step data into the Steps table
+
+    :param user_id:
+    :param step_count:
+    :param step_goal:
+    :return:
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+    connection = sqlite3.connect(db_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO Steps (UserID, Date, StepCount, StepsGoal)
+        VALUES (?, ?, ?, ?)
+    """, (user_id, date.today(), step_count, step_goal))
 
     connection.commit()
     connection.close()
