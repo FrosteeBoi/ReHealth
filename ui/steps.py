@@ -55,22 +55,21 @@ class Steps:
         self.step_entry = tb.Entry(self.stepframe)
         self.step_entry.grid(row=2, column=1, padx=(10, 0), pady=(0, 50))
 
+        self.step_button = tb.Button(self.stepframe, text="Add", command=self.step_inc)
+        self.step_button.grid(row=2, column=2, pady=(0, 50))
 
+    def step_inc(self):
+        """
+        Increments the amount of steps
+        """
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        try:
+            value = int(self.step_entry.get())
+            self.step_count = str(value)
+            self.step_entry.delete(0, 'end')
+            self.count_label.config(text=f"Total Steps Today: {self.step_count}")
+        except ValueError:
+            messagebox.showerror("Failed input", "Please enter your steps as an integer.")
 
 
 if __name__ == "__main__":
