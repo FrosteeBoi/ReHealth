@@ -3,7 +3,6 @@ from tkinter import messagebox
 from logic.user import User
 from logic.calculations import bmi_calc
 from db.db_handler import save_metrics
-from db.db_handler import save_steps
 
 
 class Measurement:
