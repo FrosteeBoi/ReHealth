@@ -2,6 +2,7 @@ import ttkbootstrap as tb
 from logic.user import User
 from ui.measurement import Measurement
 from ui.steps import Steps
+from ui.sleep import Sleep
 
 
 class Dashboard:
@@ -82,7 +83,7 @@ class Dashboard:
 
     # Placeholder methods for each tab
     def show_measurements(self):
-        """Display the Measurements tab."""
+        """Opens the measurement tab"""
         Measurement(self.root, self.user)
 
     def show_food(self):
@@ -90,15 +91,15 @@ class Dashboard:
         print("Show food")
 
     def show_workouts(self):
-        """Display the Workouts tab."""
+        """Display the Workouts tab"""
         print("Show workouts")
 
     def show_sleep(self):
-        """Display the Sleep tab."""
-        print("Show sleep")
+        Sleep(self.root, self.user)
+
 
     def show_steps(self):
-        """Display the Steps tab."""
+        """Opens the steps tab"""
         Steps(self.root, self.user)
 
 

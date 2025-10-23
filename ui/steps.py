@@ -6,8 +6,7 @@ from db.db_handler import save_steps
 
 class Steps:
     """
-    Class created to record measurements like user height, weight,
-    and calculate BMI
+    Class created to record steps and display them to the user
     """
 
     def __init__(self, root, user: User):
@@ -44,7 +43,7 @@ class Steps:
 
         self.step_record = tb.Label(
             self.stepframe,
-            text="Record Your Steps:",
+            text="Total steps today:",
             font=("roboto", 18, "bold")
         )
         self.step_record.grid(row=2, column=0, pady=(0, 50))
