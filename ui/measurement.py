@@ -91,6 +91,8 @@ class Measurement:
         self.bmi_calc_button = tb.Button(self.measureframe, text="Calculate BMI", command=self.bmi_inc)
         self.bmi_calc_button.grid(row=7, column=0, columnspan=2, padx=(50, 0))
 
+
+
     def height_inc(self):
         """
         Updates height value from the entry field and displays it
