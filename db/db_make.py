@@ -19,9 +19,11 @@ connection.close()
 
 
 import sqlite3
+import os
 
 def initialize_db():
-    connection = sqlite3.connect("db/rehealth_db.db")
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
     connection.execute("PRAGMA foreign_keys = ON")
     cursor = connection.cursor()
 
@@ -80,13 +82,11 @@ def initialize_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS Sleep (
+    CREATE TABLE Sleep (
       SleepID INTEGER PRIMARY KEY AUTOINCREMENT,
       UserID INTEGER,
       SleepDate DATE,
       SleepRating INTEGER,
-      WakeupTime TIME,
-      BedTime TIME,
       SleepDuration INTEGER,
       FOREIGN KEY (UserID) REFERENCES User(UserID)
     );
@@ -109,3 +109,5 @@ def initialize_db():
 
 
 initialize_db()
+
+

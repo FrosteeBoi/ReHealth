@@ -77,3 +77,26 @@ def save_steps(user_id, step_count, step_goal):
 
     connection.commit()
     connection.close()
+
+def save_sleep(user_id, sleep_hours, sleep_quality=None):
+    """
+    Saves the user's daily sleep data into the Sleep table.
+
+    :param user_id:
+    :param sleep_hours:
+    :param sleep_quality:
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+    connection = sqlite3.connect(db_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO Sleep (UserID, SleepDate, SleepRating, SleepDuration)
+        VALUES (?, ?, ?, ?)
+    """, (user_id, date.today(), sleep_hours, sleep_quality))
+
+    connection.commit()
+    connection.close()
+

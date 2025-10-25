@@ -2,6 +2,7 @@ import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
 from logic.calculations import sleep_calc
+from db.db_handler import save_sleep
 
 
 class Sleep:
@@ -19,6 +20,9 @@ class Sleep:
         self.sleepframe.grid(row=0, column=0, sticky="n")
         self.root.geometry("490x630")
         self.root.title("ReHealth")
+        self.sleep_duration = None
+        self.sleep_quality = None
+        self.rating = None
 
         # Makes root expandable
         self.root.grid_rowconfigure(0, weight=1)
@@ -30,7 +34,7 @@ class Sleep:
             text=f"{self.user.username}'s Sleep",
             font=("roboto", 18, "bold")
         )
-        self.sleep_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(50, 50))
+        self.sleep_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(70, 0))
 
         self.rating_label = tb.Label(
             self.sleepframe,
@@ -105,8 +109,9 @@ class Sleep:
     def update_rating(self):
         """Calculates and displays sleep rating."""
         if self.sleep_duration is not None and self.sleep_quality is not None:
-            rating = sleep_calc(self.sleep_duration, self.sleep_quality)
-            self.rating_label.config(text=f"Sleep Rating: {rating}")
+            self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
+            self.rating_label.config(text=f"Sleep Rating: {round(self.rating * 100)}%")
+            save_sleep(self.user.user_id, self.sleep_duration, self.rating)
 
 
 if __name__ == "__main__":
