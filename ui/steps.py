@@ -32,7 +32,7 @@ class Steps:
             text=f"{self.user.username}'s Steps",
             font=("roboto", 18, "bold")
         )
-        self.steps_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(15, 0))
+        self.steps_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(55, 0))
 
         self.count_label = tb.Label(
             self.stepframe,
@@ -43,7 +43,7 @@ class Steps:
 
         self.step_record = tb.Label(
             self.stepframe,
-            text="Total steps today:",
+            text="Total Steps Today:",
             font=("roboto", 18, "bold")
         )
         self.step_record.grid(row=2, column=0, pady=(0, 50))

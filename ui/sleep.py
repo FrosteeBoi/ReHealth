@@ -39,14 +39,14 @@ class Sleep:
         self.rating_label = tb.Label(
             self.sleepframe,
             text="Sleep Rating:",
-            font=("roboto", 18, "bold")
+            font=("roboto", 14)
         )
         self.rating_label.grid(row=1, column=0, pady=(20, 20), padx=(70, 0), columnspan=2)
 
         self.sleep_hours_label = tb.Label(
             self.sleepframe,
             text="Record your hours:",
-            font=("roboto", 18, "bold")
+            font=("roboto", 14)
         )
         self.sleep_hours_label.grid(row=2, column=0, pady=(20, 20))
 
@@ -63,7 +63,7 @@ class Sleep:
         self.sleep_refresh_label = tb.Label(
             self.sleepframe,
             text="Record how you feel(1-5):",
-            font=("roboto", 18, "bold")
+            font=("roboto", 14)
         )
         self.sleep_refresh_label.grid(row=3, column=0, pady=(20, 20))
 
