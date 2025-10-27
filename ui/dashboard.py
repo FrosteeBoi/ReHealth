@@ -88,7 +88,7 @@ class Dashboard:
 
     def show_food(self):
         """Display the Food tab."""
-        print("Show food")
+        Food(self.root, self.user)
 
     def show_workouts(self):
         """Display the Workouts tab"""
