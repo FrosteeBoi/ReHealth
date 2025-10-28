@@ -5,10 +5,9 @@ import os
 
 def save_user_to_db(user):
     """
-    Saves a new user to the database. If the table doesn't exist
-    (which it should) it creates the table
-    :param user:
-    :return:
+    Saves a new user to the database
+
+    :param user: User object containing username, password, sex, date of birth, and join date
     """
     db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
     db_path = os.path.abspath(db_path)
@@ -25,6 +24,7 @@ def save_user_to_db(user):
             JoinDate DATE
         );
     """)
+
     while True:
         try:
             cursor.execute("""
@@ -41,6 +41,13 @@ def save_user_to_db(user):
 
 
 def save_metrics(user_id, height, weight):
+    """
+    Saves user metrics to the database.
+
+    :param user_id: ID of the user
+    :param height: User's height
+    :param weight: User's weight
+    """
     db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
     db_path = os.path.abspath(db_path)
     connection = sqlite3.connect(db_path)
@@ -55,14 +62,14 @@ def save_metrics(user_id, height, weight):
     connection.commit()
     connection.close()
 
+
 def save_steps(user_id, step_count, step_goal):
     """
-    Saves the user's daily step data into the Steps table
+    Save the user's daily step data.
 
-    :param user_id:
-    :param step_count:
-    :param step_goal:
-    :return:
+    :param user_id: ID of the user
+    :param step_count: Number of steps taken
+    :param step_goal: Daily step goal
     """
     db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
     db_path = os.path.abspath(db_path)
@@ -78,13 +85,14 @@ def save_steps(user_id, step_count, step_goal):
     connection.commit()
     connection.close()
 
+
 def save_sleep(user_id, sleep_hours, sleep_quality=None):
     """
-    Saves the user's daily sleep data into the Sleep table.
+    Save the user's daily sleep data.
 
-    :param user_id:
-    :param sleep_hours:
-    :param sleep_quality:
+    :param user_id: ID of the user
+    :param sleep_hours: Hours slept
+    :param sleep_quality: Optional rating of sleep quality
     """
     db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
     db_path = os.path.abspath(db_path)
@@ -100,3 +108,41 @@ def save_sleep(user_id, sleep_hours, sleep_quality=None):
     connection.commit()
     connection.close()
 
+
+def save_food(user_id, food_name, calories, meal_type):
+    """
+    Save a user's food entry to the database.
+
+    :param user_id: ID of the user
+    :param food_name: Name of the food
+    :param calories: Number of calories
+    :param meal_type: Type of meal (e.g., breakfast, lunch, dinner, snack)
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+
+    connection = sqlite3.connect(db_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    # Create the Food table if it doesn't exist
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Food (
+            FoodID INTEGER PRIMARY KEY AUTOINCREMENT,
+            UserID INTEGER NOT NULL,
+            FoodName TEXT NOT NULL,
+            Calories INTEGER NOT NULL,
+            MealType TEXT NOT NULL,
+            EntryDate DATE NOT NULL,
+            FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
+        )
+    """)
+
+    # Insert the food record
+    cursor.execute("""
+        INSERT INTO Food (UserID, FoodName, Calories, MealType, EntryDate)
+        VALUES (?, ?, ?, ?, ?)
+    """, (user_id, food_name, calories, meal_type.lower(), date.today()))
+
+    connection.commit()
+    connection.close()

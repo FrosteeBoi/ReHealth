@@ -91,7 +91,7 @@ class Sleep:
             if hours < 0 or hours > 24:
                 raise ValueError
             self.sleep_duration = hours
-            messagebox.showinfo("Success", f"Recorded {hours} hours of sleep.")
+            messagebox.showinfo("Success", f"Recorded {hours} hours of sleep!")
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number of hours (0-24).")
 
