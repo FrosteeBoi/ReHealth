@@ -118,7 +118,7 @@ class Food:
     def database_inc(self):
         if self.foodname is not None and self.calorie_amount is not None and self.meal_type is not None:
             save_food(self.user.user_id, self.foodname, self.calorie_amount, self.meal_type)
-            messagebox.showinfo(f"{self.foodname} saved to database as {self.meal_type}")
+            messagebox.showinfo("Success", f"{self.foodname} saved to database as {self.meal_type}")
 
 
 if __name__ == "__main__":

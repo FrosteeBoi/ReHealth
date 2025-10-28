@@ -133,14 +133,14 @@ def save_food(user_id, food_name, calories, meal_type):
             FoodName TEXT NOT NULL,
             Calories INTEGER NOT NULL,
             MealType TEXT NOT NULL,
-            EntryDate DATE NOT NULL,
+            DateConsumed DATE NOT NULL,
             FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
         )
     """)
 
     # Insert the food record
     cursor.execute("""
-        INSERT INTO Food (UserID, FoodName, Calories, MealType, EntryDate)
+        INSERT INTO Food (UserID, FoodName, Calories, MealType, DateConsumed)
         VALUES (?, ?, ?, ?, ?)
     """, (user_id, food_name, calories, meal_type.lower(), date.today()))
 
