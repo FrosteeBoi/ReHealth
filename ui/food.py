@@ -2,8 +2,7 @@ import tkinter
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
-from db.db_handler import save_steps
-from
+from db.db_handler import save_food
 
 
 class Food:
@@ -85,7 +84,7 @@ class Food:
         self.meal_type_button = tb.Button(self.foodframe, text="Add", command=self.meal_type_inc)
         self.meal_type_button.grid(row=3, column=3, pady=(30, 0))
 
-        self.db_add_button = tb.Button(self.foodframe, text="Add to database")
+        self.db_add_button = tb.Button(self.foodframe, text="Add to database", command=self.database_inc)
         self.db_add_button.grid(row=4, column=1, pady=(30, 0), padx=(75, 0), columnspan=2)
 
     def food_name_inc(self):
@@ -118,7 +117,8 @@ class Food:
 
     def database_inc(self):
         if self.foodname is not None and self.calorie_amount is not None and self.meal_type is not None:
-            save_food
+            save_food(self.user.user_id, self.foodname, self.calorie_amount, self.meal_type)
+            messagebox.showinfo(f"{self.foodname} saved to database as {self.meal_type}")
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ from logic.user import User
 from ui.measurement import Measurement
 from ui.steps import Steps
 from ui.sleep import Sleep
+from ui.food import Food
 
 
 class Dashboard:
