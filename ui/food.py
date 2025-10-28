@@ -71,20 +71,39 @@ class Food:
         self.calorie_textbox = tb.Entry(self.foodframe)
         self.calorie_textbox.grid(row=2, column=2, pady=(30, 0))
 
-        self.meal_type_combobox = tb.Combobox(self.foodframe, values=self.meal_type_options)
+        self.meal_type_combobox = tb.Combobox(
+            self.foodframe,
+            values=self.meal_type_options
+        )
         self.meal_type_combobox.grid(row=3, column=2, pady=(30, 0))
 
         # Buttons
-        self.food_add_button = tb.Button(self.foodframe, text="Add", command=self.food_name_inc)
+        self.food_add_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.food_name_inc
+        )
         self.food_add_button.grid(row=1, column=3, pady=(30, 0))
 
-        self.calorie_add_button = tb.Button(self.foodframe, text="Add", command=self.calorie_name_inc)
+        self.calorie_add_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.calorie_name_inc
+        )
         self.calorie_add_button.grid(row=2, column=3, pady=(30, 0))
 
-        self.meal_type_button = tb.Button(self.foodframe, text="Add", command=self.meal_type_inc)
+        self.meal_type_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.meal_type_inc
+        )
         self.meal_type_button.grid(row=3, column=3, pady=(30, 0))
 
-        self.db_add_button = tb.Button(self.foodframe, text="Add to database", command=self.database_inc)
+        self.db_add_button = tb.Button(
+            self.foodframe,
+            text="Add to database",
+            command=self.database_inc
+        )
         self.db_add_button.grid(row=4, column=1, pady=(30, 0), padx=(75, 0), columnspan=2)
 
     def food_name_inc(self):
@@ -106,19 +125,28 @@ class Food:
             messagebox.showinfo("Success", f"{self.calorie_amount} cals recorded!")
         except ValueError:
             messagebox.showerror("Error", "Input calories as digits only.")
+
     def meal_type_inc(self):
         try:
             self.meal_type = self.meal_type_combobox.get()
             if not self.meal_type.strip():
                 raise ValueError
-            messagebox.showinfo("Success", f"Food: {self.meal_type} recorded!")
+            messagebox.showinfo("Success", f"Meal type: {self.meal_type} recorded!")
         except ValueError:
-            messagebox.showerror("Error", "Enter an meal option given below.")
+            messagebox.showerror("Error", "Enter a meal option given below.")
 
     def database_inc(self):
         if self.foodname is not None and self.calorie_amount is not None and self.meal_type is not None:
-            save_food(self.user.user_id, self.foodname, self.calorie_amount, self.meal_type)
-            messagebox.showinfo("Success", f"{self.foodname} saved to database as {self.meal_type}")
+            save_food(
+                self.user.user_id,
+                self.foodname,
+                self.calorie_amount,
+                self.meal_type
+            )
+            messagebox.showinfo(
+                "Success",
+                f"{self.foodname} saved to database as {self.meal_type}"
+            )
 
 
 if __name__ == "__main__":
