@@ -4,6 +4,7 @@ from ui.measurement import Measurement
 from ui.steps import Steps
 from ui.sleep import Sleep
 from ui.food import Food
+from ui.workout import Workouts
 
 
 class Dashboard:
@@ -93,7 +94,7 @@ class Dashboard:
 
     def show_workouts(self):
         """Display the Workouts tab"""
-        print("Show workouts")
+        Workouts(self.root, self.user)
 
     def show_sleep(self):
         Sleep(self.root, self.user)
