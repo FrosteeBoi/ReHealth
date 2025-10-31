@@ -3,7 +3,7 @@ from tkinter import messagebox
 from logic.user import User
 from logic.calculations import bmi_calc
 from db.db_handler import save_metrics
-
+from logic.calculations import bmi_status
 
 class Measurement:
     """
@@ -124,7 +124,7 @@ class Measurement:
         try:
             value = bmi_calc(self.weight_val, self.height_val)
             self.bmi_val = value
-            self.bmi_label.config(text=f"BMI: {self.bmi_val}")
+            self.bmi_label.config(text=f"BMI: {self.bmi_val} ({bmi_status(self.bmi_val)})")
 
             # Saves metrics to the database
             save_metrics(self.user.user_id, float(self.height_val), float(self.weight_val))

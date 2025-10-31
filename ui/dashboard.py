@@ -5,6 +5,7 @@ from ui.steps import Steps
 from ui.sleep import Sleep
 from ui.food import Food
 from ui.workout import Workouts
+from db.dashboard_data import get_sleep, get_steps, get_calories
 
 
 class Dashboard:
@@ -67,9 +68,21 @@ class Dashboard:
         )
 
         # Visual displays
-        self.dash_steps = tb.Label(self.dashframe, text="Steps: 6767")
-        self.dash_cals = tb.Label(self.dashframe, text="Calories: 6767")
-        self.dash_sleep = tb.Label(self.dashframe, text="Sleep: 6767")
+        self.dash_steps = tb.Label(
+            self.dashframe,
+            text=f"Your Steps: {get_steps(user.user_id)}",
+            font=("roboto", 14)
+        )
+        self.dash_cals = tb.Label(
+            self.dashframe,
+            text=f"Your Calories: {get_calories(user.user_id)}",
+            font=("roboto", 14)
+        )
+        self.dash_sleep = tb.Label(
+            self.dashframe,
+            text=f"Your SleepScore: {round(get_sleep(user.user_id), 2) * 100}%",
+            font=("roboto", 14)
+        )
 
         # Grids the buttons
         self.measurements_button.grid(row=0, column=0, padx=5)
@@ -105,17 +118,9 @@ class Dashboard:
         Steps(self.root, self.user)
 
 
-class TestUser:
-    """
-    A simple test user class for standalone testing of the Dashboard.
-    """
-
-    def __init__(self, username):
-        self.username = username
-
 
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
-    test_user = TestUser("TestUser")
+    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Dashboard(root, test_user)
     root.mainloop()

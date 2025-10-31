@@ -1,3 +1,6 @@
+
+from db.db_handler import get_weight
+
 def bmi_calc(kg_weight, cm_height):
     # Converts height from cm to m before calculating BMI
     m_height = float(cm_height) / 100
@@ -11,3 +14,31 @@ def sleep_calc(sleep_duration, sleep_quality):
 
     sleep_rating = duration_var + quality_var
     return sleep_rating
+
+
+def bmi_status(bmi):
+    if bmi < 18.5:
+        return "Underweight"
+    elif bmi < 25:
+        return "Healthy"
+    elif bmi < 30:
+        return "Overweight"
+    else:
+        return "Obese"
+
+
+def calories_burnt(steps, weight_kg):
+    """
+    Estimates calories burnt walking.
+    """
+    distance_m = steps * 0.78
+    distance_km = distance_m / 1000
+
+    if weight_kg == 0.0:
+        calories = distance_km * 50
+    else:
+        calories = weight_kg * distance_km * 1
+
+    return round(calories, 2)
+
+

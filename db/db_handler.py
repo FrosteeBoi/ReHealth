@@ -158,3 +158,20 @@ def save_workout(user_id, exercise_name, weight, sets, reps):
 
     connection.commit()
     connection.close()
+
+def get_weight(user_id):
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    cursor.execute("""
+           SELECT Weight 
+           FROM MetricsTracking
+           WHERE UserID = ?
+           ORDER BY MetricDate DESC
+           LIMIT 1
+       """, (user_id,))
+    result = cursor.fetchone()
+    connection.close()
+    return float(result[0]) if result and result[0] is not None else 0.0
+

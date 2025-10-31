@@ -2,6 +2,8 @@ import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
 from db.db_handler import save_steps
+from logic.calculations import calories_burnt
+from db.db_handler import get_weight
 
 
 class Steps:
@@ -25,6 +27,7 @@ class Steps:
 
         # initialises variables
         self.step_count = 0
+        self.calorie_count = 0
 
         # Labels
         self.steps_label = tb.Label(
@@ -32,28 +35,24 @@ class Steps:
             text=f"{self.user.username}'s Steps",
             font=("roboto", 18, "bold")
         )
-        self.steps_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(55, 0))
+        self.steps_label.grid(row=0, column=0, pady=(0, 0), padx=(00, 0))
 
         self.count_label = tb.Label(
             self.stepframe,
-            text=f"{self.step_count}",
-            font=("roboto", 18, "bold")
+            text=f"Step Count:Calories Burnt:",
+            font=("roboto", 14)
         )
-        self.count_label.grid(row=1, column=0, pady=(50, 50), padx=(15, 0), columnspan=2)
+        self.count_label.grid(row=2, column=0, pady=(50, 20), padx=(0, 50))
 
-        self.step_record = tb.Label(
-            self.stepframe,
-            text="Total Steps Today:",
-            font=("roboto", 18, "bold")
-        )
-        self.step_record.grid(row=2, column=0, pady=(0, 50))
+
+
 
         # Entry and Button initialised
         self.step_entry = tb.Entry(self.stepframe)
-        self.step_entry.grid(row=2, column=1, padx=(10, 0), pady=(0, 50))
+        self.step_entry.grid(row=3, column=0, padx=(0, 0), pady=(0, 0))
 
-        self.step_button = tb.Button(self.stepframe, text="Add", command=self.step_inc)
-        self.step_button.grid(row=2, column=2, pady=(0, 50))
+        self.step_button = tb.Button(self.stepframe, text="Add Steps", command=self.steps_and_calories)
+        self.step_button.grid(row=3, column=0, pady=(0, 50), padx=(0, 0))
 
     def step_inc(self):
         """
@@ -63,12 +62,28 @@ class Steps:
             value = int(self.step_entry.get())
             self.step_count = str(value)
             self.step_entry.delete(0, 'end')
-            self.count_label.config(text=f"{self.step_count}")
+            self.count_label.config(text=f"Step Count: {self.step_count}")
 
             # Saves steps to the database
             save_steps(self.user.user_id, self.step_count, 10000)
         except ValueError:
             messagebox.showerror("Failed input", "Please enter your steps as an integer.")
+
+    def calorie_inc(self):
+        """
+        Calculates and updates calories burnt only if steps are recorded.
+        """
+        if self.step_count and str(self.step_count).isdigit():
+            weight = get_weight(self.user.user_id)
+            steps = int(self.step_count)
+            self.calorie_count = calories_burnt(steps, weight)
+            self.calorie_label.config(text=f"Calories Burnt: {round(self.calorie_count)} kcal")
+        else:
+            messagebox.showinfo("No Steps", "Please enter your steps first before calculating calories.")
+
+    def steps_and_calories(self):
+        self.step_inc()
+        self.calorie_inc()
 
 
 if __name__ == "__main__":
