@@ -125,24 +125,36 @@ def save_food(user_id, food_name, calories, meal_type):
     connection.execute("PRAGMA foreign_keys = ON")
     cursor = connection.cursor()
 
-    # Create the Food table if it doesn't exist
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Food (
-            FoodID INTEGER PRIMARY KEY AUTOINCREMENT,
-            UserID INTEGER NOT NULL,
-            FoodName TEXT NOT NULL,
-            Calories INTEGER NOT NULL,
-            MealType TEXT NOT NULL,
-            DateConsumed DATE NOT NULL,
-            FOREIGN KEY (UserID) REFERENCES User(UserID) ON DELETE CASCADE
-        )
-    """)
-
-    # Insert the food record
     cursor.execute("""
         INSERT INTO Food (UserID, FoodName, Calories, MealType, DateConsumed)
         VALUES (?, ?, ?, ?, ?)
     """, (user_id, food_name, calories, meal_type.lower(), date.today()))
+
+    connection.commit()
+    connection.close()
+
+
+def save_workout(user_id, exercise_name, weight, sets, reps):
+    """
+    Save a user's workout entry to the database.
+
+    :param user_id: ID of the user
+    :param exercise_name: Name of the exercise
+    :param weight: Weight lifted in kg
+    :param sets: Number of sets performed
+    :param reps: Number of reps per set
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+    db_path = os.path.abspath(db_path)
+
+    connection = sqlite3.connect(db_path)
+    connection.execute("PRAGMA foreign_keys = ON")
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        INSERT INTO Exercises (UserID, ExerciseName, Weight, Sets, Reps, DatePerformed)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (user_id, exercise_name, weight, sets, reps, date.today()))
 
     connection.commit()
     connection.close()

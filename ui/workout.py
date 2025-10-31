@@ -2,6 +2,7 @@ import tkinter
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
+from db.db_handler import save_workout
 
 
 class Workouts:
@@ -94,46 +95,27 @@ class Workouts:
         self.exercise_add_button.grid(row=5, column=1, pady=(30, 0), padx=(40, 0), columnspan=2)
 
     def database_inc(self):
-        try:
-            self.exercise_name = self.name_textbox.get()
-            if not self.exercise_name.strip():
-                raise ValueError
-            if not all(part.isalpha() for part in self.exercise_name.split()):
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Error", "Exercise name can only consist of letters.")
+        self.exercise_name = self.name_textbox.get()
+        if not self.exercise_name.strip() or not all(part.isalpha() for part in self.exercise_name.split()):
+            messagebox.showerror("Error", "Exercise name can only consist of letters and cannot be blank.")
+            return
 
-        try:
-            self.exercise_weight = self.weight_textbox.get()
-            if not self.exercise_weight.strip():
-                raise ValueError
-            if not self.exercise_weight.isdigit():
-                raise ValueError
-        except ValueError:
+        self.exercise_weight = self.weight_textbox.get()
+        if not self.exercise_weight.strip() or not self.exercise_weight.isdigit():
             messagebox.showerror("Error", "Enter a numerical weight value")
+            return
 
-        try:
-            self.exercise_sets = self.sets_textbox.get()
-            if not self.exercise_sets.strip():
-                raise ValueError
-            if not self.exercise_sets.isdigit():
-                raise ValueError
-        except ValueError:
+        self.exercise_sets = self.sets_textbox.get()
+        if not self.exercise_sets.strip() or not self.exercise_sets.isdigit():
             messagebox.showerror("Error", "Input a numerical weight value")
+            return
 
-        try:
-            self.exercise_reps = self.reps_textbox.get()
-            if not self.exercise_reps.strip():
-                raise ValueError
-            if not self.exercise_reps.isdigit():
-                raise ValueError
-        except ValueError:
+        self.exercise_reps = self.reps_textbox.get()
+        if not self.exercise_reps.strip() or not self.exercise_reps.isdigit():
             messagebox.showerror("Error", "Enter a numerical value for reps")
-
-
-
-
-
+            return
+        save_workout(self.user.user_id, self.exercise_name, self.exercise_weight, self.exercise_sets, self.exercise_reps)
+        messagebox.showinfo("Success",f"{self.exercise_name} logged successfully!")
 
 
 if __name__ == "__main__":

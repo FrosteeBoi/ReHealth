@@ -2,126 +2,147 @@ import tkinter
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
+from db.db_handler import save_food
 
 
-class Workouts:
+class Food:
     """
-    Class that manages user exercises
+    Class created to manage the food interface and user input.
     """
 
     def __init__(self, root, user: User):
         """
-        Initialises the main window for managing exercises
+        Main window for food input initialised.
         """
         self.root = root
         self.user = user
 
+        # Variables
+        self.foodname = None
+        self.calorie_amount = None
+        self.meal_type = None
+
         # Main frame
-        self.workoutframe = tb.Frame(self.root)
-        self.workoutframe.grid(row=0, column=0, sticky="n", padx=(115, 0))
+        self.foodframe = tb.Frame(self.root)
+        self.foodframe.grid(row=0, column=0, sticky="n")
 
         # Window settings
         self.root.geometry("490x630")
         self.root.title("ReHealth")
 
-        # Variables
-        self.exercise_name = None
-        self.exercise_weight = None
-        self.exercise_reps = None
-        self.exercise_sets = None
+        self.root.grid_rowconfigure(0, weight=1)
+        self.root.grid_columnconfigure(0, weight=1)
+
+        self.meal_type_options = ["breakfast", "lunch", "dinner", "snack"]
 
         # Labels
-        self.workout_label = tb.Label(
-            self.workoutframe,
-            text=f"{self.user.username}'s Workouts",
+        self.food_label = tb.Label(
+            self.foodframe,
+            text=f"{self.user.username}'s Food",
             font=("roboto", 18, "bold")
         )
-        self.workout_label.grid(row=0, column=1, columnspan=2)
+        self.food_label.grid(row=0, column=1, pady=(0, 0), columnspan=2, padx=(50, 0))
 
-        self.name_label = tb.Label(
-            self.workoutframe,
-            text="Exercise Name:",
+        self.food_entry_label = tb.Label(
+            self.foodframe,
+            text="Add Food Name:",
             font=("roboto", 14)
         )
-        self.name_label.grid(row=1, column=1, pady=(30, 0))
+        self.food_entry_label.grid(row=1, column=1, pady=(30, 0))
 
-        self.weight_label = tb.Label(
-            self.workoutframe,
-            text="Weight (kg):",
+        self.calorie_label = tb.Label(
+            self.foodframe,
+            text="Add Calorie Amount:",
             font=("roboto", 14)
         )
-        self.weight_label.grid(row=2, column=1, pady=(30, 0))
+        self.calorie_label.grid(row=2, column=1, pady=(30, 0))
 
-        self.sets_label = tb.Label(
-            self.workoutframe,
-            text="Sets:",
+        self.meal_type_label = tb.Label(
+            self.foodframe,
+            text="Add Meal Type:",
             font=("roboto", 14)
         )
-        self.sets_label.grid(row=3, column=1, pady=(30, 0))
+        self.meal_type_label.grid(row=3, column=1, pady=(30, 0))
 
-        self.reps_label = tb.Label(
-            self.workoutframe,
-            text="Reps:",
-            font=("roboto", 14)
+        # Entry boxes
+        self.food_textbox = tb.Entry(self.foodframe)
+        self.food_textbox.grid(row=1, column=2, pady=(30, 0))
+
+        self.calorie_textbox = tb.Entry(self.foodframe)
+        self.calorie_textbox.grid(row=2, column=2, pady=(30, 0))
+
+        self.meal_type_combobox = tb.Combobox(
+            self.foodframe,
+            values=self.meal_type_options
         )
-        self.reps_label.grid(row=4, column=1, pady=(30, 0))
-
-        # Textboxes
-        self.name_textbox = tb.Entry(self.workoutframe)
-        self.name_textbox.grid(row=1, column=2, pady=(30, 0))
-
-        self.weight_textbox = tb.Entry(self.workoutframe)
-        self.weight_textbox.grid(row=2, column=2, pady=(30, 0))
-
-        self.sets_textbox = tb.Entry(self.workoutframe)
-        self.sets_textbox.grid(row=3, column=2, pady=(30, 0))
-
-        self.reps_textbox = tb.Entry(self.workoutframe)
-        self.reps_textbox.grid(row=4, column=2, pady=(30, 0))
+        self.meal_type_combobox.grid(row=3, column=2, pady=(30, 0))
 
         # Buttons
-        self.exercise_add_button = tb.Button(
-            self.workoutframe,
-            text="Add Exercise",
+        self.food_add_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.food_name_inc
+        )
+        self.food_add_button.grid(row=1, column=3, pady=(30, 0))
+
+        self.calorie_add_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.calorie_name_inc
+        )
+        self.calorie_add_button.grid(row=2, column=3, pady=(30, 0))
+
+        self.meal_type_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.meal_type_inc
+        )
+        self.meal_type_button.grid(row=3, column=3, pady=(30, 0))
+
+        self.db_add_button = tb.Button(
+            self.foodframe,
+            text="Add to database",
             command=self.database_inc
         )
-        self.exercise_add_button.grid(row=5, column=1, columnspan=2, pady=(30, 0), padx=(40, 0))
+        self.db_add_button.grid(row=4, column=1, pady=(30, 0), padx=(75, 0), columnspan=2)
+
+    def food_name_inc(self):
+        self.foodname = self.food_textbox.get()
+        if not self.foodname.strip():
+            messagebox.showerror("Error", "Input cannot be empty space.")
+            return
+        messagebox.showinfo("Success", f"Food: {self.foodname} recorded!")
+
+    def calorie_name_inc(self):
+        self.calorie_amount = self.calorie_textbox.get()
+        if not self.calorie_amount.strip() or not self.calorie_amount.isdigit():
+            messagebox.showerror("Error", "Input calories as digits only.")
+            return
+        messagebox.showinfo("Success", f"{self.calorie_amount} cals recorded!")
+
+    def meal_type_inc(self):
+        self.meal_type = self.meal_type_combobox.get()
+        if not self.meal_type.strip():
+            messagebox.showerror("Error", "Enter a meal option given below.")
+            return
+        messagebox.showinfo("Success", f"Meal type: {self.meal_type} recorded!")
 
     def database_inc(self):
-        """
-        Validates user input before adding exercise to database.
-        """
-        try:
-            self.exercise_name = self.name_textbox.get()
-            if not self.exercise_name.strip() or not all(part.isalpha() for part in self.exercise_name.split()):
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Error", "Exercise name can only consist of letters.")
-
-        try:
-            self.exercise_weight = self.weight_textbox.get()
-            if not self.exercise_weight.strip() or not self.exercise_weight.isdigit():
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Error", "Enter a numerical weight value.")
-
-        try:
-            self.exercise_sets = self.sets_textbox.get()
-            if not self.exercise_sets.strip() or not self.exercise_sets.isdigit():
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Error", "Input a numerical sets value.")
-
-        try:
-            self.exercise_reps = self.reps_textbox.get()
-            if not self.exercise_reps.strip() or not self.exercise_reps.isdigit():
-                raise ValueError
-        except ValueError:
-            messagebox.showerror("Error", "Enter a numerical value for reps.")
+        if self.foodname is not None and self.calorie_amount is not None and self.meal_type is not None:
+            save_food(
+                self.user.user_id,
+                self.foodname,
+                self.calorie_amount,
+                self.meal_type
+            )
+            messagebox.showinfo(
+                "Success",
+                f"{self.foodname} saved to database as {self.meal_type}"
+            )
 
 
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
     test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
-    app = Workouts(root, test_user)
+    app = Food(root, test_user)
     root.mainloop()

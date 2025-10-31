@@ -62,24 +62,16 @@ def initialize_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Exercises (
       ExerciseID INTEGER PRIMARY KEY AUTOINCREMENT,
+      UserID INTEGER
       ExerciseName VARCHAR(50),
       Weight DECIMAL(5,1),
-      DefaultSets INTEGER,
-      DefaultReps INTEGER
+      Sets INTEGER,
+      Reps INTEGER,
+      DatePerformed DATE NOT NULL,
+      FOREIGN KEY (UserID) REFERENCES User(UserID)
     );
     """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS UserExercises (
-      LogID INTEGER PRIMARY KEY AUTOINCREMENT,
-      UserID INTEGER,
-      ExerciseID INTEGER,
-      Weight DECIMAL(5,1),
-      DateLogged DATE NOT NULL,
-      FOREIGN KEY (UserID) REFERENCES User(UserID),
-      FOREIGN KEY (ExerciseID) REFERENCES Exercises(ExerciseID)
-    );
-    """)
 
     cursor.execute("""
     CREATE TABLE Sleep (
