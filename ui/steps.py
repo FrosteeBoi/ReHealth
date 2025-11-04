@@ -35,24 +35,29 @@ class Steps:
             text=f"{self.user.username}'s Steps",
             font=("roboto", 18, "bold")
         )
-        self.steps_label.grid(row=0, column=0, pady=(0, 0), padx=(00, 0))
+        self.steps_label.grid(row=0, column=0, pady=(20, 30), padx=20, columnspan=2)
 
         self.count_label = tb.Label(
             self.stepframe,
-            text=f"Step Count:Calories Burnt:",
+            text=f"Step Count: 0",
             font=("roboto", 14)
         )
-        self.count_label.grid(row=2, column=0, pady=(50, 20), padx=(0, 50))
+        self.count_label.grid(row=1, column=0, pady=(10, 10), padx=20, columnspan=2)
 
-
-
+        self.calorie_label = tb.Label(
+            self.stepframe,
+            text=f"Calories Burnt: 0 kcal",
+            font=("roboto", 14)
+        )
+        self.calorie_label.grid(row=2, column=0, pady=(10, 30), padx=20, columnspan=2)
 
         # Entry and Button initialised
-        self.step_entry = tb.Entry(self.stepframe)
-        self.step_entry.grid(row=3, column=0, padx=(0, 0), pady=(0, 0))
+        self.step_entry = tb.Entry(self.stepframe, width=20)
+        self.step_entry.grid(row=3, column=0, padx=(20, 10), pady=(10, 10))
 
         self.step_button = tb.Button(self.stepframe, text="Add Steps", command=self.steps_and_calories)
-        self.step_button.grid(row=3, column=0, pady=(0, 50), padx=(0, 0))
+        self.step_button.grid(row=3, column=1, pady=(10, 10), padx=(10, 20))
+
 
     def step_inc(self):
         """

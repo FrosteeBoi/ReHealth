@@ -24,7 +24,6 @@ class Measurement:
 
         # Initialises measurement values as empty strings
         self.height_val = 0
-
         self.weight_val = 0
         self.bmi_val = 0
 
@@ -32,66 +31,65 @@ class Measurement:
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
-        # Labels
+        # Labels initialised and placed
         self.measure_label = tb.Label(
             self.measureframe,
             text=f"{self.user.username}'s Measurements",
             font=("roboto", 18, "bold")
         )
-        self.measure_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(50, 0))
-
-        self.height_label = tb.Label(
-            self.measureframe,
-            text="Record Your Height:",
-            font=("roboto", 18, "bold")
-        )
-        self.height_label.grid(row=5, column=0, pady=(50, 50))
-
-        self.weight_label = tb.Label(
-            self.measureframe,
-            text="Record Your Weight:",
-            font=("roboto", 18, "bold")
-        )
-        self.weight_label.grid(row=6, column=0, pady=(0, 50))
+        self.measure_label.grid(row=0, column=0, pady=(20, 30), columnspan=3, padx=20)
 
         self.height_value_label = tb.Label(
             self.measureframe,
             text=f"Height: {self.height_val}",
-            font=("roboto", 18, "bold")
+            font=("roboto", 14)
         )
-        self.height_value_label.grid(row=2, column=0, columnspan=2, pady=(10, 10), padx=(50, 0))
+        self.height_value_label.grid(row=1, column=0, columnspan=3, pady=(10, 10), padx=20)
 
         self.weight_value_label = tb.Label(
             self.measureframe,
             text=f"Weight: {self.weight_val}",
-            font=("roboto", 18, "bold")
+            font=("roboto", 14)
         )
-        self.weight_value_label.grid(row=3, column=0, columnspan=2, pady=(10, 10), padx=(50, 0))
+        self.weight_value_label.grid(row=2, column=0, columnspan=3, pady=(10, 10), padx=20)
 
         self.bmi_label = tb.Label(
             self.measureframe,
-            text="BMI:",
-            font=("roboto", 18, "bold")
+            text="BMI: 0",
+            font=("roboto", 14)
         )
-        self.bmi_label.grid(row=4, column=0, pady=(10, 10), columnspan=2, padx=(50, 0))
-        # Entries
-        self.height_entry = tb.Entry(self.measureframe)
-        self.height_entry.grid(row=5, column=1, padx=(10, 0), pady=(50, 50))
+        self.bmi_label.grid(row=3, column=0, pady=(10, 30), columnspan=3, padx=20)
 
-        self.weight_entry = tb.Entry(self.measureframe)
-        self.weight_entry.grid(row=6, column=1, padx=(10, 0), pady=(0, 50))
+        self.height_label = tb.Label(
+            self.measureframe,
+            text="Record Your Height:",
+            font=("roboto", 14)
+        )
+        self.height_label.grid(row=4, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
 
-        # Buttons
-        self.height_button = tb.Button(self.measureframe, text="Add", command=self.height_inc)
-        self.height_button.grid(row=5, column=2)
+        self.height_entry = tb.Entry(self.measureframe, width=15)
+        self.height_entry.grid(row=4, column=1, padx=(10, 10), pady=(10, 10))
 
-        self.weight_button = tb.Button(self.measureframe, text="Add", command=self.weight_inc)
-        self.weight_button.grid(row=6, column=2, pady=(0, 50))
+        self.height_button = tb.Button(self.measureframe, text="Add", command=self.height_inc, width=8)
+        self.height_button.grid(row=4, column=2, padx=(10, 20), pady=(10, 10))
 
+        # Weight Input Section
+        self.weight_label = tb.Label(
+            self.measureframe,
+            text="Record Your Weight:",
+            font=("roboto", 14)
+        )
+        self.weight_label.grid(row=5, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
+
+        self.weight_entry = tb.Entry(self.measureframe, width=15)
+        self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10))
+
+        self.weight_button = tb.Button(self.measureframe, text="Add", command=self.weight_inc, width=8)
+        self.weight_button.grid(row=5, column=2, padx=(10, 20), pady=(10, 10))
+
+        # BMI Calculate Button
         self.bmi_calc_button = tb.Button(self.measureframe, text="Calculate BMI", command=self.bmi_inc)
-        self.bmi_calc_button.grid(row=7, column=0, columnspan=2, padx=(50, 0))
-
-
+        self.bmi_calc_button.grid(row=6, column=0, columnspan=3, pady=(30, 10), padx=20)
 
     def height_inc(self):
         """
@@ -134,9 +132,8 @@ class Measurement:
             messagebox.showerror("Failed input", "Error in calculating BMI or saving data.")
 
 
-
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
-    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025", )
+    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Measurement(root, test_user)
     root.mainloop()

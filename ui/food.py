@@ -1,4 +1,3 @@
-import tkinter
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
@@ -35,78 +34,88 @@ class Food:
 
         self.meal_type_options = ["breakfast", "lunch", "dinner", "snack"]
 
-        # Labels
+        # Title Label
         self.food_label = tb.Label(
             self.foodframe,
             text=f"{self.user.username}'s Food",
             font=("roboto", 18, "bold")
         )
-        self.food_label.grid(row=0, column=1, pady=(0, 0), columnspan=2, padx=(50, 0))
+        self.food_label.grid(row=0, column=0, pady=(20, 30), columnspan=3, padx=20)
 
+        # Food Name Section
         self.food_entry_label = tb.Label(
             self.foodframe,
             text="Add Food Name:",
             font=("roboto", 14)
         )
-        self.food_entry_label.grid(row=1, column=1, pady=(30, 0))
+        self.food_entry_label.grid(row=1, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
 
+        self.food_textbox = tb.Entry(self.foodframe, width=20)
+        self.food_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 10))
+
+        self.food_add_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.food_name_inc,
+            width=8
+        )
+        self.food_add_button.grid(row=1, column=2, pady=(10, 10), padx=(10, 20))
+
+        # Calorie Section
         self.calorie_label = tb.Label(
             self.foodframe,
             text="Add Calorie Amount:",
             font=("roboto", 14)
         )
-        self.calorie_label.grid(row=2, column=1, pady=(30, 0))
+        self.calorie_label.grid(row=2, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
 
+        self.calorie_textbox = tb.Entry(self.foodframe, width=20)
+        self.calorie_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 10))
+
+        self.calorie_add_button = tb.Button(
+            self.foodframe,
+            text="Add",
+            command=self.calorie_name_inc,
+            width=8
+        )
+        self.calorie_add_button.grid(row=2, column=2, pady=(10, 10), padx=(10, 20))
+
+        # Meal Type Section
         self.meal_type_label = tb.Label(
             self.foodframe,
             text="Add Meal Type:",
             font=("roboto", 14)
         )
-        self.meal_type_label.grid(row=3, column=1, pady=(30, 0))
-
-        # Entry boxes
-        self.food_textbox = tb.Entry(self.foodframe)
-        self.food_textbox.grid(row=1, column=2, pady=(30, 0))
-
-        self.calorie_textbox = tb.Entry(self.foodframe)
-        self.calorie_textbox.grid(row=2, column=2, pady=(30, 0))
+        self.meal_type_label.grid(row=3, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
 
         self.meal_type_combobox = tb.Combobox(
             self.foodframe,
-            values=self.meal_type_options
+            values=self.meal_type_options,
+            width=18
         )
-        self.meal_type_combobox.grid(row=3, column=2, pady=(30, 0))
-
-        # Buttons
-        self.food_add_button = tb.Button(
-            self.foodframe,
-            text="Add",
-            command=self.food_name_inc
-        )
-        self.food_add_button.grid(row=1, column=3, pady=(30, 0))
-
-        self.calorie_add_button = tb.Button(
-            self.foodframe,
-            text="Add",
-            command=self.calorie_name_inc
-        )
-        self.calorie_add_button.grid(row=2, column=3, pady=(30, 0))
+        self.meal_type_combobox.grid(row=3, column=1, pady=(10, 10), padx=(10, 10))
 
         self.meal_type_button = tb.Button(
             self.foodframe,
             text="Add",
-            command=self.meal_type_inc
+            command=self.meal_type_inc,
+            width=8
         )
-        self.meal_type_button.grid(row=3, column=3, pady=(30, 0))
+        self.meal_type_button.grid(row=3, column=2, pady=(10, 10), padx=(10, 20))
 
+        # Database Button
         self.db_add_button = tb.Button(
             self.foodframe,
-            text="Add to database",
+            text="Add to Database",
             command=self.database_inc
         )
-        self.db_add_button.grid(row=4, column=1, pady=(30, 0), padx=(75, 0), columnspan=2)
+        self.db_add_button.grid(row=4, column=0, pady=(30, 10), columnspan=3)
 
     def food_name_inc(self):
+        """
+        Records name of food
+        :return:
+        """
         self.foodname = self.food_textbox.get()
         if not self.foodname.strip():
             messagebox.showerror("Error", "Input cannot be empty space.")
@@ -114,6 +123,9 @@ class Food:
         messagebox.showinfo("Success", f"Food: {self.foodname} recorded!")
 
     def calorie_name_inc(self):
+        """
+        Records calorie amount
+        """
         self.calorie_amount = self.calorie_textbox.get()
         if not self.calorie_amount.strip() or not self.calorie_amount.isdigit():
             messagebox.showerror("Error", "Input calories as digits only.")
@@ -121,6 +133,9 @@ class Food:
         messagebox.showinfo("Success", f"{self.calorie_amount} cals recorded!")
 
     def meal_type_inc(self):
+        """
+        Records type of meal recorded by user
+        """
         self.meal_type = self.meal_type_combobox.get()
         if not self.meal_type.strip():
             messagebox.showerror("Error", "Enter a meal option given below.")
@@ -128,6 +143,9 @@ class Food:
         messagebox.showinfo("Success", f"Meal type: {self.meal_type} recorded!")
 
     def database_inc(self):
+        """
+        Saves food to database
+        """
         if self.foodname is not None and self.calorie_amount is not None and self.meal_type is not None:
             save_food(
                 self.user.user_id,
