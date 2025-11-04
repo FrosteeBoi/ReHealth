@@ -6,11 +6,15 @@ from ui.sleep import Sleep
 from ui.food import Food
 from ui.workout import Workouts
 from db.dashboard_data import get_sleep, get_steps, get_calories
+import matplotlib as plt
+import numpy as np
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class Dashboard:
     """
-    Create a class for a dashboard gui that can access other parts of the application
+    Create a dashboard class inherited from a base page
+    that allows navigation to other windows
     """
 
     def __init__(self, root, user: User):
@@ -124,6 +128,7 @@ class Dashboard:
     def show_steps(self):
         """Opens the steps tab"""
         Steps(self.root, self.user)
+
 
 
 if __name__ == "__main__":

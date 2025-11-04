@@ -4,6 +4,10 @@ from logic.user import User
 from db.db_handler import save_steps
 from logic.calculations import calories_burnt
 from db.db_handler import get_weight
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+
 
 
 class Steps:
@@ -59,6 +63,7 @@ class Steps:
         self.step_button.grid(row=3, column=1, pady=(10, 10), padx=(10, 20))
 
 
+
     def step_inc(self):
         """
         Increments the amount of steps
@@ -89,6 +94,60 @@ class Steps:
     def steps_and_calories(self):
         self.step_inc()
         self.calorie_inc()
+
+class StepGraph:
+    """
+    graph widget to display steps over time
+    """
+
+    def __init__(self, graph_frame, user: User):
+        """
+        initialises graph
+        graph_frame: frame to place graph
+        user: user id whose steps are recorded
+        """
+        self.graph_frame = graph_frame
+        self.user = user
+
+        self.graph_frame.grid(row=4, column=0, sticky="s")
+
+        self.graph_frame.grid_rowconfigure(0, weight=1)
+        self.graph_frame.grid_columnconfigure(0, weight=1)
+
+        self.fig = Figure(figsize=(6, 4), dpi=100)
+        self.ax = self.fig.add_subplot(111)
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
+        self.canvas_widget = self.canvas.get_tk_widget()
+
+        # test data
+        days = [1, 2, 3, 4, 5, 6, 7]
+        steps = [5000, 7000, 6500, 8000, 9000, 7500, 8500]
+
+        # Plot the data
+        self.ax.plot(days, steps, marker='o')
+        self.ax.set_xlabel('Days')
+        self.ax.set_ylabel('Steps')
+        self.ax.set_title('Steps Over Time')
+
+        # Pack the canvas
+        self.canvas_widget.pack()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
