@@ -5,6 +5,7 @@ from logic.calculations import bmi_calc
 from db.db_handler import save_metrics
 from logic.calculations import bmi_status
 
+
 class Measurement:
     """
     Class created to record measurements like user height, weight,
