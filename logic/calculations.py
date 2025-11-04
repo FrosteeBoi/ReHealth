@@ -1,5 +1,5 @@
-
 from db.db_handler import get_weight
+
 
 def bmi_calc(kg_weight, cm_height):
     # Converts height from cm to m before calculating BMI
@@ -40,5 +40,3 @@ def calories_burnt(steps, weight_kg):
         calories = weight_kg * distance_km * 1
 
     return round(calories, 2)
-
-
