@@ -1,13 +1,11 @@
-import ttkbootstrap as tb
+import os
 from tkinter import messagebox
-from logic.user import User
-from db.db_handler import save_steps
-from logic.calculations import calories_burnt
-from db.db_handler import get_weight
-import matplotlib.pyplot as plt
+import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-
+from db.db_handler import get_weight, save_steps
+from logic.calculations import calories_burnt
+from logic.user import User
 
 
 class Steps:
@@ -59,10 +57,16 @@ class Steps:
         self.step_entry = tb.Entry(self.stepframe, width=20)
         self.step_entry.grid(row=3, column=0, padx=(20, 10), pady=(10, 10))
 
-        self.step_button = tb.Button(self.stepframe, text="Add Steps", command=self.steps_and_calories)
+        self.step_button = tb.Button(
+            self.stepframe,
+            text="Add Steps",
+            command=self.steps_and_calories
+        )
         self.step_button.grid(row=3, column=1, pady=(10, 10), padx=(10, 20))
 
-
+        self.graph_frame = tb.Frame(self.stepframe)
+        self.graph_frame.grid(row=4, column=0, columnspan=2, pady=20, padx=20)
+        self.step_graph = StepGraph(self.graph_frame, self.user)
 
     def step_inc(self):
         """
@@ -87,13 +91,19 @@ class Steps:
             weight = get_weight(self.user.user_id)
             steps = int(self.step_count)
             self.calorie_count = calories_burnt(steps, weight)
-            self.calorie_label.config(text=f"Calories Burnt: {round(self.calorie_count)} kcal")
+            self.calorie_label.config(
+                text=f"Calories Burnt: {round(self.calorie_count)} kcal"
+            )
         else:
-            messagebox.showinfo("No Steps", "Please enter your steps first before calculating calories.")
+            messagebox.showinfo(
+                "No Steps",
+                "Please enter your steps first before calculating calories."
+            )
 
     def steps_and_calories(self):
         self.step_inc()
         self.calorie_inc()
+
 
 class StepGraph:
     """
@@ -114,8 +124,9 @@ class StepGraph:
         self.graph_frame.grid_rowconfigure(0, weight=1)
         self.graph_frame.grid_columnconfigure(0, weight=1)
 
-        self.fig = Figure(figsize=(6, 4), dpi=100)
+        self.fig = Figure(figsize=(5.5, 4), dpi=80, facecolor='#222222')
         self.ax = self.fig.add_subplot(111)
+        self.ax.set_facecolor('#2b3e50')
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
@@ -125,29 +136,51 @@ class StepGraph:
         steps = [5000, 7000, 6500, 8000, 9000, 7500, 8500]
 
         # Plot the data
-        self.ax.plot(days, steps, marker='o')
-        self.ax.set_xlabel('Days')
-        self.ax.set_ylabel('Steps')
-        self.ax.set_title('Steps Over Time')
+        self.ax.plot(days, steps, marker='o', color='#4e73df', linewidth=2, markersize=8)
+        self.ax.set_xlabel('Days', color='#adb5bd')
+        self.ax.set_ylabel('Steps', color='#adb5bd')
+        self.ax.set_title('Steps Over Time', color='#ffffff')
+
+        # Graph styling
+        self.ax.tick_params(colors='#adb5bd')
+        self.ax.spines['bottom'].set_color('#adb5bd')
+        self.ax.spines['top'].set_color('#adb5bd')
+        self.ax.spines['left'].set_color('#adb5bd')
+        self.ax.spines['right'].set_color('#adb5bd')
+
+        self.ax.grid(True, alpha=0.2, color='#adb5bd')
 
         # Pack the canvas
-        self.canvas_widget.pack()
+        self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
 
+        self.save_btn = tb.Button(
+            self.graph_frame,
+            text="Download",
+            command=self.save_graph
+        )
+        self.save_btn.grid(row=1, column=0, pady=(0, 10))
 
+    def save_graph(self):
+        """
+        Saves image of graph to images folder
+        """
+        try:
+            images_folder = os.path.join(os.path.dirname(__file__), "..", "images")
+            images_folder = os.path.abspath(images_folder)
 
+            if not os.path.exists(images_folder):
+                os.makedirs(images_folder)
 
+            filename = os.path.join(
+                images_folder,
+                f'{self.user.username}_steps_graph_week.png'
+            )
 
+            self.fig.savefig(filename, dpi=100, facecolor='#222222')
 
-
-
-
-
-
-
-
-
-
-
+            messagebox.showinfo("Success", f"Graph saved to {filename}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save graph: {str(e)}")
 
 
 if __name__ == "__main__":

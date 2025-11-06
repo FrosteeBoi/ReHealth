@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 
-
 import os
 import sys
+import ttkbootstrap as tb
+from ui.login import App
 
 # Adds the current directory to the Python path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Imports the main application class
-from ui.login import App
-import ttkbootstrap as tb
 
 def main():
     """
@@ -19,6 +17,7 @@ def main():
     root = tb.Window(themename="darkly")
     app = App(root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()

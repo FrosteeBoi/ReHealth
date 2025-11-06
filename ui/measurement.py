@@ -1,9 +1,8 @@
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
-from logic.calculations import bmi_calc
+from logic.calculations import bmi_calc, bmi_status
 from db.db_handler import save_metrics
-from logic.calculations import bmi_status
 
 
 class Measurement:
@@ -71,7 +70,12 @@ class Measurement:
         self.height_entry = tb.Entry(self.measureframe, width=15)
         self.height_entry.grid(row=4, column=1, padx=(10, 10), pady=(10, 10))
 
-        self.height_button = tb.Button(self.measureframe, text="Add", command=self.height_inc, width=8)
+        self.height_button = tb.Button(
+            self.measureframe,
+            text="Add",
+            command=self.height_inc,
+            width=8
+        )
         self.height_button.grid(row=4, column=2, padx=(10, 20), pady=(10, 10))
 
         # Weight Input Section
@@ -85,11 +89,20 @@ class Measurement:
         self.weight_entry = tb.Entry(self.measureframe, width=15)
         self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10))
 
-        self.weight_button = tb.Button(self.measureframe, text="Add", command=self.weight_inc, width=8)
+        self.weight_button = tb.Button(
+            self.measureframe,
+            text="Add",
+            command=self.weight_inc,
+            width=8
+        )
         self.weight_button.grid(row=5, column=2, padx=(10, 20), pady=(10, 10))
 
         # BMI Calculate Button
-        self.bmi_calc_button = tb.Button(self.measureframe, text="Calculate BMI", command=self.bmi_inc)
+        self.bmi_calc_button = tb.Button(
+            self.measureframe,
+            text="Calculate BMI",
+            command=self.bmi_inc
+        )
         self.bmi_calc_button.grid(row=6, column=0, columnspan=3, pady=(30, 10), padx=20)
 
     def height_inc(self):

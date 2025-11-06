@@ -1,4 +1,3 @@
-import tkinter
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
@@ -28,7 +27,7 @@ class Workouts:
         self.exercise_name = None
         self.exercise_weight = None
         self.exercise_reps = None
-        self.exercise_sets =None
+        self.exercise_sets = None
 
         # Labels
         self.workout_label = tb.Label(
@@ -50,7 +49,6 @@ class Workouts:
             text="Weight (kg):",
             font=("roboto", 14)
         )
-
         self.weight_label.grid(row=2, column=1, pady=(30, 0))
 
         self.sets_label = tb.Label(
@@ -67,26 +65,20 @@ class Workouts:
         )
         self.reps_label.grid(row=4, column=1, pady=(30, 0))
 
-        # textboxes
-
+        # Textboxes
         self.name_textbox = tb.Entry(self.workoutframe)
         self.name_textbox.grid(row=1, column=2, pady=(30, 0))
 
         self.weight_textbox = tb.Entry(self.workoutframe)
         self.weight_textbox.grid(row=2, column=2, pady=(30, 0))
 
-        self.sets_textbox = tb.Entry(
-            self.workoutframe,
-        )
+        self.sets_textbox = tb.Entry(self.workoutframe)
         self.sets_textbox.grid(row=3, column=2, pady=(30, 0))
 
-        self.reps_textbox = tb.Entry(
-            self.workoutframe,
-        )
+        self.reps_textbox = tb.Entry(self.workoutframe)
         self.reps_textbox.grid(row=4, column=2, pady=(30, 0))
 
         # Buttons
-
         self.exercise_add_button = tb.Button(
             self.workoutframe,
             text="Add Exercise",
@@ -97,7 +89,10 @@ class Workouts:
     def database_inc(self):
         self.exercise_name = self.name_textbox.get()
         if not self.exercise_name.strip() or not all(part.isalpha() for part in self.exercise_name.split()):
-            messagebox.showerror("Error", "Exercise name can only consist of letters and cannot be blank.")
+            messagebox.showerror(
+                "Error",
+                "Exercise name can only consist of letters and cannot be blank."
+            )
             return
 
         self.exercise_weight = self.weight_textbox.get()
@@ -114,8 +109,15 @@ class Workouts:
         if not self.exercise_reps.strip() or not self.exercise_reps.isdigit():
             messagebox.showerror("Error", "Enter a numerical value for reps")
             return
-        save_workout(self.user.user_id, self.exercise_name, self.exercise_weight, self.exercise_sets, self.exercise_reps)
-        messagebox.showinfo("Success",f"{self.exercise_name} logged successfully!")
+
+        save_workout(
+            self.user.user_id,
+            self.exercise_name,
+            self.exercise_weight,
+            self.exercise_sets,
+            self.exercise_reps
+        )
+        messagebox.showinfo("Success", f"{self.exercise_name} logged successfully!")
 
 
 if __name__ == "__main__":

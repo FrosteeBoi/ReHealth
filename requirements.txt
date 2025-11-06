@@ -1,2 +1,5 @@
 ttkbootstrap==1.10.1
 ttkbootstrap
+matplotlib~=3.9.4
+numpy~=2.0.2
+requests~=2.32.5

@@ -6,9 +6,6 @@ from ui.sleep import Sleep
 from ui.food import Food
 from ui.workout import Workouts
 from db.dashboard_data import get_sleep, get_steps, get_calories
-import matplotlib as plt
-import numpy as np
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
 class Dashboard:
@@ -100,12 +97,11 @@ class Dashboard:
         self.sleep_button.grid(row=0, column=3, padx=4)
         self.steps_button.grid(row=0, column=4, padx=4)
 
-        # Grids the  visual displays
+        # Grids the visual displays
         self.dash_steps.grid(row=1, column=0, pady=(5, 5))
         self.dash_cals.grid(row=2, column=0, pady=(5, 5))
         self.dash_sleep.grid(row=3, column=0, pady=(5, 5))
 
-    # Tab functions
     def show_measurements(self):
         """Opens the measurement tab"""
         Measurement(self.root, self.user)
@@ -128,7 +124,6 @@ class Dashboard:
     def show_steps(self):
         """Opens the steps tab"""
         Steps(self.root, self.user)
-
 
 
 if __name__ == "__main__":
