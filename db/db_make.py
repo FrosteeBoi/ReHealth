@@ -62,7 +62,7 @@ def initialize_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Exercises (
       ExerciseID INTEGER PRIMARY KEY AUTOINCREMENT,
-      UserID INTEGER
+      UserID INTEGER,
       ExerciseName VARCHAR(50),
       Weight DECIMAL(5,1),
       Sets INTEGER,
