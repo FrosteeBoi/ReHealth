@@ -3,7 +3,7 @@ from tkinter import messagebox
 import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from db.db_handler import get_weight, save_steps
+from db.db_handler import get_weight, save_steps, get_last_7_days_steps_convert
 from logic.calculations import calories_burnt
 from logic.user import User
 
@@ -132,8 +132,7 @@ class StepGraph:
         self.canvas_widget = self.canvas.get_tk_widget()
 
         # test data
-        days = [1, 2, 3, 4, 5, 6, 7]
-        steps = [5000, 7000, 6500, 8000, 9000, 7500, 8500]
+        days, steps = get_last_7_days_steps_convert(self.user.user_id)
 
         # Plot the data
         self.ax.plot(days, steps, marker='o', color='#4e73df', linewidth=2, markersize=8)

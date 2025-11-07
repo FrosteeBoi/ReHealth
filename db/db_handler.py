@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import date
+from datetime import date, datetime, timedelta
 import os
 
 
@@ -175,3 +175,55 @@ def get_weight(user_id):
     result = cursor.fetchone()
     connection.close()
     return float(result[0]) if result and result[0] is not None else 0.0
+
+
+def get_last_7_days_steps(user_id):
+    """
+    Fetches steps data for the last 7 days for a given user.
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Gets today's date and calculate 7 days ago
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Queries steps for the last 7 days
+    cursor.execute("""
+        SELECT Date, SUM(StepCount) as TotalSteps
+        FROM Steps
+        WHERE UserID = ? AND Date >= ? AND Date <= ?
+        GROUP BY Date
+        ORDER BY Date ASC
+    """, (user_id, seven_days_ago, today))
+
+    results = cursor.fetchall()
+    connection.close()
+
+    # Creates a dictionary of dates and steps from database results
+    steps_dict = {}
+    for row in results:
+        date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
+        steps_dict[date_obj] = row[1]
+
+    # Fill in all 7 days (including days with no data)
+    dates = []
+    steps = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+        dates.append(current_date.strftime('%m/%d'))  # Formats as MM/DD for display
+        steps.append(steps_dict.get(current_date, 0))  # Value is 0 if no data for that day is found
+
+    return dates, steps
+
+
+def get_last_7_days_steps_convert(user_id):
+    """
+    Converts dayes to numbers for graph
+    Returns day numbers (1-7) and steps.
+    """
+    dates, steps = get_last_7_days_steps(user_id)
+    day_numbers = list(range(1, 8))
+    return day_numbers, steps
