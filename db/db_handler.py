@@ -330,3 +330,61 @@ def get_last_7_days_calories_convert(user_id):
     dates, calories = get_last_7_days_calories(user_id)
     day_numbers = list(range(1, 8))
     return day_numbers, calories
+
+
+def get_all_days_metrics(user_id):
+    """
+    Gets a list of all the measurement information
+    stored by the user from the database
+    """
+    try:
+        # Connect to database
+        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+        db_path = os.path.abspath(db_path)
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        # Fetch all metrics for the user
+        cursor.execute("""
+                   SELECT MetricDate, Height, Weight
+                   FROM MetricsTracking
+                   WHERE UserID = ?
+                   ORDER BY MetricDate DESC
+               """, (user_id,))
+
+        records = cursor.fetchall()
+        connection.close()
+        return records
+    except Exception as e:
+        print(f"Error fetching user metrics: {e}")
+        return []
+
+
+def get_all_workouts(user_id):
+    """
+    Gets a list of all the workout information
+    stored by the user from the database
+    """
+    try:
+        # Connect to database
+        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+        db_path = os.path.abspath(db_path)
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        # Fetch all workouts for the user
+        cursor.execute("""
+            SELECT DatePerformed, ExerciseName, Weight, Sets, Reps
+            FROM Exercises
+            WHERE UserID = ?
+            ORDER BY DatePerformed DESC
+        """, (user_id,))
+
+        records = cursor.fetchall()
+        connection.close()
+
+        return records
+
+    except Exception as e:
+        print(f"Error fetching workouts: {e}")
+        return []

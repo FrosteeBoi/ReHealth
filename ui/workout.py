@@ -1,7 +1,9 @@
 import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
-from db.db_handler import save_workout
+from db.db_handler import save_workout, get_all_workouts
+from datetime import datetime
+import os
 
 
 class Workouts:
@@ -86,6 +88,14 @@ class Workouts:
         )
         self.exercise_add_button.grid(row=5, column=1, pady=(30, 0), padx=(40, 0), columnspan=2)
 
+        # Download Workout History Button
+        self.download_button = tb.Button(
+            self.workoutframe,
+            text="Download Workout History",
+            command=self.download_records
+        )
+        self.download_button.grid(row=6, column=1, pady=(20, 0), padx=(40, 0), columnspan=2)
+
     def database_inc(self):
         self.exercise_name = self.name_textbox.get()
         if not self.exercise_name.strip() or not all(part.isalpha() for part in self.exercise_name.split()):
@@ -118,6 +128,50 @@ class Workouts:
             self.exercise_reps
         )
         messagebox.showinfo("Success", f"{self.exercise_name} logged successfully!")
+
+    def download_records(self):
+        """
+        Downloads all past workout records for the user to a text file
+        """
+        try:
+            # Fetch all workouts using db_handler function
+            records = get_all_workouts(self.user.user_id)
+
+            if not records:
+                messagebox.showinfo("No Records", "No workout records found for this user.")
+                return
+
+            # Create directory path for workout logs (relative to project root)
+            met_log_directory = os.path.join(os.path.dirname(__file__), "..", "metric_logs")
+            met_log_directory = os.path.abspath(met_log_directory)
+
+            # Create directory if it doesn't exist
+            os.makedirs(met_log_directory, exist_ok=True)
+
+            # Create filename with current date
+            current_date = datetime.now().strftime("%d-%m-%y")
+            filename = os.path.join(met_log_directory, f"workout_log_{current_date}.txt")
+
+            # Write records to file
+            with open(filename, 'w') as file:
+                file.write(f"Workout Records for {self.user.username}\n")
+                file.write(f"Downloaded on: {datetime.now().strftime('%d-%m-%Y %H:%M')}\n")
+                file.write("=" * 60 + "\n\n")
+
+                for record in records:
+                    date, exercise_name, weight, sets, reps = record
+
+                    file.write(f"Date: {date}\n")
+                    file.write(f"Exercise: {exercise_name}\n")
+                    file.write(f"Weight: {weight} kg\n")
+                    file.write(f"Sets: {sets}\n")
+                    file.write(f"Reps: {reps}\n")
+                    file.write("-" * 60 + "\n")
+
+            messagebox.showinfo("Success", f"Workout records downloaded successfully to {filename}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to download records: {str(e)}")
 
 
 if __name__ == "__main__":

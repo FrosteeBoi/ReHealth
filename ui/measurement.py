@@ -2,7 +2,9 @@ import ttkbootstrap as tb
 from tkinter import messagebox
 from logic.user import User
 from logic.calculations import bmi_calc, bmi_status
-from db.db_handler import save_metrics
+from db.db_handler import save_metrics, get_all_days_metrics
+from datetime import datetime
+import os
 
 
 class Measurement:
@@ -105,6 +107,14 @@ class Measurement:
         )
         self.bmi_calc_button.grid(row=6, column=0, columnspan=3, pady=(30, 10), padx=20)
 
+        # Download Records Button
+        self.download_button = tb.Button(
+            self.measureframe,
+            text="Download Measurement History",
+            command=self.download_records
+        )
+        self.download_button.grid(row=7, column=0, columnspan=3, pady=(10, 20), padx=20)
+
     def height_inc(self):
         """
         Updates height value from the entry field and displays it
@@ -144,6 +154,50 @@ class Measurement:
 
         except (ValueError, ZeroDivisionError):
             messagebox.showerror("Failed input", "Error in calculating BMI or saving data.")
+
+    def download_records(self):
+        """
+        Downloads all past measurement records for the user to a text file
+        """
+        try:
+            # Fetch all metrics using db_handler function
+            records = get_all_days_metrics(self.user.user_id)
+
+            if not records:
+                messagebox.showinfo("No Records", "No measurement records found for this user.")
+                return
+
+            met_log_directory = os.path.join(os.path.dirname(__file__), "..", "metric_logs")
+            met_log_directory = os.path.abspath(met_log_directory)
+
+            os.makedirs(met_log_directory, exist_ok=True)
+
+            # Creates filename with current date
+            current_date = datetime.now().strftime("%d-%m-%Y")
+            filename = os.path.join(met_log_directory, f"metric_log_{current_date}.txt")
+
+            # Writes records to file
+            with open(filename, 'w') as file:
+                file.write(f"Measurement Records for {self.user.username}\n")
+                file.write(f"Downloaded on: {datetime.now().strftime('%d-%m-%Y %H:%M')}\n")
+                file.write("=" * 60 + "\n\n")
+
+                for record in records:
+                    date, height, weight = record
+                    # Calculates BMI for each record
+                    bmi = bmi_calc(str(weight), str(height))
+                    status = bmi_status(bmi)
+
+                    file.write(f"Date: {date}\n")
+                    file.write(f"Height: {height} cm\n")
+                    file.write(f"Weight: {weight} kg\n")
+                    file.write(f"BMI: {bmi} ({status})\n")
+                    file.write("-" * 60 + "\n")
+
+            messagebox.showinfo("Success", f"Records downloaded successfully to {filename}")
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to download records: {str(e)}")
 
 
 if __name__ == "__main__":
