@@ -1,8 +1,11 @@
+import os
 import ttkbootstrap as tb
 from tkinter import messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 from logic.user import User
 from logic.calculations import sleep_calc
-from db.db_handler import save_sleep
+from db.db_handler import save_sleep, get_last_7_days_sleep_convert
 
 
 class Sleep:
@@ -34,14 +37,14 @@ class Sleep:
             text=f"{self.user.username}'s Sleep",
             font=("roboto", 18, "bold")
         )
-        self.sleep_label.grid(row=0, column=0, pady=(0, 0), columnspan=2, padx=(70, 0))
+        self.sleep_label.grid(row=0, column=0, pady=(20, 30), columnspan=2, padx=20)
 
         self.rating_label = tb.Label(
             self.sleepframe,
             text="Sleep Rating:",
             font=("roboto", 14)
         )
-        self.rating_label.grid(row=1, column=0, pady=(20, 20), padx=(70, 0), columnspan=2)
+        self.rating_label.grid(row=1, column=0, pady=(10, 10), padx=20, columnspan=2)
 
         self.sleep_hours_label = tb.Label(
             self.sleepframe,
@@ -82,7 +85,12 @@ class Sleep:
             text="Calculate Rating",
             command=self.update_rating
         )
-        self.rating_button.grid(row=4, column=0, pady=(20, 20), padx=(190, 0))
+        self.rating_button.grid(row=4, column=0, pady=(0, 0), padx=(190, 0))
+
+        # Adds graph frame
+        self.graph_frame = tb.Frame(self.sleepframe)
+        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=(20), padx=20)
+        self.sleep_graph = SleepGraph(self.graph_frame, self.user)
 
     def hours_inc(self):
         """Receive hours input from user to store"""
@@ -91,6 +99,7 @@ class Sleep:
             if hours < 0 or hours > 24:
                 raise ValueError
             self.sleep_duration = hours
+            self.sleep_entry.delete(0, 'end')
             messagebox.showinfo("Success", f"Recorded {hours} hours of sleep!")
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid number of hours (0-24).")
@@ -102,6 +111,7 @@ class Sleep:
             if quality < 1 or quality > 5:
                 raise ValueError
             self.sleep_quality = quality
+            self.refresh_entry.delete(0, 'end')
             messagebox.showinfo("Success", f"Recorded sleep quality: {quality}/5.")
         except ValueError:
             messagebox.showerror("Error", "Please enter a valid sleep quality (1-5).")
@@ -112,6 +122,83 @@ class Sleep:
             self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
             self.rating_label.config(text=f"Sleep Rating: {round(self.rating * 100)}%")
             save_sleep(self.user.user_id, self.sleep_duration, self.rating)
+
+
+class SleepGraph:
+    """
+    graph widget to display sleep hours over time
+    """
+
+    def __init__(self, graph_frame, user: User):
+        """
+        initialises graph
+        graph_frame: frame to place graph
+        user: user id whose sleep is recorded
+        """
+        self.graph_frame = graph_frame
+        self.user = user
+
+        self.graph_frame.grid(row=5, column=0, sticky="s")
+
+        self.graph_frame.grid_rowconfigure(0, weight=1)
+        self.graph_frame.grid_columnconfigure(0, weight=1)
+
+        self.fig = Figure(figsize=(6, 4), dpi=67, facecolor='#222222')
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_facecolor('#2b3e50')
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
+        self.canvas_widget = self.canvas.get_tk_widget()
+
+        # grabs sleep data
+        days, sleep_hours = get_last_7_days_sleep_convert(self.user.user_id)
+
+        # Plot the data
+        self.ax.plot(days, sleep_hours, marker='o', color='#4e73df', linewidth=2, markersize=8)
+        self.ax.set_xlabel('Days', color='#adb5bd')
+        self.ax.set_ylabel('Hours', color='#adb5bd')
+        self.ax.set_title('Sleep Over Time', color='#ffffff')
+
+        # Graph styling
+        self.ax.tick_params(colors='#adb5bd')
+        self.ax.spines['bottom'].set_color('#adb5bd')
+        self.ax.spines['top'].set_color('#adb5bd')
+        self.ax.spines['left'].set_color('#adb5bd')
+        self.ax.spines['right'].set_color('#adb5bd')
+
+        self.ax.grid(True, alpha=0.2, color='#adb5bd')
+
+        # Pack the canvas
+        self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
+
+        self.save_btn = tb.Button(
+            self.graph_frame,
+            text="Download",
+            command=self.save_graph
+        )
+        self.save_btn.grid(row=1, column=0, pady=(0, 10))
+
+    def save_graph(self):
+        """
+        Saves image of graph to images folder
+        """
+        try:
+            images_folder = os.path.join(os.path.dirname(__file__), "..", "images")
+            images_folder = os.path.abspath(images_folder)
+
+            if not os.path.exists(images_folder):
+                os.makedirs(images_folder)
+
+            filename = os.path.join(
+                images_folder,
+                f'{self.user.username}_sleep_graph_week.png'
+            )
+
+            self.fig.savefig(filename, dpi=100, facecolor='#222222')
+
+            messagebox.showinfo("Success", f"Graph saved to {filename}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save graph: {str(e)}")
 
 
 if __name__ == "__main__":

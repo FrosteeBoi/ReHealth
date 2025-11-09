@@ -124,14 +124,14 @@ class StepGraph:
         self.graph_frame.grid_rowconfigure(0, weight=1)
         self.graph_frame.grid_columnconfigure(0, weight=1)
 
-        self.fig = Figure(figsize=(5.5, 4), dpi=80, facecolor='#222222')
+        self.fig = Figure(figsize=(6, 4), dpi=80, facecolor='#222222')
         self.ax = self.fig.add_subplot(111)
         self.ax.set_facecolor('#2b3e50')
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
 
-        # test data
+        # grabs steps data
         days, steps = get_last_7_days_steps_convert(self.user.user_id)
 
         # Plot the data

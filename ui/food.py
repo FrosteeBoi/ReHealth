@@ -1,7 +1,10 @@
+import os
 import ttkbootstrap as tb
 from tkinter import messagebox
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 from logic.user import User
-from db.db_handler import save_food
+from db.db_handler import save_food, get_last_7_days_calories_convert
 
 
 class Food:
@@ -111,6 +114,11 @@ class Food:
         )
         self.db_add_button.grid(row=4, column=0, pady=(30, 10), columnspan=3)
 
+        # Add graph frame
+        self.graph_frame = tb.Frame(self.foodframe)
+        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=20, padx=20)
+        self.calorie_graph = CalorieGraph(self.graph_frame, self.user)
+
     def food_name_inc(self):
         """
         Records name of food
@@ -120,6 +128,7 @@ class Food:
         if not self.foodname.strip():
             messagebox.showerror("Error", "Input cannot be empty space.")
             return
+        self.food_textbox.delete(0, 'end')
         messagebox.showinfo("Success", f"Food: {self.foodname} recorded!")
 
     def calorie_name_inc(self):
@@ -130,6 +139,7 @@ class Food:
         if not self.calorie_amount.strip() or not self.calorie_amount.isdigit():
             messagebox.showerror("Error", "Input calories as digits only.")
             return
+        self.calorie_textbox.delete(0, 'end')
         messagebox.showinfo("Success", f"{self.calorie_amount} cals recorded!")
 
     def meal_type_inc(self):
@@ -157,6 +167,83 @@ class Food:
                 "Success",
                 f"{self.foodname} saved to database as {self.meal_type}"
             )
+
+
+class CalorieGraph:
+    """
+    graph widget to display calories over time
+    """
+
+    def __init__(self, graph_frame, user: User):
+        """
+        initialises graph
+        graph_frame: frame to place graph
+        user: user id whose calories are recorded
+        """
+        self.graph_frame = graph_frame
+        self.user = user
+
+        self.graph_frame.grid(row=5, column=0, sticky="s")
+
+        self.graph_frame.grid_rowconfigure(0, weight=1)
+        self.graph_frame.grid_columnconfigure(0, weight=1)
+
+        self.fig = Figure(figsize=(6, 4), dpi=67, facecolor='#222222')
+        self.ax = self.fig.add_subplot(111)
+        self.ax.set_facecolor('#2b3e50')
+
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
+        self.canvas_widget = self.canvas.get_tk_widget()
+
+        # grabs calorie data
+        days, calories = get_last_7_days_calories_convert(self.user.user_id)
+
+        # Plot the data
+        self.ax.plot(days, calories, marker='o', color='#4e73df', linewidth=2, markersize=8)
+        self.ax.set_xlabel('Days', color='#adb5bd')
+        self.ax.set_ylabel('Calories', color='#adb5bd')
+        self.ax.set_title('Calories Over Time', color='#ffffff')
+
+        # Graph styling
+        self.ax.tick_params(colors='#adb5bd')
+        self.ax.spines['bottom'].set_color('#adb5bd')
+        self.ax.spines['top'].set_color('#adb5bd')
+        self.ax.spines['left'].set_color('#adb5bd')
+        self.ax.spines['right'].set_color('#adb5bd')
+
+        self.ax.grid(True, alpha=0.2, color='#adb5bd')
+
+        # Pack the canvas
+        self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
+
+        self.save_btn = tb.Button(
+            self.graph_frame,
+            text="Download",
+            command=self.save_graph
+        )
+        self.save_btn.grid(row=1, column=0, pady=(0, 10))
+
+    def save_graph(self):
+        """
+        Saves image of graph to images folder
+        """
+        try:
+            images_folder = os.path.join(os.path.dirname(__file__), "..", "images")
+            images_folder = os.path.abspath(images_folder)
+
+            if not os.path.exists(images_folder):
+                os.makedirs(images_folder)
+
+            filename = os.path.join(
+                images_folder,
+                f'{self.user.username}_calories_graph_week.png'
+            )
+
+            self.fig.savefig(filename, dpi=100, facecolor='#222222')
+
+            messagebox.showinfo("Success", f"Graph saved to {filename}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to save graph: {str(e)}")
 
 
 if __name__ == "__main__":

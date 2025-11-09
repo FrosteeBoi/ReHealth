@@ -221,9 +221,112 @@ def get_last_7_days_steps(user_id):
 
 def get_last_7_days_steps_convert(user_id):
     """
-    Converts dayes to numbers for graph
+    Converts dates to numbers for graph
     Returns day numbers (1-7) and steps.
     """
     dates, steps = get_last_7_days_steps(user_id)
     day_numbers = list(range(1, 8))
     return day_numbers, steps
+
+
+def get_last_7_days_sleep(user_id):
+    """
+    Fetches sleep data for the last 7 days for a given user.
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Gets today's date and calculate 7 days ago
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Queries sleep for the last 7 days
+    cursor.execute("""
+        SELECT SleepDate, SleepDuration
+        FROM Sleep
+        WHERE UserID = ? AND SleepDate >= ? AND SleepDate <= ?
+        ORDER BY SleepDate ASC
+    """, (user_id, seven_days_ago, today))
+
+    results = cursor.fetchall()
+    connection.close()
+
+    # Creates a dictionary of dates and sleep hours from database results
+    sleep_dict = {}
+    for row in results:
+        date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
+        sleep_dict[date_obj] = row[1]
+
+    # Fill in all 7 days (including days with no data)
+    dates = []
+    sleep_hours = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+        dates.append(current_date.strftime('%m/%d'))  # Formats as MM/DD for display
+        sleep_hours.append(sleep_dict.get(current_date, 0))  # Value is 0 if no data for that day is found
+
+    return dates, sleep_hours
+
+
+def get_last_7_days_sleep_convert(user_id):
+    """
+    Converts dates to numbers for graph
+    Returns day numbers (1-7) and sleep hours.
+    """
+    dates, sleep_hours = get_last_7_days_sleep(user_id)
+    day_numbers = list(range(1, 8))
+    return day_numbers, sleep_hours
+
+
+def get_last_7_days_calories(user_id):
+    """
+    Fetches calorie data for the last 7 days for a given user.
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Gets today's date and calculate 7 days ago
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Queries calories for the last 7 days
+    cursor.execute("""
+        SELECT DateConsumed, SUM(Calories) as TotalCalories
+        FROM Food
+        WHERE UserID = ? AND DateConsumed >= ? AND DateConsumed <= ?
+        GROUP BY DateConsumed
+        ORDER BY DateConsumed ASC
+    """, (user_id, seven_days_ago, today))
+
+    results = cursor.fetchall()
+    connection.close()
+
+    # Creates a dictionary of dates and calories from database results
+    calories_dict = {}
+    for row in results:
+        date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
+        calories_dict[date_obj] = row[1]
+
+    # Fill in all 7 days (including days with no data)
+    dates = []
+    calories = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+        dates.append(current_date.strftime('%m/%d'))  # Formats as MM/DD for display
+        calories.append(calories_dict.get(current_date, 0))  # Value is 0 if no data for that day is found
+
+    return dates, calories
+
+
+def get_last_7_days_calories_convert(user_id):
+    """
+    Converts dates to numbers for graph
+    Returns day numbers (1-7) and calories.
+    """
+    dates, calories = get_last_7_days_calories(user_id)
+    day_numbers = list(range(1, 8))
+    return day_numbers, calories
