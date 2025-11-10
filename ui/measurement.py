@@ -1,21 +1,24 @@
-import ttkbootstrap as tb
+import os
+from datetime import datetime
 from tkinter import messagebox
+
+import ttkbootstrap as tb
+
 from logic.user import User
 from logic.calculations import bmi_calc, bmi_status
 from db.db_handler import save_metrics, get_all_days_metrics
-from datetime import datetime
-import os
+from ui_handler import return_to_dashboard
 
 
 class Measurement:
     """
     Class created to record measurements like user height, weight,
-    and calculate BMI
+    and calculate BMI.
     """
 
     def __init__(self, root, user: User):
         """
-        Main window for measurement initialised
+        Main window for measurement initialised.
         """
         self.root = root
         self.user = user
@@ -111,9 +114,17 @@ class Measurement:
         )
         self.download_button.grid(row=7, column=0, columnspan=3, pady=(10, 20), padx=20)
 
+        # Back to Dashboard Button
+        self.dash_button = tb.Button(
+            self.measureframe,
+            text="Back to Dashboard",
+            command=self.return_to_dash
+        )
+        self.dash_button.grid(row=8, column=0, columnspan=3, pady=(10, 20), padx=20)
+
     def height_inc(self):
         """
-        Updates height value from the entry field and displays it
+        Updates height value from the entry field and displays it.
         """
         try:
             value = float(self.height_entry.get())
@@ -125,7 +136,7 @@ class Measurement:
 
     def weight_inc(self):
         """
-        Updates weight value from the entry field and displays it
+        Updates weight value from the entry field and displays it.
         """
         try:
             value = float(self.weight_entry.get())
@@ -137,7 +148,7 @@ class Measurement:
 
     def bmi_inc(self):
         """
-        Calculates BMI using given values
+        Calculates BMI using given values.
         """
         try:
             value = bmi_calc(self.weight_val, self.height_val)
@@ -147,13 +158,12 @@ class Measurement:
             # Saves metrics to the database
             save_metrics(self.user.user_id, float(self.height_val), float(self.weight_val))
             messagebox.showinfo("Saved", "Measurement data saved successfully.")
-
         except (ValueError, ZeroDivisionError):
             messagebox.showerror("Failed input", "Error in calculating BMI or saving data.")
 
     def download_records(self):
         """
-        Downloads all past measurement records for the user to a text file
+        Downloads all past measurement records for the user to a text file.
         """
         try:
             # Fetch all metrics using db_handler function
@@ -165,7 +175,6 @@ class Measurement:
 
             met_log_directory = os.path.join(os.path.dirname(__file__), "..", "metric_logs")
             met_log_directory = os.path.abspath(met_log_directory)
-
             os.makedirs(met_log_directory, exist_ok=True)
 
             # Creates filename with current date
@@ -194,6 +203,12 @@ class Measurement:
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to download records: {str(e)}")
+
+    def return_to_dash(self):
+        """
+        Returns to the dashboard screen.
+        """
+        return_to_dashboard(self.measureframe, self.root, self.user)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from datetime import datetime
+
 
 db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
 
@@ -33,3 +33,4 @@ def get_sleep(user_id):
     result = cursor.fetchone()
     connection.close()
     return result[0] if result and result[0] else 0
+

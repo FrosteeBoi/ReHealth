@@ -4,6 +4,7 @@ from logic.user import User
 from db.db_handler import save_workout, get_all_workouts
 from datetime import datetime
 import os
+from ui_handler import return_to_dashboard
 
 
 class Workouts:
