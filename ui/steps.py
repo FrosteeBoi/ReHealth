@@ -20,12 +20,9 @@ class Steps:
         self.root = root
         self.user = user
         self.stepframe = tb.Frame(self.root)
-        self.stepframe.grid(row=0, column=0, sticky="n")
+        self.stepframe.place(relx=0.5, rely=0, anchor="n")
         self.root.geometry("490x630")
         self.root.title("ReHealth")
-
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
 
         # initialises variables
         self.step_count = 0

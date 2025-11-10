@@ -20,7 +20,7 @@ class Measurement:
         self.root = root
         self.user = user
         self.measureframe = tb.Frame(self.root)
-        self.measureframe.grid(row=0, column=0, sticky="n")
+        self.measureframe.place(relx=0.5, rely=0, anchor="n")
         self.root.geometry("490x630")
         self.root.title("ReHealth")
 
@@ -28,10 +28,6 @@ class Measurement:
         self.height_val = 0
         self.weight_val = 0
         self.bmi_val = 0
-
-        # Makes root expandable
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
 
         # Labels initialised and placed
         self.measure_label = tb.Label(
@@ -67,7 +63,7 @@ class Measurement:
             text="Record Your Height:",
             font=("roboto", 14)
         )
-        self.height_label.grid(row=4, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
+        self.height_label.grid(row=4, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
         self.height_entry = tb.Entry(self.measureframe, width=15)
         self.height_entry.grid(row=4, column=1, padx=(10, 10), pady=(10, 10))
@@ -86,7 +82,7 @@ class Measurement:
             text="Record Your Weight:",
             font=("roboto", 14)
         )
-        self.weight_label.grid(row=5, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
+        self.weight_label.grid(row=5, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
         self.weight_entry = tb.Entry(self.measureframe, width=15)
         self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10))

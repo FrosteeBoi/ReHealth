@@ -26,14 +26,11 @@ class Food:
 
         # Main frame
         self.foodframe = tb.Frame(self.root)
-        self.foodframe.grid(row=0, column=0, sticky="n")
+        self.foodframe.place(relx=0.5, rely=0, anchor="n")
 
         # Window settings
         self.root.geometry("490x630")
         self.root.title("ReHealth")
-
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
 
         self.meal_type_options = ["breakfast", "lunch", "dinner", "snack"]
 
@@ -51,7 +48,7 @@ class Food:
             text="Add Food Name:",
             font=("roboto", 14)
         )
-        self.food_entry_label.grid(row=1, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
+        self.food_entry_label.grid(row=1, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
         self.food_textbox = tb.Entry(self.foodframe, width=20)
         self.food_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 10))
@@ -70,7 +67,7 @@ class Food:
             text="Add Calorie Amount:",
             font=("roboto", 14)
         )
-        self.calorie_label.grid(row=2, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
+        self.calorie_label.grid(row=2, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
         self.calorie_textbox = tb.Entry(self.foodframe, width=20)
         self.calorie_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 10))
@@ -89,7 +86,7 @@ class Food:
             text="Add Meal Type:",
             font=("roboto", 14)
         )
-        self.meal_type_label.grid(row=3, column=0, pady=(10, 10), padx=(20, 10), sticky="w")
+        self.meal_type_label.grid(row=3, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
         self.meal_type_combobox = tb.Combobox(
             self.foodframe,

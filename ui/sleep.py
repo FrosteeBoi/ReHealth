@@ -20,16 +20,12 @@ class Sleep:
         self.root = root
         self.user = user
         self.sleepframe = tb.Frame(self.root)
-        self.sleepframe.grid(row=0, column=0, sticky="n")
+        self.sleepframe.place(relx=0.5, rely=0, anchor="n")
         self.root.geometry("490x630")
         self.root.title("ReHealth")
         self.sleep_duration = None
         self.sleep_quality = None
         self.rating = None
-
-        # Makes root expandable
-        self.root.grid_rowconfigure(0, weight=1)
-        self.root.grid_columnconfigure(0, weight=1)
 
         # Labels
         self.sleep_label = tb.Label(
@@ -37,21 +33,21 @@ class Sleep:
             text=f"{self.user.username}'s Sleep",
             font=("roboto", 18, "bold")
         )
-        self.sleep_label.grid(row=0, column=0, pady=(20, 30), columnspan=2, padx=20)
+        self.sleep_label.grid(row=0, column=0, pady=(20, 30), columnspan=3, padx=20)
 
         self.rating_label = tb.Label(
             self.sleepframe,
             text="Sleep Rating:",
             font=("roboto", 14)
         )
-        self.rating_label.grid(row=1, column=0, pady=(10, 10), padx=20, columnspan=2)
+        self.rating_label.grid(row=1, column=0, pady=(10, 10), padx=20, columnspan=3)
 
         self.sleep_hours_label = tb.Label(
             self.sleepframe,
             text="Record your hours:",
             font=("roboto", 14)
         )
-        self.sleep_hours_label.grid(row=2, column=0, pady=(20, 20))
+        self.sleep_hours_label.grid(row=2, column=0, pady=(20, 20), sticky="e", padx=(0, 10))
 
         self.sleep_entry = tb.Entry(self.sleepframe)
         self.sleep_entry.grid(row=2, column=1, pady=(20, 20))
@@ -61,14 +57,14 @@ class Sleep:
             text="Add",
             command=self.hours_inc
         )
-        self.hours_button.grid(row=2, column=2, pady=(20, 20))
+        self.hours_button.grid(row=2, column=2, pady=(20, 20), padx=(10, 0))
 
         self.sleep_refresh_label = tb.Label(
             self.sleepframe,
             text="Record how you feel(1-5):",
             font=("roboto", 14)
         )
-        self.sleep_refresh_label.grid(row=3, column=0, pady=(20, 20))
+        self.sleep_refresh_label.grid(row=3, column=0, pady=(20, 20), sticky="e", padx=(0, 10))
 
         self.refresh_entry = tb.Entry(self.sleepframe)
         self.refresh_entry.grid(row=3, column=1, pady=(20, 20))
@@ -78,18 +74,18 @@ class Sleep:
             text="Add",
             command=self.quality_inc
         )
-        self.refresh_button.grid(row=3, column=2)
+        self.refresh_button.grid(row=3, column=2, pady=(20, 20), padx=(10, 0))
 
         self.rating_button = tb.Button(
             self.sleepframe,
             text="Calculate Rating",
             command=self.update_rating
         )
-        self.rating_button.grid(row=4, column=0, pady=(0, 0), padx=(190, 0))
+        self.rating_button.grid(row=4, column=0, pady=(0, 20), columnspan=3)
 
         # Adds graph frame
         self.graph_frame = tb.Frame(self.sleepframe)
-        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=(20), padx=20)
+        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=(0, 20), padx=20)
         self.sleep_graph = SleepGraph(self.graph_frame, self.user)
 
     def hours_inc(self):

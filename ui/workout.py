@@ -20,7 +20,7 @@ class Workouts:
 
         # Main frame
         self.workoutframe = tb.Frame(self.root)
-        self.workoutframe.grid(row=0, column=0, sticky="n", padx=(115, 0))
+        self.workoutframe.place(relx=0.5, rely=0, anchor="n")
 
         # Window settings
         self.root.geometry("490x630")
@@ -37,48 +37,48 @@ class Workouts:
             text=f"{self.user.username}'s Workouts",
             font=("roboto", 18, "bold")
         )
-        self.workout_label.grid(row=0, column=1, pady=(0, 0), columnspan=2, padx=(0, 0))
+        self.workout_label.grid(row=0, column=0, pady=(20, 30), columnspan=2)
 
         self.name_label = tb.Label(
             self.workoutframe,
             text="Exercise Name:",
             font=("roboto", 14)
         )
-        self.name_label.grid(row=1, column=1, pady=(30, 0))
+        self.name_label.grid(row=1, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
 
         self.weight_label = tb.Label(
             self.workoutframe,
             text="Weight (kg):",
             font=("roboto", 14)
         )
-        self.weight_label.grid(row=2, column=1, pady=(30, 0))
+        self.weight_label.grid(row=2, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
 
         self.sets_label = tb.Label(
             self.workoutframe,
             text="Sets:",
             font=("roboto", 14)
         )
-        self.sets_label.grid(row=3, column=1, pady=(30, 0))
+        self.sets_label.grid(row=3, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
 
         self.reps_label = tb.Label(
             self.workoutframe,
             text="Reps:",
             font=("roboto", 14)
         )
-        self.reps_label.grid(row=4, column=1, pady=(30, 0))
+        self.reps_label.grid(row=4, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
 
         # Textboxes
         self.name_textbox = tb.Entry(self.workoutframe)
-        self.name_textbox.grid(row=1, column=2, pady=(30, 0))
+        self.name_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 0))
 
         self.weight_textbox = tb.Entry(self.workoutframe)
-        self.weight_textbox.grid(row=2, column=2, pady=(30, 0))
+        self.weight_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 0))
 
         self.sets_textbox = tb.Entry(self.workoutframe)
-        self.sets_textbox.grid(row=3, column=2, pady=(30, 0))
+        self.sets_textbox.grid(row=3, column=1, pady=(10, 10), padx=(10, 0))
 
         self.reps_textbox = tb.Entry(self.workoutframe)
-        self.reps_textbox.grid(row=4, column=2, pady=(30, 0))
+        self.reps_textbox.grid(row=4, column=1, pady=(10, 10), padx=(10, 0))
 
         # Buttons
         self.exercise_add_button = tb.Button(
@@ -86,7 +86,7 @@ class Workouts:
             text="Add Exercise",
             command=self.database_inc
         )
-        self.exercise_add_button.grid(row=5, column=1, pady=(30, 0), padx=(40, 0), columnspan=2)
+        self.exercise_add_button.grid(row=5, column=0, pady=(30, 10), columnspan=2)
 
         # Download Workout History Button
         self.download_button = tb.Button(
@@ -94,7 +94,7 @@ class Workouts:
             text="Download Workout History",
             command=self.download_records
         )
-        self.download_button.grid(row=6, column=1, pady=(20, 0), padx=(40, 0), columnspan=2)
+        self.download_button.grid(row=6, column=0, pady=(10, 20), columnspan=2)
 
     def database_inc(self):
         self.exercise_name = self.name_textbox.get()
