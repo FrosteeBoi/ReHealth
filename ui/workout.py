@@ -45,28 +45,32 @@ class Workouts:
             text="Exercise Name:",
             font=("roboto", 14)
         )
-        self.name_label.grid(row=1, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
+        self.name_label.grid(row=1, column=0, pady=(10, 10), sticky="e",
+                             padx=(0, 10))
 
         self.weight_label = tb.Label(
             self.workoutframe,
             text="Weight (kg):",
             font=("roboto", 14)
         )
-        self.weight_label.grid(row=2, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
+        self.weight_label.grid(row=2, column=0, pady=(10, 10), sticky="e",
+                               padx=(0, 10))
 
         self.sets_label = tb.Label(
             self.workoutframe,
             text="Sets:",
             font=("roboto", 14)
         )
-        self.sets_label.grid(row=3, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
+        self.sets_label.grid(row=3, column=0, pady=(10, 10), sticky="e",
+                             padx=(0, 10))
 
         self.reps_label = tb.Label(
             self.workoutframe,
             text="Reps:",
             font=("roboto", 14)
         )
-        self.reps_label.grid(row=4, column=0, pady=(10, 10), sticky="e", padx=(0, 10))
+        self.reps_label.grid(row=4, column=0, pady=(10, 10), sticky="e",
+                             padx=(0, 10))
 
         # Textboxes
         self.name_textbox = tb.Entry(self.workoutframe)
@@ -81,25 +85,39 @@ class Workouts:
         self.reps_textbox = tb.Entry(self.workoutframe)
         self.reps_textbox.grid(row=4, column=1, pady=(10, 10), padx=(10, 0))
 
-        # Buttons
+        # Buttons on same row
         self.exercise_add_button = tb.Button(
             self.workoutframe,
             text="Add Exercise",
             command=self.database_inc
         )
-        self.exercise_add_button.grid(row=5, column=0, pady=(30, 10), columnspan=2)
+        self.exercise_add_button.grid(row=5, column=0, pady=(30, 10),
+                                      padx=(0, 5))
 
-        # Download Workout History Button
         self.download_button = tb.Button(
             self.workoutframe,
             text="Download Workout History",
             command=self.download_records
         )
-        self.download_button.grid(row=6, column=0, pady=(10, 20), columnspan=2)
+        self.download_button.grid(row=5, column=1, pady=(30, 10), padx=(5, 0))
+
+        # Back to Dashboard Button
+        self.dash_button = tb.Button(
+            self.workoutframe,
+            text="Back to Dashboard",
+            command=self.return_to_dash
+        )
+        self.dash_button.grid(row=6, column=0, columnspan=2, pady=(230, 20),
+                              padx=20)
 
     def database_inc(self):
+        """
+        Validates and saves exercise data to the database
+        """
         self.exercise_name = self.name_textbox.get()
-        if not self.exercise_name.strip() or not all(part.isalpha() for part in self.exercise_name.split()):
+        if not self.exercise_name.strip() or not all(
+            part.isalpha() for part in self.exercise_name.split()
+        ):
             messagebox.showerror(
                 "Error",
                 "Exercise name can only consist of letters and cannot be blank."
@@ -128,7 +146,8 @@ class Workouts:
             self.exercise_sets,
             self.exercise_reps
         )
-        messagebox.showinfo("Success", f"{self.exercise_name} logged successfully!")
+        messagebox.showinfo("Success",
+                            f"{self.exercise_name} logged successfully!")
 
     def download_records(self):
         """
@@ -139,11 +158,18 @@ class Workouts:
             records = get_all_workouts(self.user.user_id)
 
             if not records:
-                messagebox.showinfo("No Records", "No workout records found for this user.")
+                messagebox.showinfo(
+                    "No Records",
+                    "No workout records found for this user."
+                )
                 return
 
             # Create directory path for workout logs (relative to project root)
-            met_log_directory = os.path.join(os.path.dirname(__file__), "..", "metric_logs")
+            met_log_directory = os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "metric_logs"
+            )
             met_log_directory = os.path.abspath(met_log_directory)
 
             # Create directory if it doesn't exist
@@ -151,12 +177,17 @@ class Workouts:
 
             # Create filename with current date
             current_date = datetime.now().strftime("%d-%m-%y")
-            filename = os.path.join(met_log_directory, f"workout_log_{current_date}.txt")
+            filename = os.path.join(
+                met_log_directory,
+                f"workout_log_{current_date}.txt"
+            )
 
             # Write records to file
             with open(filename, 'w') as file:
                 file.write(f"Workout Records for {self.user.username}\n")
-                file.write(f"Downloaded on: {datetime.now().strftime('%d-%m-%Y %H:%M')}\n")
+                file.write(
+                    f"Downloaded on: {datetime.now().strftime('%d-%m-%Y %H:%M')}\n"
+                )
                 file.write("=" * 60 + "\n\n")
 
                 for record in records:
@@ -169,14 +200,25 @@ class Workouts:
                     file.write(f"Reps: {reps}\n")
                     file.write("-" * 60 + "\n")
 
-            messagebox.showinfo("Success", f"Workout records downloaded successfully to {filename}")
+            messagebox.showinfo(
+                "Success",
+                f"Workout records downloaded successfully to {filename}"
+            )
 
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to download records: {str(e)}")
+            messagebox.showerror("Error",
+                                 f"Failed to download records: {str(e)}")
+
+    def return_to_dash(self):
+        """
+        Returns to the dashboard screen
+        """
+        return_to_dashboard(self.workoutframe, self.root, self.user)
 
 
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
-    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
+    test_user = User("TestUser", "1234567", "Male", "26/12/2007",
+                     "29/08/2025")
     app = Workouts(root, test_user)
     root.mainloop()
