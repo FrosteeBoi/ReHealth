@@ -1,9 +1,11 @@
-import ttkbootstrap as tb
-from tkinter import messagebox
-from logic.user import User
-from db.db_handler import save_workout, get_all_workouts
-from datetime import datetime
 import os
+from datetime import datetime
+from tkinter import messagebox
+
+import ttkbootstrap as tb
+
+from db.db_handler import save_workout, get_all_workouts
+from logic.user import User
 from ui_handler import return_to_dashboard
 
 
@@ -116,7 +118,7 @@ class Workouts:
         """
         self.exercise_name = self.name_textbox.get()
         if not self.exercise_name.strip() or not all(
-            part.isalpha() for part in self.exercise_name.split()
+                part.isalpha() for part in self.exercise_name.split()
         ):
             messagebox.showerror(
                 "Error",

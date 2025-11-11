@@ -1,10 +1,12 @@
 import os
-import ttkbootstrap as tb
 from tkinter import messagebox
+
+import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from logic.user import User
+
 from db.db_handler import save_food, get_last_7_days_calories_convert
+from logic.user import User
 from ui_handler import return_to_dashboard
 
 

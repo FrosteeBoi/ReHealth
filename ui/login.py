@@ -1,12 +1,14 @@
 import os
-import re
 import random
+import re
 import sqlite3
 from datetime import datetime, date
 from tkinter import messagebox
+
 import ttkbootstrap as tb
-from logic.user import User
+
 from db.db_handler import save_user_to_db
+from logic.user import User
 from ui.dashboard import Dashboard
 
 

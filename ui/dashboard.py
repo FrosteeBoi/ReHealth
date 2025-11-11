@@ -1,11 +1,12 @@
 import ttkbootstrap as tb
-from logic.user import User
-from ui.measurement import Measurement
-from ui.steps import Steps
-from ui.sleep import Sleep
-from ui.food import Food
-from ui.workout import Workouts
+
 from db.dashboard_data import get_sleep, get_steps, get_calories
+from logic.user import User
+from ui.food import Food
+from ui.measurement import Measurement
+from ui.sleep import Sleep
+from ui.steps import Steps
+from ui.workout import Workouts
 
 
 class Dashboard:

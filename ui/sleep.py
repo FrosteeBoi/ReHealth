@@ -1,11 +1,13 @@
 import os
-import ttkbootstrap as tb
 from tkinter import messagebox
+
+import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from logic.user import User
-from logic.calculations import sleep_calc
+
 from db.db_handler import save_sleep, get_last_7_days_sleep_convert
+from logic.calculations import sleep_calc
+from logic.user import User
 from ui_handler import return_to_dashboard
 
 

@@ -1,6 +1,6 @@
+import os
 import sqlite3
 from datetime import date, datetime, timedelta
-import os
 
 
 def save_user_to_db(user):

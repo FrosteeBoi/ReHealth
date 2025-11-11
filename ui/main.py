@@ -2,7 +2,9 @@
 
 import os
 import sys
+
 import ttkbootstrap as tb
+
 from ui.login import App
 
 # Adds the current directory to the Python path for imports

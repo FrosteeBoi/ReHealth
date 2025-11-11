@@ -1,8 +1,10 @@
 import os
 from tkinter import messagebox
+
 import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+
 from db.db_handler import (get_weight, save_steps,
                            get_last_7_days_steps_convert)
 from logic.calculations import calories_burnt

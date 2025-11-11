@@ -1,4 +1,3 @@
-
 """
 import sqlite3
 
@@ -17,9 +16,9 @@ else:
 connection.close()
 """
 
-
-import sqlite3
 import os
+import sqlite3
+
 
 def initialize_db():
     db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
@@ -72,7 +71,6 @@ def initialize_db():
     );
     """)
 
-
     cursor.execute("""
     CREATE TABLE Sleep (
       SleepID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,5 +99,3 @@ def initialize_db():
 
 
 initialize_db()
-
-

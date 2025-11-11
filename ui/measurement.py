@@ -4,9 +4,9 @@ from tkinter import messagebox
 
 import ttkbootstrap as tb
 
-from logic.user import User
-from logic.calculations import bmi_calc, bmi_status
 from db.db_handler import save_metrics, get_all_days_metrics
+from logic.calculations import bmi_calc, bmi_status
+from logic.user import User
 from ui_handler import return_to_dashboard
 
 

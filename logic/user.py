@@ -1,5 +1,6 @@
 import hashlib
 
+
 class User:
     """
     The class represents the user's login details
@@ -26,11 +27,3 @@ class User:
         Checks if the password inputted through login is the correct one
         """
         return self.password == self.password_hasher(input_password)
-
-
-
-
-
-
-
-
