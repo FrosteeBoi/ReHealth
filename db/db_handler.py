@@ -1,6 +1,6 @@
-import sqlite3
-from datetime import date
 import os
+import sqlite3
+from datetime import date, datetime, timedelta
 
 
 def save_user_to_db(user):
@@ -175,3 +175,216 @@ def get_weight(user_id):
     result = cursor.fetchone()
     connection.close()
     return float(result[0]) if result and result[0] is not None else 0.0
+
+
+def get_last_7_days_steps(user_id):
+    """
+    Fetches steps data for the last 7 days for a given user.
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Gets today's date and calculate 7 days ago
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Queries steps for the last 7 days
+    cursor.execute("""
+        SELECT Date, SUM(StepCount) as TotalSteps
+        FROM Steps
+        WHERE UserID = ? AND Date >= ? AND Date <= ?
+        GROUP BY Date
+        ORDER BY Date ASC
+    """, (user_id, seven_days_ago, today))
+
+    results = cursor.fetchall()
+    connection.close()
+
+    # Creates a dictionary of dates and steps from database results
+    steps_dict = {}
+    for row in results:
+        date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
+        steps_dict[date_obj] = row[1]
+
+    # Fill in all 7 days (including days with no data)
+    dates = []
+    steps = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+        dates.append(current_date.strftime('%m/%d'))  # Formats as MM/DD for display
+        steps.append(steps_dict.get(current_date, 0))  # Value is 0 if no data for that day is found
+
+    return dates, steps
+
+
+def get_last_7_days_steps_convert(user_id):
+    """
+    Converts dates to numbers for graph
+    Returns day numbers (1-7) and steps.
+    """
+    dates, steps = get_last_7_days_steps(user_id)
+    day_numbers = list(range(1, 8))
+    return day_numbers, steps
+
+
+def get_last_7_days_sleep(user_id):
+    """
+    Fetches sleep data for the last 7 days for a given user.
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Gets today's date and calculate 7 days ago
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Queries sleep for the last 7 days
+    cursor.execute("""
+        SELECT SleepDate, SleepDuration
+        FROM Sleep
+        WHERE UserID = ? AND SleepDate >= ? AND SleepDate <= ?
+        ORDER BY SleepDate ASC
+    """, (user_id, seven_days_ago, today))
+
+    results = cursor.fetchall()
+    connection.close()
+
+    # Creates a dictionary of dates and sleep hours from database results
+    sleep_dict = {}
+    for row in results:
+        date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
+        sleep_dict[date_obj] = row[1]
+
+    # Fill in all 7 days (including days with no data)
+    dates = []
+    sleep_hours = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+        dates.append(current_date.strftime('%m/%d'))  # Formats as MM/DD for display
+        sleep_hours.append(sleep_dict.get(current_date, 0))  # Value is 0 if no data for that day is found
+
+    return dates, sleep_hours
+
+
+def get_last_7_days_sleep_convert(user_id):
+    """
+    Converts dates to numbers for graph
+    Returns day numbers (1-7) and sleep hours.
+    """
+    dates, sleep_hours = get_last_7_days_sleep(user_id)
+    day_numbers = list(range(1, 8))
+    return day_numbers, sleep_hours
+
+
+def get_last_7_days_calories(user_id):
+    """
+    Fetches calorie data for the last 7 days for a given user.
+    """
+    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Gets today's date and calculate 7 days ago
+    today = datetime.now().date()
+    seven_days_ago = today - timedelta(days=6)
+
+    # Queries calories for the last 7 days
+    cursor.execute("""
+        SELECT DateConsumed, SUM(Calories) as TotalCalories
+        FROM Food
+        WHERE UserID = ? AND DateConsumed >= ? AND DateConsumed <= ?
+        GROUP BY DateConsumed
+        ORDER BY DateConsumed ASC
+    """, (user_id, seven_days_ago, today))
+
+    results = cursor.fetchall()
+    connection.close()
+
+    # Creates a dictionary of dates and calories from database results
+    calories_dict = {}
+    for row in results:
+        date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
+        calories_dict[date_obj] = row[1]
+
+    # Fill in all 7 days (including days with no data)
+    dates = []
+    calories = []
+
+    for i in range(7):
+        current_date = seven_days_ago + timedelta(days=i)
+        dates.append(current_date.strftime('%m/%d'))  # Formats as MM/DD for display
+        calories.append(calories_dict.get(current_date, 0))  # Value is 0 if no data for that day is found
+
+    return dates, calories
+
+
+def get_last_7_days_calories_convert(user_id):
+    """
+    Converts dates to numbers for graph
+    Returns day numbers (1-7) and calories.
+    """
+    dates, calories = get_last_7_days_calories(user_id)
+    day_numbers = list(range(1, 8))
+    return day_numbers, calories
+
+
+def get_all_days_metrics(user_id):
+    """
+    Gets a list of all the measurement information
+    stored by the user from the database
+    """
+    try:
+        # Connect to database
+        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+        db_path = os.path.abspath(db_path)
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        # Fetch all metrics for the user
+        cursor.execute("""
+                   SELECT MetricDate, Height, Weight
+                   FROM MetricsTracking
+                   WHERE UserID = ?
+                   ORDER BY MetricDate DESC
+               """, (user_id,))
+
+        records = cursor.fetchall()
+        connection.close()
+        return records
+    except Exception as e:
+        print(f"Error fetching user metrics: {e}")
+        return []
+
+
+def get_all_workouts(user_id):
+    """
+    Gets a list of all the workout information
+    stored by the user from the database
+    """
+    try:
+        # Connect to database
+        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
+        db_path = os.path.abspath(db_path)
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        # Fetch all workouts for the user
+        cursor.execute("""
+            SELECT DatePerformed, ExerciseName, Weight, Sets, Reps
+            FROM Exercises
+            WHERE UserID = ?
+            ORDER BY DatePerformed DESC
+        """, (user_id,))
+
+        records = cursor.fetchall()
+        connection.close()
+
+        return records
+
+    except Exception as e:
+        print(f"Error fetching workouts: {e}")
+        return []

@@ -2,12 +2,10 @@
 USE OPEN FOOD FACTS INSTEAD
 """
 
-
-
-
 import requests
 
-api_key ="b00818ea914348ce8d881f52088d0e53"
+api_key = "b00818ea914348ce8d881f52088d0e53"
+
 
 class Consumable:
     def __init__(self, name, calories):
@@ -22,14 +20,17 @@ class Consumable:
         # Call your save_food function or equivalent
         pass
 
+
 class Food(Consumable):
     def __init__(self, name, calories):
         super().__init__(name, calories)
+
 
 class Drink(Consumable):
     def __init__(self, name, calories, volume_ml):
         super().__init__(name, calories)
         self.volume_ml = volume_ml
+
 
 def fetch_food_from_api(food_name):
     url = f"https://api.spoonacular.com/food/ingredients/search?query={food_name}&apiKey={api_key}"
