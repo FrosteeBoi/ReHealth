@@ -72,7 +72,7 @@ def initialize_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE Sleep (
+    CREATE TABLE IF NOT EXISTS Sleep (
       SleepID INTEGER PRIMARY KEY AUTOINCREMENT,
       UserID INTEGER,
       SleepDate DATE,
@@ -98,4 +98,5 @@ def initialize_db():
     connection.close()
 
 
-initialize_db()
+if __name__ == "__main__":
+    initialize_db()

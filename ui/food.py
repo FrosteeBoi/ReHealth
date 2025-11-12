@@ -7,7 +7,7 @@ from matplotlib.figure import Figure
 
 from db.db_handler import save_food, get_last_7_days_calories_convert
 from logic.user import User
-from ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard
 
 
 class Food:

@@ -9,7 +9,7 @@ from db.db_handler import (get_weight, save_steps,
                            get_last_7_days_steps_convert)
 from logic.calculations import calories_burnt
 from logic.user import User
-from ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard
 
 
 class Steps:

@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 from db.db_handler import save_sleep, get_last_7_days_sleep_convert
 from logic.calculations import sleep_calc
 from logic.user import User
-from ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard
 
 
 class Sleep:

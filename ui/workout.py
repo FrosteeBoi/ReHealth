@@ -6,7 +6,7 @@ import ttkbootstrap as tb
 
 from db.db_handler import save_workout, get_all_workouts
 from logic.user import User
-from ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard
 
 
 class Workouts:
