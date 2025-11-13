@@ -125,7 +125,7 @@ class Food:
 
         # Add graph frame
         self.graph_frame = tb.Frame(self.foodframe)
-        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=(0), padx=20)
+        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=0, padx=20)
         self.calorie_graph = CalorieGraph(self.graph_frame, self.user,
                                           self.foodframe, self.root)
 
@@ -164,10 +164,32 @@ class Food:
 
     def database_inc(self):
         """
-        Saves food to database
+        Saves food to database with validation
         """
-        if (self.foodname is not None and self.calorie_amount is not None
-                and self.meal_type is not None):
+        # Check if all fields are filled
+        if self.foodname is None or not self.foodname.strip():
+            messagebox.showerror(
+                "Missing Information",
+                "Enter the food name to continue."
+            )
+            return
+
+        if self.calorie_amount is None or not str(self.calorie_amount).strip():
+            messagebox.showerror(
+                "Missing Information",
+                "Enter a calorie amount to continue."
+            )
+            return
+
+        if self.meal_type is None or not self.meal_type.strip():
+            messagebox.showerror(
+                "Missing Information",
+                "Select a meal type to continue."
+            )
+            return
+
+        # All fields are valid, save to database
+        try:
             save_food(
                 self.user.user_id,
                 self.foodname,
@@ -176,7 +198,14 @@ class Food:
             )
             messagebox.showinfo(
                 "Success",
-                f"{self.foodname} saved to database as {self.meal_type}"
+                f"{self.foodname} ({self.calorie_amount} cals) saved to database as {self.meal_type}!"
+            )
+
+
+        except Exception as e:
+            messagebox.showerror(
+                "Database Error",
+                f"Failed to save to database: {str(e)}"
             )
 
 

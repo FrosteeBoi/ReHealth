@@ -40,68 +40,105 @@ class Workouts:
             text=f"{self.user.username}'s Workouts",
             font=("roboto", 18, "bold")
         )
-        self.workout_label.grid(row=0, column=0, pady=(20, 30), columnspan=2)
+        self.workout_label.grid(row=0, column=0, pady=(20, 30), columnspan=3, padx=20)
 
+        # Exercise Name Section
         self.name_label = tb.Label(
             self.workoutframe,
             text="Exercise Name:",
             font=("roboto", 14)
         )
         self.name_label.grid(row=1, column=0, pady=(10, 10), sticky="e",
-                             padx=(0, 10))
+                             padx=(20, 10))
 
+        self.name_textbox = tb.Entry(self.workoutframe, width=20)
+        self.name_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 10))
+
+        self.name_add_button = tb.Button(
+            self.workoutframe,
+            text="Add",
+            command=self.name_inc,
+            width=8
+        )
+        self.name_add_button.grid(row=1, column=2, pady=(10, 10), padx=(10, 20))
+
+        # Weight Section
         self.weight_label = tb.Label(
             self.workoutframe,
             text="Weight (kg):",
             font=("roboto", 14)
         )
         self.weight_label.grid(row=2, column=0, pady=(10, 10), sticky="e",
-                               padx=(0, 10))
+                               padx=(20, 10))
 
+        self.weight_textbox = tb.Entry(self.workoutframe, width=20)
+        self.weight_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 10))
+
+        self.weight_add_button = tb.Button(
+            self.workoutframe,
+            text="Add",
+            command=self.weight_inc,
+            width=8
+        )
+        self.weight_add_button.grid(row=2, column=2, pady=(10, 10), padx=(10, 20))
+
+        # Sets Section
         self.sets_label = tb.Label(
             self.workoutframe,
             text="Sets:",
             font=("roboto", 14)
         )
         self.sets_label.grid(row=3, column=0, pady=(10, 10), sticky="e",
-                             padx=(0, 10))
+                             padx=(20, 10))
 
+        self.sets_textbox = tb.Entry(self.workoutframe, width=20)
+        self.sets_textbox.grid(row=3, column=1, pady=(10, 10), padx=(10, 10))
+
+        self.sets_add_button = tb.Button(
+            self.workoutframe,
+            text="Add",
+            command=self.sets_inc,
+            width=8
+        )
+        self.sets_add_button.grid(row=3, column=2, pady=(10, 10), padx=(10, 20))
+
+        # Reps Section
         self.reps_label = tb.Label(
             self.workoutframe,
             text="Reps:",
             font=("roboto", 14)
         )
         self.reps_label.grid(row=4, column=0, pady=(10, 10), sticky="e",
-                             padx=(0, 10))
+                             padx=(20, 10))
 
-        # Textboxes
-        self.name_textbox = tb.Entry(self.workoutframe)
-        self.name_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 0))
+        self.reps_textbox = tb.Entry(self.workoutframe, width=20)
+        self.reps_textbox.grid(row=4, column=1, pady=(10, 10), padx=(10, 10))
 
-        self.weight_textbox = tb.Entry(self.workoutframe)
-        self.weight_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 0))
-
-        self.sets_textbox = tb.Entry(self.workoutframe)
-        self.sets_textbox.grid(row=3, column=1, pady=(10, 10), padx=(10, 0))
-
-        self.reps_textbox = tb.Entry(self.workoutframe)
-        self.reps_textbox.grid(row=4, column=1, pady=(10, 10), padx=(10, 0))
-
-        # Buttons on same row
-        self.exercise_add_button = tb.Button(
+        self.reps_add_button = tb.Button(
             self.workoutframe,
-            text="Add Exercise",
+            text="Add",
+            command=self.reps_inc,
+            width=8
+        )
+        self.reps_add_button.grid(row=4, column=2, pady=(10, 10), padx=(10, 20))
+
+        # Main Action Buttons
+        self.button_frame = tb.Frame(self.workoutframe)
+        self.button_frame.grid(row=5, column=0, columnspan=3, pady=(30, 10))
+
+        self.exercise_add_button = tb.Button(
+            self.button_frame,
+            text="Add to Database",
             command=self.database_inc
         )
-        self.exercise_add_button.grid(row=5, column=0, pady=(30, 10),
-                                      padx=(0, 5))
+        self.exercise_add_button.grid(row=0, column=0, padx=(0, 5))
 
         self.download_button = tb.Button(
-            self.workoutframe,
+            self.button_frame,
             text="Download Workout History",
             command=self.download_records
         )
-        self.download_button.grid(row=5, column=1, pady=(30, 10), padx=(5, 0))
+        self.download_button.grid(row=0, column=1, padx=(5, 0))
 
         # Back to Dashboard Button
         self.dash_button = tb.Button(
@@ -109,47 +146,126 @@ class Workouts:
             text="Back to Dashboard",
             command=self.return_to_dash
         )
-        self.dash_button.grid(row=6, column=0, columnspan=2, pady=(230, 20),
+        self.dash_button.grid(row=6, column=0, columnspan=3, pady=(160, 20),
                               padx=20)
+
+    def name_inc(self):
+        """
+        Records exercise name
+        """
+        self.exercise_name = self.name_textbox.get()
+        if not self.exercise_name.strip():
+            messagebox.showerror("Error", "Exercise name cannot be empty.")
+            return
+        if not all(part.isalpha() or part.isspace() for part in self.exercise_name):
+            messagebox.showerror(
+                "Error",
+                "Exercise name can only contain letters."
+            )
+            return
+        self.name_textbox.delete(0, 'end')
+        messagebox.showinfo("Success", f"Exercise: {self.exercise_name} recorded!")
+
+    def weight_inc(self):
+        """
+        Records weight value
+        """
+        self.exercise_weight = self.weight_textbox.get()
+        if not self.exercise_weight.strip():
+            messagebox.showerror("Error", "Weight cannot be empty.")
+            return
+        if not self.exercise_weight.replace('.', '', 1).isdigit():
+            messagebox.showerror("Error", "Enter a numerical weight value.")
+            return
+        self.weight_textbox.delete(0, 'end')
+        messagebox.showinfo("Success", f"Weight: {self.exercise_weight} kg recorded!")
+
+    def sets_inc(self):
+        """
+        Records number of sets
+        """
+        self.exercise_sets = self.sets_textbox.get()
+        if not self.exercise_sets.strip():
+            messagebox.showerror("Error", "Sets cannot be empty.")
+            return
+        if not self.exercise_sets.isdigit():
+            messagebox.showerror("Error", "Enter a numerical value for sets.")
+            return
+        self.sets_textbox.delete(0, 'end')
+        messagebox.showinfo("Success", f"Sets: {self.exercise_sets} recorded!")
+
+    def reps_inc(self):
+        """
+        Records number of reps
+        """
+        self.exercise_reps = self.reps_textbox.get()
+        if not self.exercise_reps.strip():
+            messagebox.showerror("Error", "Reps cannot be empty.")
+            return
+        if not self.exercise_reps.isdigit():
+            messagebox.showerror("Error", "Enter a numerical value for reps.")
+            return
+        self.reps_textbox.delete(0, 'end')
+        messagebox.showinfo("Success", f"Reps: {self.exercise_reps} recorded!")
 
     def database_inc(self):
         """
         Validates and saves exercise data to the database
         """
-        self.exercise_name = self.name_textbox.get()
-        if not self.exercise_name.strip() or not all(
-                part.isalpha() for part in self.exercise_name.split()
-        ):
+        # Check if all fields are filled
+        if self.exercise_name is None or not self.exercise_name.strip():
             messagebox.showerror(
-                "Error",
-                "Exercise name can only consist of letters and cannot be blank."
+                "Missing Information",
+                "Please enter an exercise name first!"
             )
             return
 
-        self.exercise_weight = self.weight_textbox.get()
-        if not self.exercise_weight.strip() or not self.exercise_weight.isdigit():
-            messagebox.showerror("Error", "Enter a numerical weight value")
+        if self.exercise_weight is None or not str(self.exercise_weight).strip():
+            messagebox.showerror(
+                "Missing Information",
+                "Please enter the weight first!"
+            )
             return
 
-        self.exercise_sets = self.sets_textbox.get()
-        if not self.exercise_sets.strip() or not self.exercise_sets.isdigit():
-            messagebox.showerror("Error", "Input a numerical weight value")
+        if self.exercise_sets is None or not str(self.exercise_sets).strip():
+            messagebox.showerror(
+                "Missing Information",
+                "Please enter the number of sets first!"
+            )
             return
 
-        self.exercise_reps = self.reps_textbox.get()
-        if not self.exercise_reps.strip() or not self.exercise_reps.isdigit():
-            messagebox.showerror("Error", "Enter a numerical value for reps")
+        if self.exercise_reps is None or not str(self.exercise_reps).strip():
+            messagebox.showerror(
+                "Missing Information",
+                "Please enter the number of reps first!"
+            )
             return
 
-        save_workout(
-            self.user.user_id,
-            self.exercise_name,
-            self.exercise_weight,
-            self.exercise_sets,
-            self.exercise_reps
-        )
-        messagebox.showinfo("Success",
-                            f"{self.exercise_name} logged successfully!")
+        # All fields are valid, save to database
+        try:
+            save_workout(
+                self.user.user_id,
+                self.exercise_name,
+                self.exercise_weight,
+                self.exercise_sets,
+                self.exercise_reps
+            )
+            messagebox.showinfo(
+                "Success",
+                f"{self.exercise_name}: {self.exercise_weight}kg x {self.exercise_sets} sets x {self.exercise_reps} reps logged successfully!"
+            )
+
+            # Reset fields after successful save
+            self.exercise_name = None
+            self.exercise_weight = None
+            self.exercise_sets = None
+            self.exercise_reps = None
+
+        except Exception as e:
+            messagebox.showerror(
+                "Database Error",
+                f"Failed to save workout: {str(e)}"
+            )
 
     def download_records(self):
         """
