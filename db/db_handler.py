@@ -103,7 +103,7 @@ def save_sleep(user_id, sleep_hours, sleep_quality=None):
     cursor.execute("""
         INSERT INTO Sleep (UserID, SleepDate, SleepRating, SleepDuration)
         VALUES (?, ?, ?, ?)
-    """, (user_id, date.today(), sleep_hours, sleep_quality))
+    """, (user_id, date.today(), sleep_quality, sleep_hours))
 
     connection.commit()
     connection.close()

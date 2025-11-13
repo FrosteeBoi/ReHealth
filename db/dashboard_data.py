@@ -25,10 +25,10 @@ def get_calories(user_id):
 
 
 def get_sleep(user_id):
-    """Returns sleep obtained from user today."""
+    """Returns sleep rating for today by user."""
     connection = sqlite3.connect(db_path)
     cursor = connection.cursor()
-    cursor.execute("SELECT SleepDuration FROM Sleep WHERE UserID = ? AND SleepDate = DATE('now')", (user_id,))
+    cursor.execute("SELECT SleepRating FROM Sleep WHERE UserID = ? AND SleepDate = DATE('now')", (user_id,))
     result = cursor.fetchone()
     connection.close()
     return result[0] if result and result[0] else 0

@@ -102,11 +102,6 @@ class Steps:
             self.calorie_label.config(
                 text=f"Calories Burnt: {round(self.calorie_count)} kcal"
             )
-        else:
-            messagebox.showinfo(
-                "No Steps",
-                "Please enter your steps first before calculating calories."
-            )
 
     def steps_and_calories(self):
         """

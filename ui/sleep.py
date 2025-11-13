@@ -137,6 +137,21 @@ class Sleep:
         """
         Calculates and displays sleep rating
         """
+        # Checks if sleep duration is recorded
+        if self.sleep_duration is None:
+            messagebox.showerror(
+                "Missing Information",
+                "Record your sleep hours first to continue."
+            )
+            return
+
+        # Checks if sleep quality is recorded
+        if self.sleep_quality is None:
+            messagebox.showerror(
+                "Missing Information",
+                "Record how you feel (1-5) to continue."
+            )
+            return
         if self.sleep_duration is not None and self.sleep_quality is not None:
             self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
             self.rating_label.config(
