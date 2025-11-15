@@ -76,8 +76,8 @@ def initialize_db():
       SleepID INTEGER PRIMARY KEY AUTOINCREMENT,
       UserID INTEGER,
       SleepDate DATE,
-      SleepRating INTEGER,
-      SleepDuration INTEGER,
+      SleepRating DECIMAL(3,2),
+      SleepDuration DECIMAL(4,1),
       FOREIGN KEY (UserID) REFERENCES User(UserID)
     );
     """)
