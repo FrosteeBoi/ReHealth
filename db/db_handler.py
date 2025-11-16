@@ -2,6 +2,17 @@ import os
 import sqlite3
 from datetime import date, datetime, timedelta
 
+# Define database path once at module level
+db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db"))
+
+
+def get_db_connection(enable_foreign_keys=False):
+    """Get a database connection with optional foreign key support"""
+    connection = sqlite3.connect(db_path)
+    if enable_foreign_keys:
+        connection.execute("PRAGMA foreign_keys = ON")
+    return connection
+
 
 def save_user_to_db(user):
     """
@@ -9,9 +20,7 @@ def save_user_to_db(user):
 
     :param user: User object containing username, password, sex, date of birth, and join date
     """
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-    connection = sqlite3.connect(db_path)
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -48,10 +57,7 @@ def save_metrics(user_id, height, weight):
     :param height: User's height
     :param weight: User's weight
     """
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-    connection = sqlite3.connect(db_path)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -71,10 +77,7 @@ def save_steps(user_id, step_count, step_goal):
     :param step_count: Number of steps taken
     :param step_goal: Daily step goal
     """
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-    connection = sqlite3.connect(db_path)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -94,10 +97,7 @@ def save_sleep(user_id, sleep_hours, sleep_quality=None):
     :param sleep_hours: Hours slept
     :param sleep_quality: Optional rating of sleep quality
     """
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-    connection = sqlite3.connect(db_path)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -118,11 +118,7 @@ def save_food(user_id, food_name, calories, meal_type):
     :param calories: Number of calories
     :param meal_type: Type of meal (e.g., breakfast, lunch, dinner, snack)
     """
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-
-    connection = sqlite3.connect(db_path)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -144,11 +140,7 @@ def save_workout(user_id, exercise_name, weight, sets, reps):
     :param sets: Number of sets performed
     :param reps: Number of reps per set
     """
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-
-    connection = sqlite3.connect(db_path)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -161,9 +153,12 @@ def save_workout(user_id, exercise_name, weight, sets, reps):
 
 
 def get_weight(user_id):
-    db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-    db_path = os.path.abspath(db_path)
-    connection = sqlite3.connect(db_path)
+    """
+    Fetches weight from the database
+    :param user_id:  ID of the user
+    :return: The weight the user recorded in the datbase
+    """
+    connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute("""
            SELECT Weight 
@@ -181,8 +176,7 @@ def get_last_7_days_steps(user_id):
     """
     Fetches steps data for the last 7 days for a given user.
     """
-    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
-    connection = sqlite3.connect(db_path)
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     # Gets today's date and calculate 7 days ago
@@ -233,8 +227,7 @@ def get_last_7_days_sleep(user_id):
     """
     Fetches sleep data for the last 7 days for a given user.
     """
-    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
-    connection = sqlite3.connect(db_path)
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     # Gets today's date and calculate 7 days ago
@@ -284,8 +277,7 @@ def get_last_7_days_calories(user_id):
     """
     Fetches calorie data for the last 7 days for a given user.
     """
-    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
-    connection = sqlite3.connect(db_path)
+    connection = get_db_connection()
     cursor = connection.cursor()
 
     # Gets today's date and calculate 7 days ago
@@ -339,9 +331,7 @@ def get_all_days_metrics(user_id):
     """
     try:
         # Connect to database
-        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-        db_path = os.path.abspath(db_path)
-        connection = sqlite3.connect(db_path)
+        connection = get_db_connection()
         cursor = connection.cursor()
 
         # Fetch all metrics for the user
@@ -367,9 +357,7 @@ def get_all_workouts(user_id):
     """
     try:
         # Connect to database
-        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-        db_path = os.path.abspath(db_path)
-        connection = sqlite3.connect(db_path)
+        connection = get_db_connection()
         cursor = connection.cursor()
 
         # Fetch all workouts for the user
