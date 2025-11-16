@@ -18,12 +18,11 @@ connection.close()
 
 import os
 import sqlite3
+from db.db_handler import get_db_connection
 
 
 def initialize_db():
-    db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
-    connection = sqlite3.connect(db_path)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
     cursor.execute("""
