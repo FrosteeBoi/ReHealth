@@ -30,8 +30,8 @@ def initialize_db():
     CREATE TABLE IF NOT EXISTS User (
       UserID INTEGER PRIMARY KEY AUTOINCREMENT,
       Username VARCHAR(20) UNIQUE NOT NULL,
-      Password VARCHAR(50) NOT NULL,
-      Gender VARCHAR(10),
+      Password VARCHAR(64) NOT NULL,
+      Sex VARCHAR(10),
       DateOfBirth DATE,
       JoinDate DATE
     );
@@ -39,6 +39,7 @@ def initialize_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS MetricsTracking (
+      MetricID INTEGER PRIMARY KEY AUTOINCREMENT,
       UserID INTEGER,
       Height DECIMAL(4,1),
       Weight DECIMAL(4,1),
