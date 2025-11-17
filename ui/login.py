@@ -4,10 +4,8 @@ import re
 import sqlite3
 from datetime import datetime, date
 from tkinter import messagebox
-
 import ttkbootstrap as tb
-
-from db.db_handler import save_user_to_db
+from db.db_handler import save_user_to_db, db_path
 from logic.user import User
 from ui.dashboard import Dashboard
 
@@ -332,7 +330,7 @@ class App:
         hashed_password = User.password_hasher(password_input)
 
         # Checks if username already exists
-        connection = sqlite3.connect("db/rehealth_db.db")
+        connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
         cursor.execute(
             "SELECT Username FROM User WHERE Username = ?",
