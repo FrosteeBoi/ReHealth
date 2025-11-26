@@ -22,11 +22,6 @@ class Food:
         self.root = root
         self.user = user
 
-        # Variables
-        self.foodname = None
-        self.calorie_amount = None
-        self.meal_type = None
-
         # Main frame
         self.foodframe = tb.Frame(self.root)
         self.foodframe.place(relx=0.5, rely=0, anchor="n")
@@ -43,56 +38,39 @@ class Food:
             text=f"{self.user.username}'s Food",
             font=("roboto", 18, "bold")
         )
-        self.food_label.grid(row=0, column=0, pady=(20, 30), columnspan=3,
+        self.food_label.grid(row=0, column=0, pady=(20, 30), columnspan=2,
                              padx=20)
 
         # Food Name Section
         self.food_entry_label = tb.Label(
             self.foodframe,
-            text="Add Food Name:",
+            text="Food Name:",
             font=("roboto", 14)
         )
         self.food_entry_label.grid(row=1, column=0, pady=(10, 10),
                                    padx=(20, 10), sticky="e")
 
-        self.food_textbox = tb.Entry(self.foodframe, width=20)
-        self.food_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 10))
-
-        self.food_add_button = tb.Button(
-            self.foodframe,
-            text="Add",
-            command=self.food_name_inc,
-            width=8
-        )
-        self.food_add_button.grid(row=1, column=2, pady=(10, 10),
-                                  padx=(10, 20))
+        self.food_textbox = tb.Entry(self.foodframe, width=25)
+        self.food_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 20),
+                              sticky="w")
 
         # Calorie Section
         self.calorie_label = tb.Label(
             self.foodframe,
-            text="Add Calorie Amount:",
+            text="Calorie Amount:",
             font=("roboto", 14)
         )
         self.calorie_label.grid(row=2, column=0, pady=(10, 10),
                                 padx=(20, 10), sticky="e")
 
-        self.calorie_textbox = tb.Entry(self.foodframe, width=20)
+        self.calorie_textbox = tb.Entry(self.foodframe, width=25)
         self.calorie_textbox.grid(row=2, column=1, pady=(10, 10),
-                                  padx=(10, 10))
-
-        self.calorie_add_button = tb.Button(
-            self.foodframe,
-            text="Add",
-            command=self.calorie_name_inc,
-            width=8
-        )
-        self.calorie_add_button.grid(row=2, column=2, pady=(10, 10),
-                                     padx=(10, 20))
+                                  padx=(10, 20), sticky="w")
 
         # Meal Type Section
         self.meal_type_label = tb.Label(
             self.foodframe,
-            text="Add Meal Type:",
+            text="Meal Type:",
             font=("roboto", 14)
         )
         self.meal_type_label.grid(row=3, column=0, pady=(10, 10),
@@ -101,19 +79,10 @@ class Food:
         self.meal_type_combobox = tb.Combobox(
             self.foodframe,
             values=self.meal_type_options,
-            width=18
+            width=23
         )
         self.meal_type_combobox.grid(row=3, column=1, pady=(10, 10),
-                                     padx=(10, 10))
-
-        self.meal_type_button = tb.Button(
-            self.foodframe,
-            text="Add",
-            command=self.meal_type_inc,
-            width=8
-        )
-        self.meal_type_button.grid(row=3, column=2, pady=(10, 10),
-                                   padx=(10, 20))
+                                     padx=(10, 20), sticky="w")
 
         # Database Button
         self.db_add_button = tb.Button(
@@ -121,86 +90,87 @@ class Food:
             text="Add to Database",
             command=self.database_inc
         )
-        self.db_add_button.grid(row=4, column=0, pady=(30, 10), columnspan=3)
+        self.db_add_button.grid(row=4, column=0, pady=(30, 10), columnspan=2)
 
         # Add graph frame
         self.graph_frame = tb.Frame(self.foodframe)
-        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=0, padx=20)
+        self.graph_frame.grid(row=5, column=0, columnspan=2, pady=0, padx=20)
         self.calorie_graph = CalorieGraph(self.graph_frame, self.user,
                                           self.foodframe, self.root)
 
-    def food_name_inc(self):
-        """
-        Records name of food
-        """
-        self.foodname = self.food_textbox.get()
-        if not self.foodname.strip():
-            messagebox.showerror("Error", "Input cannot be empty space.")
-            return
-        self.food_textbox.delete(0, 'end')
-        messagebox.showinfo("Success", f"Food: {self.foodname} recorded!")
-
-    def calorie_name_inc(self):
-        """
-        Records calorie amount
-        """
-        self.calorie_amount = self.calorie_textbox.get()
-        if not self.calorie_amount.strip() or not self.calorie_amount.isdigit():
-            messagebox.showerror("Error", "Input calories as digits only.")
-            return
-        self.calorie_textbox.delete(0, 'end')
-        messagebox.showinfo("Success",
-                            f"{self.calorie_amount} cals recorded!")
-
-    def meal_type_inc(self):
-        """
-        Records type of meal recorded by user
-        """
-        self.meal_type = self.meal_type_combobox.get()
-        if not self.meal_type.strip():
-            messagebox.showerror("Error", "Enter a meal option given below.")
-            return
-        messagebox.showinfo("Success", f"Meal type: {self.meal_type} recorded!")
-
     def database_inc(self):
         """
-        Saves food to database with validation
+        Validates all fields and saves food to database
         """
-        # Check if all fields are filled
-        if self.foodname is None or not self.foodname.strip():
+        # Get values from entries
+        foodname = self.food_textbox.get().strip()
+        calorie_amount = self.calorie_textbox.get().strip()
+        meal_type = self.meal_type_combobox.get().strip()
+
+        # Validate food name
+        if not foodname:
             messagebox.showerror(
                 "Missing Information",
-                "Enter the food name to continue."
+                "Please enter the food name."
             )
+            self.food_textbox.focus()
             return
 
-        if self.calorie_amount is None or not str(self.calorie_amount).strip():
+        # Validate calorie amount
+        if not calorie_amount:
             messagebox.showerror(
                 "Missing Information",
-                "Enter a calorie amount to continue."
+                "Please enter a calorie amount."
             )
+            self.calorie_textbox.focus()
             return
 
-        if self.meal_type is None or not self.meal_type.strip():
+        if not calorie_amount.isdigit():
+            messagebox.showerror(
+                "Invalid Input",
+                "Calorie amount must be a number."
+            )
+            self.calorie_textbox.focus()
+            return
+
+        # Validate meal type
+        if not meal_type:
             messagebox.showerror(
                 "Missing Information",
-                "Select a meal type to continue."
+                "Please select a meal type."
             )
+            self.meal_type_combobox.focus()
+            return
+
+        if meal_type.lower() not in self.meal_type_options:
+            messagebox.showerror(
+                "Invalid Input",
+                "Please select a valid meal type from the dropdown."
+            )
+            self.meal_type_combobox.focus()
             return
 
         # All fields are valid, save to database
         try:
             save_food(
                 self.user.user_id,
-                self.foodname,
-                self.calorie_amount,
-                self.meal_type
+                foodname,
+                calorie_amount,
+                meal_type.lower()
             )
             messagebox.showinfo(
                 "Success",
-                f"{self.foodname} ({self.calorie_amount} cals) saved to database as {self.meal_type}!"
+                f"{foodname} ({calorie_amount} cals) saved as {meal_type}!"
             )
 
+            # Clear all fields after successful save
+            self.food_textbox.delete(0, 'end')
+            self.calorie_textbox.delete(0, 'end')
+            self.meal_type_combobox.set('')
+            self.food_textbox.focus()
+
+            # Refresh the graph to show updated data
+            self.calorie_graph.refresh_graph()
 
         except Exception as e:
             messagebox.showerror(
@@ -239,24 +209,8 @@ class CalorieGraph:
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
 
-        # Grabs calorie data
-        days, calories = get_last_7_days_calories_convert(self.user.user_id)
-
-        # Plots the data
-        self.ax.plot(days, calories, marker='o', color='#4e73df',
-                     linewidth=2, markersize=8)
-        self.ax.set_xlabel('Days', color='#adb5bd')
-        self.ax.set_ylabel('Calories', color='#adb5bd')
-        self.ax.set_title('Calories Over Time', color='#ffffff')
-
-        # Graph styling
-        self.ax.tick_params(colors='#adb5bd')
-        self.ax.spines['bottom'].set_color('#adb5bd')
-        self.ax.spines['top'].set_color('#adb5bd')
-        self.ax.spines['left'].set_color('#adb5bd')
-        self.ax.spines['right'].set_color('#adb5bd')
-
-        self.ax.grid(True, alpha=0.2, color='#adb5bd')
+        # Initial plot
+        self.plot_data()
 
         # Packs the canvas
         self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
@@ -278,6 +232,41 @@ class CalorieGraph:
             command=self.return_to_dash
         )
         self.dash_button.grid(row=0, column=1, padx=(5, 0))
+
+    def plot_data(self):
+        """
+        Plots calorie data on the graph
+        """
+        # Clear previous plot
+        self.ax.clear()
+
+        # Grabs calorie data
+        days, calories = get_last_7_days_calories_convert(self.user.user_id)
+
+        # Plots the data
+        self.ax.plot(days, calories, marker='o', color='#4e73df',
+                     linewidth=2, markersize=8)
+        self.ax.set_xlabel('Days', color='#adb5bd')
+        self.ax.set_ylabel('Calories', color='#adb5bd')
+        self.ax.set_title('Calories Over Time', color='#ffffff')
+
+        # Graph styling
+        self.ax.tick_params(colors='#adb5bd')
+        self.ax.spines['bottom'].set_color('#adb5bd')
+        self.ax.spines['top'].set_color('#adb5bd')
+        self.ax.spines['left'].set_color('#adb5bd')
+        self.ax.spines['right'].set_color('#adb5bd')
+
+        self.ax.grid(True, alpha=0.2, color='#adb5bd')
+
+        # Redraw the canvas
+        self.canvas.draw()
+
+    def refresh_graph(self):
+        """
+        Refreshes the graph with updated data
+        """
+        self.plot_data()
 
     def save_graph(self):
         """

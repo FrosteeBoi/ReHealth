@@ -65,42 +65,26 @@ class Measurement:
 
         self.height_label = tb.Label(
             self.measureframe,
-            text="Record Your Height:",
+            text="Record Your Height(M):",
             font=("roboto", 14)
         )
         self.height_label.grid(row=4, column=0, pady=(10, 10),
                                padx=(20, 10), sticky="e")
 
         self.height_entry = tb.Entry(self.measureframe, width=15)
-        self.height_entry.grid(row=4, column=1, padx=(10, 10), pady=(10, 10))
-
-        self.height_button = tb.Button(
-            self.measureframe,
-            text="Add",
-            command=self.height_inc,
-            width=8
-        )
-        self.height_button.grid(row=4, column=2, padx=(10, 20), pady=(10, 10))
+        self.height_entry.grid(row=4, column=1, padx=(10, 10), pady=(10, 10), columnspan=2)
 
         # Weight Input Section
         self.weight_label = tb.Label(
             self.measureframe,
-            text="Record Your Weight:",
+            text="Record Your Weight(Kg):",
             font=("roboto", 14)
         )
         self.weight_label.grid(row=5, column=0, pady=(10, 10),
                                padx=(20, 10), sticky="e")
 
         self.weight_entry = tb.Entry(self.measureframe, width=15)
-        self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10))
-
-        self.weight_button = tb.Button(
-            self.measureframe,
-            text="Add",
-            command=self.weight_inc,
-            width=8
-        )
-        self.weight_button.grid(row=5, column=2, padx=(10, 20), pady=(10, 10))
+        self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10), columnspan=2)
 
         self.bmi_calc_button = tb.Button(
             self.measureframe,
@@ -127,47 +111,73 @@ class Measurement:
         self.dash_button.grid(row=7, column=0, columnspan=3, pady=(170, 20),
                               padx=20)
 
-    def height_inc(self):
+    def bmi_inc(self):
         """
-        Updates height value from the entry field and displays it.
+        Calculates BMI using given values.
         """
-        try:
-            value = float(self.height_entry.get())
-            self.height_val = str(value)
-            self.height_entry.delete(0, 'end')
-            self.height_value_label.config(
-                text=f"Height: {self.height_val} cm"
+        # Get values from entries
+        height_input = self.height_entry.get().strip()
+        weight_input = self.weight_entry.get().strip()
+
+        # Validate height
+        if not height_input:
+            messagebox.showerror(
+                "Failed input",
+                "Please enter your height as a number in cm."
             )
+            return
+
+        try:
+            height_val = float(height_input)
+            if height_val <= 0:
+                messagebox.showerror(
+                    "Failed input",
+                    "Height must be a positive number."
+                )
+                return
+            self.height_val = str(height_val)
         except ValueError:
             messagebox.showerror(
                 "Failed input",
                 "Please enter your height as a number in cm."
             )
+            return
 
-    def weight_inc(self):
-        """
-        Updates weight value from the entry field and displays it.
-        """
-        try:
-            value = float(self.weight_entry.get())
-            self.weight_val = str(value)
-            self.weight_entry.delete(0, 'end')
-            self.weight_value_label.config(
-                text=f"Weight: {self.weight_val} kg"
+        # Validate weight
+        if not weight_input:
+            messagebox.showerror(
+                "Failed input",
+                "Please enter your weight as a number in kg."
             )
+            return
+
+        try:
+            weight_val = float(weight_input)
+            if weight_val <= 0:
+                messagebox.showerror(
+                    "Failed input",
+                    "Weight must be a positive number."
+                )
+                return
+            self.weight_val = str(weight_val)
         except ValueError:
             messagebox.showerror(
                 "Failed input",
                 "Please enter your weight as a number in kg."
             )
+            return
 
-    def bmi_inc(self):
-        """
-        Calculates BMI using given values.
-        """
         try:
             value = bmi_calc(self.weight_val, self.height_val)
             self.bmi_val = value
+
+            # Update display labels
+            self.height_value_label.config(
+                text=f"Height: {self.height_val} cm"
+            )
+            self.weight_value_label.config(
+                text=f"Weight: {self.weight_val} kg"
+            )
             self.bmi_label.config(
                 text=f"BMI: {self.bmi_val} ({bmi_status(self.bmi_val)})"
             )
@@ -177,6 +187,10 @@ class Measurement:
                          float(self.weight_val))
             messagebox.showinfo("Saved",
                                 "Measurement data saved successfully.")
+
+            # Clear entries
+            self.height_entry.delete(0, 'end')
+            self.weight_entry.delete(0, 'end')
         except (ValueError, ZeroDivisionError):
             messagebox.showerror(
                 "Failed input",

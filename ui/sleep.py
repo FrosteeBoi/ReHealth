@@ -56,14 +56,7 @@ class Sleep:
                                     sticky="e", padx=(0, 10))
 
         self.sleep_entry = tb.Entry(self.sleepframe)
-        self.sleep_entry.grid(row=2, column=1, pady=(20, 20))
-
-        self.hours_button = tb.Button(
-            self.sleepframe,
-            text="Add",
-            command=self.hours_inc
-        )
-        self.hours_button.grid(row=2, column=2, pady=(20, 20), padx=(10, 0))
+        self.sleep_entry.grid(row=2, column=1, pady=(20, 20), columnspan=2)
 
         self.sleep_refresh_label = tb.Label(
             self.sleepframe,
@@ -74,14 +67,7 @@ class Sleep:
                                       sticky="e", padx=(0, 10))
 
         self.refresh_entry = tb.Entry(self.sleepframe)
-        self.refresh_entry.grid(row=3, column=1, pady=(20, 20))
-
-        self.refresh_button = tb.Button(
-            self.sleepframe,
-            text="Add",
-            command=self.quality_inc
-        )
-        self.refresh_button.grid(row=3, column=2, pady=(20, 20), padx=(10, 0))
+        self.refresh_entry.grid(row=3, column=1, pady=(20, 20), columnspan=2)
 
         self.rating_button = tb.Button(
             self.sleepframe,
@@ -97,67 +83,77 @@ class Sleep:
         self.sleep_graph = SleepGraph(self.graph_frame, self.user,
                                       self.sleepframe, self.root)
 
-    def hours_inc(self):
+    def update_rating(self):
         """
-        Receive hours input from user to store
+        Calculates and displays sleep rating
         """
+        # Get values from entries
+        hours_input = self.sleep_entry.get().strip()
+        quality_input = self.refresh_entry.get().strip()
+
+        # Validate hours
+        if not hours_input:
+            messagebox.showerror(
+                "Error",
+                "Please enter a valid number of hours (0-24)."
+            )
+            return
+
         try:
-            hours = float(self.sleep_entry.get())
+            hours = float(hours_input)
             if hours < 0 or hours > 24:
-                raise ValueError
+                messagebox.showerror(
+                    "Error",
+                    "Please enter a valid number of hours (0-24)."
+                )
+                return
             self.sleep_duration = hours
-            self.sleep_entry.delete(0, 'end')
-            messagebox.showinfo("Success",
-                                f"Recorded {hours} hours of sleep!")
         except ValueError:
             messagebox.showerror(
                 "Error",
                 "Please enter a valid number of hours (0-24)."
             )
+            return
 
-    def quality_inc(self):
-        """
-        Get sleep quality input from user and store it
-        """
+        # Validate quality
+        if not quality_input:
+            messagebox.showerror(
+                "Error",
+                "Please enter a valid sleep quality (1-5)."
+            )
+            return
+
         try:
-            quality = int(self.refresh_entry.get())
+            quality = int(quality_input)
             if quality < 1 or quality > 5:
-                raise ValueError
+                messagebox.showerror(
+                    "Error",
+                    "Please enter a valid sleep quality (1-5)."
+                )
+                return
             self.sleep_quality = quality
-            self.refresh_entry.delete(0, 'end')
-            messagebox.showinfo("Success",
-                                f"Recorded sleep quality: {quality}/5.")
         except ValueError:
             messagebox.showerror(
                 "Error",
                 "Please enter a valid sleep quality (1-5)."
             )
-
-    def update_rating(self):
-        """
-        Calculates and displays sleep rating
-        """
-        # Checks if sleep duration is recorded
-        if self.sleep_duration is None:
-            messagebox.showerror(
-                "Missing Information",
-                "Record your sleep hours first to continue."
-            )
             return
 
-        # Checks if sleep quality is recorded
-        if self.sleep_quality is None:
-            messagebox.showerror(
-                "Missing Information",
-                "Record how you feel (1-5) to continue."
-            )
-            return
-        if self.sleep_duration is not None and self.sleep_quality is not None:
-            self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
-            self.rating_label.config(
-                text=f"Sleep Rating: {round(self.rating * 100)}%"
-            )
-            save_sleep(self.user.user_id, self.sleep_duration, self.rating)
+        # Calculate rating and save
+        self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
+        self.rating_label.config(
+            text=f"Sleep Rating: {round(self.rating * 100)}%"
+        )
+        save_sleep(self.user.user_id, self.sleep_duration, self.rating)
+
+        messagebox.showinfo(
+            "Success",
+            f"Sleep data saved! Rating: {round(self.rating * 100)}%"
+        )
+
+        # Clear entries
+        self.sleep_entry.delete(0, 'end')
+        self.refresh_entry.delete(0, 'end')
 
 
 class SleepGraph:
