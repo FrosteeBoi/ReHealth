@@ -7,6 +7,7 @@ from ui.measurement import Measurement
 from ui.sleep import Sleep
 from ui.steps import Steps
 from ui.workout import Workouts
+from ui.achievements import Achievements
 
 
 class Dashboard:
@@ -50,11 +51,19 @@ class Dashboard:
             text=f"SleepScore: {round(get_sleep(user.user_id), 2) * 100}%",
             font=("roboto", 14)
         )
+        self.achievements_button = tb.Button(
+            self.dashframe,
+            text="Achievements",
+            command=self.show_achievements,
+            width=9
+        )
+
 
         # Grids the visual displays
         self.dash_steps.grid(row=1, column=0, pady=(5, 5))
         self.dash_cals.grid(row=2, column=0, pady=(5, 5))
         self.dash_sleep.grid(row=3, column=0, pady=(5, 5))
+        self.achievements_button.grid(row=0, column=0, padx=4)
 
         # Bottom frame made for tab buttons
         self.tab_frame = tb.Frame(self.dashframe)
@@ -92,6 +101,7 @@ class Dashboard:
             width=9
         )
 
+
         # Grids the buttons
         self.measurements_button.grid(row=0, column=0, padx=4)
         self.food_button.grid(row=0, column=1, padx=4)
@@ -125,6 +135,14 @@ class Dashboard:
         """Opens the steps tab"""
         self.dashframe.destroy()
         Steps(self.root, self.user)
+
+    def show_achievements(self):
+        """
+        Opens the Achievements tab
+        """
+        self.dashframe.destroy()
+        Achievements(self.root, self.user)
+
 
 
 if __name__ == "__main__":

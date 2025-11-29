@@ -376,3 +376,60 @@ def get_all_workouts(user_id):
     except Exception as e:
         print(f"Error fetching workouts: {e}")
         return []
+
+
+def get_total_steps(user_id):
+    """
+    Returns the user's lifetime total steps.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT SUM(StepCount)
+        FROM Steps
+        WHERE UserID = ?
+    """, (user_id,))
+
+    result = cursor.fetchone()
+    connection.close()
+
+    return result[0] if result and result[0] is not None else 0
+
+
+def get_total_calories(user_id):
+    """
+    Returns the user's lifetime total calories.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT SUM(Calories)
+        FROM Food
+        WHERE UserID = ?
+    """, (user_id,))
+
+    result = cursor.fetchone()
+    connection.close()
+
+    return result[0] if result and result[0] is not None else 0
+
+
+def get_total_sleep_hours(user_id):
+    """
+    Returns the user's lifetime total hours slept.
+    """
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT SUM(SleepDuration)
+        FROM Sleep
+        WHERE UserID = ?
+    """, (user_id,))
+
+    result = cursor.fetchone()
+    connection.close()
+
+    return float(result[0]) if result and result[0] is not None else 0.0

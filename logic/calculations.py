@@ -5,12 +5,25 @@ def bmi_calc(kg_weight, cm_height):
 
 
 def sleep_calc(sleep_duration, sleep_quality):
-    # Calculates a sleep rating from 2 variables
-    duration_var = (sleep_duration * 0.6) / 8
-    quality_var = (sleep_quality / 5) * 0.4
+    """
+    Calculates a balanced sleep rating between 0 and 1.
+    - sleep_duration: hours slept (0–24)
+    - sleep_quality: integer 1–5 (how refreshed you feel)
+    """
 
-    sleep_rating = duration_var + quality_var
+    if sleep_duration < 7:
+        duration_score = sleep_duration / 7.0  # 0 → 1
+    elif 7 <= sleep_duration <= 9:
+        duration_score = 1.0
+    else:
+        duration_score = max(0.7, 1.0 - (sleep_duration - 9) * 0.1)
+
+    quality_score = sleep_quality / 5.0
+
+    sleep_rating = (duration_score * 0.6) + (quality_score * 0.4)
+
     return sleep_rating
+
 
 
 def bmi_status(bmi):
