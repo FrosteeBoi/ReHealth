@@ -91,19 +91,19 @@ def get_rehealth_level(score):
     Convert a ReHealth score into a rank
     """
 
-    if score < 1000:
+    if score < 500:
         return "Bronze Beginner"
-    elif score < 2000:
+    elif score < 1000:
         return "Silver Strider"
-    elif score < 3500:
+    elif score < 2000:
         return "Golden Grinder"
-    elif score < 5000:
+    elif score < 3500:
         return "Platinum Pro"
-    elif score < 7000:
+    elif score < 5000:
         return "Diamond Elite"
-    elif score < 10000:
+    elif score < 7000:
         return "Athlete"
-    elif score < 15000:
+    elif score < 10000:
         return "Olympian"
     else:
         return "#1 ReHealth User"
