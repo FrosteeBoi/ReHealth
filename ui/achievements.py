@@ -12,7 +12,7 @@ from logic.calculations import get_rehealth_level, calculate_lifetime_score
 from logic.user import User
 from ui.ui_handler import return_to_dashboard
 
-RANK_COLOURS = {
+rank_colours = {
     "Bronze Beginner": "warning",
     "Silver Strider": "secondary",
     "Golden Grinder": "success",
@@ -23,7 +23,7 @@ RANK_COLOURS = {
     "#1 ReHealth User": "primary",
 }
 
-RANK_THRESHOLDS = [
+rank_thresholds = [
     ("Bronze Beginner", 0, 500),
     ("Silver Strider", 500, 1000),
     ("Golden Grinder", 1000, 2000),
@@ -52,15 +52,15 @@ class Achievements:
         self._load_user_stats()
         self._build_ui()
 
-    def _configure_window(self) -> None:
+    def _configure_window(self):
         self.root.geometry("490x630")
         self.root.title("ReHealth")
 
-    def _create_main_frame(self) -> None:
+    def _create_main_frame(self):
         self.achieveframe = tb.Frame(self.root)
         self.achieveframe.place(relx=0.5, rely=0, anchor="n")
 
-    def _load_user_stats(self) -> None:
+    def _load_user_stats(self):
         self.total_steps = get_total_steps(self.user.user_id)
         self.total_cals = get_total_calories(self.user.user_id)
         self.total_sleep = get_total_sleep_hours(self.user.user_id)
@@ -73,7 +73,7 @@ class Achievements:
         )
         self.user_rank = get_rehealth_level(self.user_score)
 
-    def _build_ui(self) -> None:
+    def _build_ui(self):
         next_rank_name, progress_percent = self._get_progress_to_next_level(
             self.user_score
         )
@@ -153,34 +153,34 @@ class Achievements:
             command=self.return_to_dash,
             width=22,
         )
-        self.dash_button.grid(row=9, column=0, pady=(40, 10), sticky="n")
+        self.dash_button.grid(row=9, column=0, pady=(200, 10), sticky="n")
 
         self.achieveframe.grid_rowconfigure(9, minsize=200)
 
-    def _get_progress_bar_colour(self, rank: str) -> str:
+    def _get_progress_bar_colour(self, rank):
         """
         Returns the colour based on user rank.
         """
-        return RANK_COLOURS.get(rank, "primary")
+        return rank_colours.get(rank, "primary")
 
-    def _get_progress_to_next_level(self, score: float) -> Tuple[Optional[str], float]:
+    def _get_progress_to_next_level(self, score):
         """
         returns how close the user is to the next rank
         """
         if score >= 10000:
             return None, 100.0
 
-        for i, (_, lower, upper) in enumerate(RANK_THRESHOLDS):
+        for i, (_, lower, upper) in enumerate(rank_thresholds):
             if upper is None:
                 continue
             if lower <= score < upper:
-                next_rank_name, _, _ = RANK_THRESHOLDS[i + 1]
+                next_rank_name, _, _ = rank_thresholds[i + 1]
                 progress = (score - lower) / (upper - lower) * 100
                 return next_rank_name, progress
 
         return None, 0.0
 
-    def return_to_dash(self) -> None:
+    def return_to_dash(self):
         """
         Returns to the dashboard screen.
         """
