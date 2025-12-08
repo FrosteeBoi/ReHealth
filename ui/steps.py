@@ -74,17 +74,20 @@ class Steps:
                                     self.stepframe, self.root)
 
     def step_inc(self):
-        """
-        Increments the amount of steps
-        """
         try:
             value = int(self.step_entry.get())
             self.step_count = str(value)
             self.step_entry.delete(0, 'end')
             self.count_label.config(text=f"Step Count: {self.step_count}")
 
-            # Saves steps to the database
             save_steps(self.user.user_id, self.step_count, 10000)
+
+            if value >= 10000:
+                messagebox.showinfo(
+                    "Congratulations!",
+                    f"Well done {self.user.username}. You smashed 10,000 steps go treat yourself!"
+                )
+
         except ValueError:
             messagebox.showerror(
                 "Failed input",
