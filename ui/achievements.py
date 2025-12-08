@@ -125,7 +125,7 @@ class Achievements:
         rank_colours = {
             "Bronze Beginner": "warning",
             "Silver Strider": "secondary",
-            "Gold Grinder": "success",
+            "Golden Grinder": "success",
             "Platinum Pro": "info",
             "Diamond Elite": "primary",
             "Athlete": "success",
@@ -142,7 +142,7 @@ class Achievements:
         thresholds = [
             ("Bronze Beginner", 0, 500),
             ("Silver Strider", 500, 1000),
-            ("Gold Grinder", 1000, 2000),
+            ("Golden Grinder", 1000, 2000),
             ("Platinum Pro", 2000, 3500),
             ("Diamond Elite", 3500, 5000),
             ("Athlete", 5000, 7500),

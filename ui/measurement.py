@@ -65,7 +65,7 @@ class Measurement:
 
         self.height_label = tb.Label(
             self.measureframe,
-            text="Record Your Height(M):",
+            text="Record Your Height(Cm):",
             font=("roboto", 14)
         )
         self.height_label.grid(row=4, column=0, pady=(10, 10),
