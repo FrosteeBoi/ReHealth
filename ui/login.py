@@ -1,11 +1,10 @@
-import os
 import random
 import re
 import sqlite3
 from datetime import datetime, date
 from tkinter import messagebox
 import ttkbootstrap as tb
-from db.db_handler import save_user_to_db, db_path
+from db.db_handler import save_user_to_db, db_path, get_db_connection
 from logic.user import User
 from ui.dashboard import Dashboard
 
@@ -130,9 +129,7 @@ class App:
         username_attempt = self.username_entry.get()
         password_attempt = self.password_entry.get()
 
-        db_path = os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db")
-        db_path = os.path.abspath(db_path)
-        connection = sqlite3.connect(db_path)
+        connection = get_db_connection()
         cursor = connection.cursor()
 
         cursor.execute(

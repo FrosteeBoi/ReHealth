@@ -53,7 +53,7 @@ def fetch_food_from_api(food_name):
     return None
 
 
-api_data = fetch_food_from_api("banana")  # Example search
+api_data = fetch_food_from_api("apple")  # Example search
 if api_data:
     food_obj = Food(api_data['name'], api_data['calories'])
     print(food_obj.name, food_obj.calories)

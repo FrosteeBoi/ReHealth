@@ -58,8 +58,6 @@ class Dashboard:
             width=13
         )
 
-
-
         # Grids the visual displays and achievements button
         self.dash_steps.grid(row=1, column=0, pady=(5, 5))
         self.dash_cals.grid(row=2, column=0, pady=(5, 5))
@@ -101,13 +99,6 @@ class Dashboard:
             command=self.show_steps,
             width=9
         )
-        self.achievements_button = tb.Button(
-            self.tab_frame,
-            text="Achievements",
-            command=self.show_achievements,
-            width=9
-        )
-
 
         # Grids the buttons
         self.measurements_button.grid(row=1, column=0, padx=4)
@@ -115,7 +106,6 @@ class Dashboard:
         self.workout_button.grid(row=1, column=2, padx=4)
         self.sleep_button.grid(row=1, column=3, padx=4)
         self.steps_button.grid(row=1, column=4, padx=4)
-
 
     def show_measurements(self):
         """Opens the measurement tab"""
@@ -150,7 +140,6 @@ class Dashboard:
         """
         self.dashframe.destroy()
         Achievements(self.root, self.user)
-
 
 
 if __name__ == "__main__":

@@ -76,6 +76,9 @@ class Steps:
     def step_inc(self):
         try:
             value = int(self.step_entry.get())
+            if value < 0:
+                messagebox.showerror("Invalid Input", "Steps cannot be negative.")
+                return
             self.step_count = str(value)
             self.step_entry.delete(0, 'end')
             self.count_label.config(text=f"Step Count: {self.step_count}")

@@ -27,7 +27,7 @@ def save_user_to_db(user):
         CREATE TABLE IF NOT EXISTS User (
             UserID INTEGER PRIMARY KEY AUTOINCREMENT,
             Username VARCHAR(20) UNIQUE NOT NULL,
-            Password VARCHAR(50) NOT NULL,
+            Password VARCHAR(64) NOT NULL,
             Sex VARCHAR(10),
             DateOfBirth DATE,
             JoinDate DATE
