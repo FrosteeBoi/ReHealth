@@ -1,5 +1,3 @@
-from typing import Optional, Tuple
-
 import ttkbootstrap as tb
 
 from db.db_handler import (
@@ -33,6 +31,31 @@ rank_thresholds = [
     ("Olympian", 7500, 10000),
     ("#1 ReHealth User", 10000, None),
 ]
+
+
+def _get_progress_bar_colour(rank):
+    """
+    Returns the colour based on user rank.
+    """
+    return rank_colours.get(rank, "primary")
+
+
+def _get_progress_to_next_level(score):
+    """
+    returns how close the user is to the next rank
+    """
+    if score >= 10000:
+        return None, 100.0
+
+    for i, (_, lower, upper) in enumerate(rank_thresholds):
+        if upper is None:
+            continue
+        if lower <= score < upper:
+            next_rank_name, _, _ = rank_thresholds[i + 1]
+            progress = (score - lower) / (upper - lower) * 100
+            return next_rank_name, progress
+
+    return None, 0.0
 
 
 class Achievements:
@@ -74,10 +97,10 @@ class Achievements:
         self.user_rank = get_rehealth_level(self.user_score)
 
     def _build_ui(self):
-        next_rank_name, progress_percent = self._get_progress_to_next_level(
+        next_rank_name, progress_percent = _get_progress_to_next_level(
             self.user_score
         )
-        bar_colour = self._get_progress_bar_colour(self.user_rank)
+        bar_colour = _get_progress_bar_colour(self.user_rank)
 
         self.achieve_label = tb.Label(
             self.achieveframe,
@@ -107,7 +130,7 @@ class Achievements:
                 mode="determinate",
                 length=300,
                 maximum=100,
-                bootstyle=bar_colour,
+                bootstyle=f"{bar_colour}-striped",
             )
             self.progress_bar.grid(row=3, column=0, pady=(0, 20), sticky="n")
             self.progress_bar["value"] = progress_percent
@@ -156,29 +179,6 @@ class Achievements:
         self.dash_button.grid(row=9, column=0, pady=(200, 10), sticky="n")
 
         self.achieveframe.grid_rowconfigure(9, minsize=200)
-
-    def _get_progress_bar_colour(self, rank):
-        """
-        Returns the colour based on user rank.
-        """
-        return rank_colours.get(rank, "primary")
-
-    def _get_progress_to_next_level(self, score):
-        """
-        returns how close the user is to the next rank
-        """
-        if score >= 10000:
-            return None, 100.0
-
-        for i, (_, lower, upper) in enumerate(rank_thresholds):
-            if upper is None:
-                continue
-            if lower <= score < upper:
-                next_rank_name, _, _ = rank_thresholds[i + 1]
-                progress = (score - lower) / (upper - lower) * 100
-                return next_rank_name, progress
-
-        return None, 0.0
 
     def return_to_dash(self):
         """
