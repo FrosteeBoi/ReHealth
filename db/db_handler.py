@@ -2,7 +2,6 @@ import os
 import sqlite3
 from datetime import date, datetime, timedelta
 
-# Define database path once at module level
 db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db"))
 
 

@@ -52,7 +52,7 @@ class Food:
 
         self.food_textbox = tb.Entry(self.foodframe, width=25)
         self.food_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 20),
-                              sticky="w")
+                               sticky="w")
 
         # Calorie Section
         self.calorie_label = tb.Label(
