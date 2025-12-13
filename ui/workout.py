@@ -96,7 +96,7 @@ class Workouts:
 
         self.exercise_add_button = tb.Button(
             self.button_frame,
-            text="Add to Database",
+            text="Log Workout",
             command=self.database_inc
         )
         self.exercise_add_button.grid(row=0, column=0, padx=(0, 5))

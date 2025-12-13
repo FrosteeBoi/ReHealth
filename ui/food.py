@@ -171,6 +171,7 @@ class Food:
 
             # Refresh the graph to show updated data
             self.calorie_graph.refresh_graph()
+            self.root.update_idletasks()
 
         except Exception as e:
             messagebox.showerror(

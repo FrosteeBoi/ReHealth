@@ -5,8 +5,11 @@ import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 
-from db.db_handler import (get_weight, save_steps,
-                           get_last_7_days_steps_convert)
+from db.db_handler import (
+    get_weight,
+    save_steps,
+    get_last_7_days_steps_convert
+)
 from logic.calculations import calories_burnt
 from logic.user import User
 from ui.ui_handler import return_to_dashboard
@@ -23,8 +26,10 @@ class Steps:
         """
         self.root = root
         self.user = user
+
         self.stepframe = tb.Frame(self.root)
         self.stepframe.place(relx=0.5, rely=0, anchor="n")
+
         self.root.geometry("490x630")
         self.root.title("ReHealth")
 
@@ -43,7 +48,7 @@ class Steps:
 
         self.count_label = tb.Label(
             self.stepframe,
-            text=f"Step Count: 0",
+            text="Step Count: 0",
             font=("roboto", 14)
         )
         self.count_label.grid(row=1, column=0, pady=(10, 10), padx=20,
@@ -51,7 +56,7 @@ class Steps:
 
         self.calorie_label = tb.Label(
             self.stepframe,
-            text=f"Calories Burnt: 0 kcal",
+            text="Calories Burnt: 0 kcal",
             font=("roboto", 14)
         )
         self.calorie_label.grid(row=2, column=0, pady=(10, 30), padx=20,
@@ -68,53 +73,82 @@ class Steps:
         )
         self.step_button.grid(row=3, column=1, pady=(10, 10), padx=(10, 20))
 
+        # Graph
         self.graph_frame = tb.Frame(self.stepframe)
         self.graph_frame.grid(row=4, column=0, columnspan=2, pady=0, padx=20)
-        self.step_graph = StepGraph(self.graph_frame, self.user,
-                                    self.stepframe, self.root)
 
-    def step_inc(self):
+        self.step_graph = StepGraph(
+            self.graph_frame,
+            self.user,
+            self.stepframe,
+            self.root
+        )
+
+    def steps_and_calories(self):
+        """
+        Validates input, saves steps, updates labels, refreshes graph, calculates calories.
+        Flow matches your Food page: only refresh after a successful save.
+        """
+        steps_text = self.step_entry.get().strip()
+
+        # Validation
+        if not steps_text:
+            messagebox.showerror("Missing Information", "Please enter your steps.")
+            self.step_entry.focus()
+            return
+
+        if not steps_text.isdigit():
+            messagebox.showerror("Invalid Input", "Please enter your steps as a whole number.")
+            self.step_entry.focus()
+            return
+
+        steps_value = int(steps_text)
+
+        if steps_value < 0:
+            messagebox.showerror("Invalid Input", "Steps cannot be negative.")
+            self.step_entry.focus()
+            return
+
+        # Save to database )
         try:
-            value = int(self.step_entry.get())
-            if value < 0:
-                messagebox.showerror("Invalid Input", "Steps cannot be negative.")
-                return
-            self.step_count = str(value)
-            self.step_entry.delete(0, 'end')
+            save_steps(self.user.user_id, str(steps_value), 10000)
+
+            # Update UI labels
+            self.step_count = str(steps_value)
             self.count_label.config(text=f"Step Count: {self.step_count}")
 
-            save_steps(self.user.user_id, self.step_count, 10000)
-
-            if value >= 10000:
-                messagebox.showinfo(
-                    "Congratulations!",
-                    f"Well done {self.user.username}. You smashed 10,000 steps go treat yourself!"
-                )
-
-        except ValueError:
-            messagebox.showerror(
-                "Failed input",
-                "Please enter your steps as an integer."
-            )
-
-    def calorie_inc(self):
-        """
-        Calculates and updates calories burnt only if steps are recorded
-        """
-        if self.step_count and str(self.step_count).isdigit():
+            # Calculate + update calories label
             weight = get_weight(self.user.user_id)
-            steps = int(self.step_count)
-            self.calorie_count = calories_burnt(steps, weight)
+            self.calorie_count = calories_burnt(steps_value, weight)
             self.calorie_label.config(
                 text=f"Calories Burnt: {round(self.calorie_count)} kcal"
             )
 
-    def steps_and_calories(self):
-        """
-        Adds steps and calculates calories burnt
-        """
-        self.step_inc()
-        self.calorie_inc()
+            messagebox.showinfo(
+                "Success",
+                f"Steps saved! {self.step_count} steps recorded."
+            )
+
+            # Clear entry
+            self.step_entry.delete(0, 'end')
+            self.step_entry.focus()
+
+            # Refresh graph to show updated data
+            self.step_graph.refresh_graph()
+
+            # Optional: keep your 10k congrats as a second message (like before)
+            if steps_value >= 10000:
+                messagebox.showinfo(
+                    "Congratulations!",
+                    f"Well done {self.user.username}. You smashed 10,000 steps — go treat yourself!"
+                )
+
+        except Exception as e:
+            messagebox.showerror(
+                "Database Error",
+                f"Failed to save to database: {str(e)}"
+            )
+            self.step_entry.focus()
 
 
 class StepGraph:
@@ -123,20 +157,12 @@ class StepGraph:
     """
 
     def __init__(self, graph_frame, user: User, stepframe, root):
-        """
-        Initialises graph
-        graph_frame: frame to place graph
-        user: user id whose steps are recorded
-        stepframe: main step frame for navigation
-        root: root window
-        """
         self.graph_frame = graph_frame
         self.user = user
         self.stepframe = stepframe
         self.root = root
 
         self.graph_frame.grid(row=4, column=0, sticky="s")
-
         self.graph_frame.grid_rowconfigure(0, weight=1)
         self.graph_frame.grid_columnconfigure(0, weight=1)
 
@@ -147,26 +173,10 @@ class StepGraph:
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
 
-        # Grabs steps data
-        days, steps = get_last_7_days_steps_convert(self.user.user_id)
+        # Initial plot
+        self.plot_data()
 
-        # Plot the data
-        self.ax.plot(days, steps, marker='o', color='#4e73df',
-                     linewidth=2, markersize=8)
-        self.ax.set_xlabel('Days', color='#adb5bd')
-        self.ax.set_ylabel('Steps', color='#adb5bd')
-        self.ax.set_title('Steps Over Time', color='#ffffff')
-
-        # Graph styling
-        self.ax.tick_params(colors='#adb5bd')
-        self.ax.spines['bottom'].set_color('#adb5bd')
-        self.ax.spines['top'].set_color('#adb5bd')
-        self.ax.spines['left'].set_color('#adb5bd')
-        self.ax.spines['right'].set_color('#adb5bd')
-
-        self.ax.grid(True, alpha=0.2, color='#adb5bd')
-
-        # Pack the canvas
+        # Place the canvas
         self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
 
         # Frame for Download and Back to Dashboard buttons initialised
@@ -186,6 +196,34 @@ class StepGraph:
             command=self.return_to_dash
         )
         self.dash_button.grid(row=0, column=1, padx=(5, 0))
+
+    def plot_data(self):
+        """
+        Fetches steps data and plots it on the graph
+        """
+        self.ax.clear()
+
+        days, steps = get_last_7_days_steps_convert(self.user.user_id)
+
+        self.ax.plot(days, steps, marker='o', color='#4e73df',
+                     linewidth=2, markersize=8)
+        self.ax.set_xlabel('Days', color='#adb5bd')
+        self.ax.set_ylabel('Steps', color='#adb5bd')
+        self.ax.set_title('Steps Over Time', color='#ffffff')
+
+        self.ax.tick_params(colors='#adb5bd')
+        for spine in self.ax.spines.values():
+            spine.set_color('#adb5bd')
+
+        self.ax.grid(True, alpha=0.2, color='#adb5bd')
+
+        self.canvas.draw()
+
+    def refresh_graph(self):
+        """
+        Refreshes the graph with updated data
+        """
+        self.plot_data()
 
     def save_graph(self):
         """

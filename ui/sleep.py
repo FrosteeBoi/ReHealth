@@ -22,10 +22,13 @@ class Sleep:
         """
         self.root = root
         self.user = user
+
         self.sleepframe = tb.Frame(self.root)
         self.sleepframe.place(relx=0.5, rely=0, anchor="n")
+
         self.root.geometry("490x630")
         self.root.title("ReHealth")
+
         self.sleep_duration = None
         self.sleep_quality = None
         self.rating = None
@@ -36,35 +39,31 @@ class Sleep:
             text=f"{self.user.username}'s Sleep",
             font=("roboto", 18, "bold")
         )
-        self.sleep_label.grid(row=0, column=0, pady=(20, 30), columnspan=3,
-                              padx=20)
+        self.sleep_label.grid(row=0, column=0, pady=(20, 30), columnspan=3, padx=20)
 
         self.rating_label = tb.Label(
             self.sleepframe,
             text="Sleep Rating:",
             font=("roboto", 14)
         )
-        self.rating_label.grid(row=1, column=0, pady=(10, 10), padx=20,
-                               columnspan=3)
+        self.rating_label.grid(row=1, column=0, pady=(10, 10), padx=20, columnspan=3)
 
         self.sleep_hours_label = tb.Label(
             self.sleepframe,
             text="Record your hours:",
             font=("roboto", 14)
         )
-        self.sleep_hours_label.grid(row=2, column=0, pady=(20, 20),
-                                    sticky="e", padx=(0, 10))
+        self.sleep_hours_label.grid(row=2, column=0, pady=(20, 20), sticky="e", padx=(0, 10))
 
         self.sleep_entry = tb.Entry(self.sleepframe)
         self.sleep_entry.grid(row=2, column=1, pady=(20, 20), columnspan=2)
 
         self.sleep_refresh_label = tb.Label(
             self.sleepframe,
-            text="Record how you feel(1-5):",
+            text="Record how you feel (1-5):",
             font=("roboto", 14)
         )
-        self.sleep_refresh_label.grid(row=3, column=0, pady=(20, 20),
-                                      sticky="e", padx=(0, 10))
+        self.sleep_refresh_label.grid(row=3, column=0, pady=(20, 20), sticky="e", padx=(0, 10))
 
         self.refresh_entry = tb.Entry(self.sleepframe)
         self.refresh_entry.grid(row=3, column=1, pady=(20, 20), columnspan=2)
@@ -78,14 +77,13 @@ class Sleep:
 
         # Adds graph frame
         self.graph_frame = tb.Frame(self.sleepframe)
-        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=0,
-                              padx=20)
-        self.sleep_graph = SleepGraph(self.graph_frame, self.user,
-                                      self.sleepframe, self.root)
+        self.graph_frame.grid(row=5, column=0, columnspan=3, pady=0, padx=20)
+
+        self.sleep_graph = SleepGraph(self.graph_frame, self.user, self.sleepframe, self.root)
 
     def update_rating(self):
         """
-        Calculates and displays sleep rating
+        Calculates and displays sleep rating, saves to DB, and refreshes the graph
         """
         # Get values from entries
         hours_input = self.sleep_entry.get().strip()
@@ -93,67 +91,63 @@ class Sleep:
 
         # Validate hours
         if not hours_input:
-            messagebox.showerror(
-                "Error",
-                "Please enter a valid number of hours (0-24)."
-            )
+            messagebox.showerror("Error", "Please enter a valid number of hours (0-24).")
+            self.sleep_entry.focus()
             return
 
         try:
             hours = float(hours_input)
             if hours < 0 or hours > 24:
-                messagebox.showerror(
-                    "Error",
-                    "Please enter a valid number of hours (0-24)."
-                )
+                messagebox.showerror("Error", "Please enter a valid number of hours (0-24).")
+                self.sleep_entry.focus()
                 return
             self.sleep_duration = hours
         except ValueError:
-            messagebox.showerror(
-                "Error",
-                "Please enter a valid number of hours (0-24)."
-            )
+            messagebox.showerror("Error", "Please enter a valid number of hours (0-24).")
+            self.sleep_entry.focus()
             return
 
         # Validate quality
         if not quality_input:
-            messagebox.showerror(
-                "Error",
-                "Please enter a valid sleep quality (1-5)."
-            )
+            messagebox.showerror("Error", "Please enter a valid sleep quality (1-5).")
+            self.refresh_entry.focus()
             return
 
         try:
             quality = int(quality_input)
             if quality < 1 or quality > 5:
-                messagebox.showerror(
-                    "Error",
-                    "Please enter a valid sleep quality (1-5)."
-                )
+                messagebox.showerror("Error", "Please enter a valid sleep quality (1-5).")
+                self.refresh_entry.focus()
                 return
             self.sleep_quality = quality
         except ValueError:
-            messagebox.showerror(
-                "Error",
-                "Please enter a valid sleep quality (1-5)."
-            )
+            messagebox.showerror("Error", "Please enter a valid sleep quality (1-5).")
+            self.refresh_entry.focus()
             return
 
         # Calculate rating and save
         self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
-        self.rating_label.config(
-            text=f"Sleep Rating: {round(self.rating * 100)}%"
-        )
-        save_sleep(self.user.user_id, self.sleep_duration, self.rating)
+        self.rating_label.config(text=f"Sleep Rating: {round(self.rating * 100)}%")
 
-        messagebox.showinfo(
-            "Success",
-            f"Sleep data saved! Rating: {round(self.rating * 100)}%"
-        )
+        try:
+            save_sleep(self.user.user_id, self.sleep_duration, self.rating)
 
-        # Clear entries
-        self.sleep_entry.delete(0, 'end')
-        self.refresh_entry.delete(0, 'end')
+            messagebox.showinfo(
+                "Success",
+                f"Sleep data saved! Rating: {round(self.rating * 100)}%"
+            )
+
+            # Clear entries
+            self.sleep_entry.delete(0, 'end')
+            self.refresh_entry.delete(0, 'end')
+            self.sleep_entry.focus()
+
+            # Refresh graph to show updated data
+            self.sleep_graph.refresh_graph()
+            self.root.update_idletasks()
+
+        except Exception as e:
+            messagebox.showerror("Database Error", f"Failed to save to database: {str(e)}")
 
 
 class SleepGraph:
@@ -175,7 +169,6 @@ class SleepGraph:
         self.root = root
 
         self.graph_frame.grid(row=5, column=0, sticky="s")
-
         self.graph_frame.grid_rowconfigure(0, weight=1)
         self.graph_frame.grid_columnconfigure(0, weight=1)
 
@@ -186,26 +179,10 @@ class SleepGraph:
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
 
-        # Grabs sleep data
-        days, sleep_hours = get_last_7_days_sleep_convert(self.user.user_id)
+        # Initial plot
+        self.plot_data()
 
-        # Plot the data
-        self.ax.plot(days, sleep_hours, marker='o', color='#4e73df',
-                     linewidth=2, markersize=8)
-        self.ax.set_xlabel('Days', color='#adb5bd')
-        self.ax.set_ylabel('Hours', color='#adb5bd')
-        self.ax.set_title('Sleep Over Time', color='#ffffff')
-
-        # Graph styling
-        self.ax.tick_params(colors='#adb5bd')
-        self.ax.spines['bottom'].set_color('#adb5bd')
-        self.ax.spines['top'].set_color('#adb5bd')
-        self.ax.spines['left'].set_color('#adb5bd')
-        self.ax.spines['right'].set_color('#adb5bd')
-
-        self.ax.grid(True, alpha=0.2, color='#adb5bd')
-
-        # Pack the canvas
+        # Place the canvas
         self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
 
         # Frame for Download and Back to Dashboard buttons initialised
@@ -225,6 +202,38 @@ class SleepGraph:
             command=self.return_to_dash
         )
         self.dash_button.grid(row=0, column=1, padx=(5, 0))
+
+    def plot_data(self):
+        """
+        Fetches sleep data and plots it on the graph
+        """
+        self.ax.clear()
+
+        days, sleep_hours = get_last_7_days_sleep_convert(self.user.user_id)
+
+        # Plot the data
+        self.ax.plot(days, sleep_hours, marker='o', color='#4e73df',
+                     linewidth=2, markersize=8)
+
+        self.ax.set_xlabel('Days', color='#adb5bd')
+        self.ax.set_ylabel('Hours', color='#adb5bd')
+        self.ax.set_title('Sleep Over Time', color='#ffffff')
+
+        # Graph styling
+        self.ax.tick_params(colors='#adb5bd')
+        for spine in self.ax.spines.values():
+            spine.set_color('#adb5bd')
+
+        self.ax.grid(True, alpha=0.2, color='#adb5bd')
+
+        # Redraw the canvas
+        self.canvas.draw()
+
+    def refresh_graph(self):
+        """
+        Refreshes the graph with updated data
+        """
+        self.plot_data()
 
     def save_graph(self):
         """
@@ -261,7 +270,6 @@ class SleepGraph:
 
 if __name__ == "__main__":
     root = tb.Window(themename="darkly")
-    test_user = User("TestUser", "1234567", "Male", "26/12/2007",
-                     "29/08/2025")
+    test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Sleep(root, test_user)
     root.mainloop()
