@@ -109,7 +109,7 @@ class Steps:
             self.step_entry.focus()
             return
 
-        # Save to database )
+        # Save to database
         try:
             save_steps(self.user.user_id, str(steps_value), 10000)
 
