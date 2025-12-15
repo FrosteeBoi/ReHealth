@@ -1,3 +1,5 @@
+"""Sleep Module - ReHealth"""
+
 import os
 from tkinter import messagebox
 
@@ -12,13 +14,13 @@ from ui.ui_handler import return_to_dashboard
 
 
 class Sleep:
-    """
-    Class created to record user sleep and display it to the user
-    """
+    """Sleep tracking screen: records sleep inputs, calculates a rating, saves to DB, and displays a 7-day graph."""
 
     def __init__(self, root, user: User):
         """
-        Main window for sleep tracking initialised
+        Args:
+            root: Main application window.
+            user: Logged-in user (used for user_id and username).
         """
         self.root = root
         self.user = user
@@ -29,11 +31,11 @@ class Sleep:
         self.root.geometry("490x630")
         self.root.title("ReHealth")
 
+        # Stored values used for calculation and database saving
         self.sleep_duration = None
         self.sleep_quality = None
         self.rating = None
 
-        # Labels
         self.sleep_label = tb.Label(
             self.sleepframe,
             text=f"{self.user.username}'s Sleep",
@@ -73,9 +75,9 @@ class Sleep:
             text="Calculate Rating",
             command=self.update_rating
         )
-        self.rating_button.grid(row=4, column=0, pady=(0, 0), columnspan=3)
+        self.rating_button.grid(row=4, column=0, columnspan=3)
 
-        # Adds graph frame
+        # Container for the embedded graph widget
         self.graph_frame = tb.Frame(self.sleepframe)
         self.graph_frame.grid(row=5, column=0, columnspan=3, pady=0, padx=20)
 
@@ -83,13 +85,12 @@ class Sleep:
 
     def update_rating(self):
         """
-        Calculates and displays sleep rating, saves to DB, and refreshes the graph
+        Validates inputs, calculates a sleep rating, saves to DB, updates UI, and refreshes the graph.
         """
-        # Get values from entries
         hours_input = self.sleep_entry.get().strip()
         quality_input = self.refresh_entry.get().strip()
 
-        # Validate hours
+        # Presence + type + range check for sleep hours (float allows half-hours, etc.)
         if not hours_input:
             messagebox.showerror("Error", "Please enter a valid number of hours (0-24).")
             self.sleep_entry.focus()
@@ -107,7 +108,7 @@ class Sleep:
             self.sleep_entry.focus()
             return
 
-        # Validate quality
+        # Presence + type + range check for sleep quality (must be integer 1–5)
         if not quality_input:
             messagebox.showerror("Error", "Please enter a valid sleep quality (1-5).")
             self.refresh_entry.focus()
@@ -125,11 +126,12 @@ class Sleep:
             self.refresh_entry.focus()
             return
 
-        # Calculate rating and save
+        # Rating algorithm is kept in a separate logic function for modularity
         self.rating = sleep_calc(self.sleep_duration, self.sleep_quality)
         self.rating_label.config(text=f"Sleep Rating: {round(self.rating * 100)}%")
 
         try:
+            # Save record to database linked to the logged-in user
             save_sleep(self.user.user_id, self.sleep_duration, self.rating)
 
             messagebox.showinfo(
@@ -137,12 +139,12 @@ class Sleep:
                 f"Sleep data saved! Rating: {round(self.rating * 100)}%"
             )
 
-            # Clear entries
+            # Reset inputs for the next entry
             self.sleep_entry.delete(0, 'end')
             self.refresh_entry.delete(0, 'end')
             self.sleep_entry.focus()
 
-            # Refresh graph to show updated data
+            # Refresh graph so the new DB record is visible immediately
             self.sleep_graph.refresh_graph()
             self.root.update_idletasks()
 
@@ -151,17 +153,15 @@ class Sleep:
 
 
 class SleepGraph:
-    """
-    Graph widget to display sleep hours over time
-    """
+    """Embedded matplotlib graph showing the user's last 7 days of sleep hours with export + navigation buttons."""
 
     def __init__(self, graph_frame, user: User, sleepframe, root):
         """
-        Initialises graph
-        graph_frame: frame to place graph
-        user: user id whose sleep is recorded
-        sleepframe: main sleep frame for navigation
-        root: root window
+        Args:
+            graph_frame: Parent frame that the graph and buttons are placed into.
+            user: Logged-in user (used for user_id and export filename).
+            sleepframe: Sleep screen frame (used for navigation back to dashboard).
+            root: Main application window (used for navigation).
         """
         self.graph_frame = graph_frame
         self.user = user
@@ -172,28 +172,23 @@ class SleepGraph:
         self.graph_frame.grid_rowconfigure(0, weight=1)
         self.graph_frame.grid_columnconfigure(0, weight=1)
 
+        # Matplotlib setup (dark theme to match ttkbootstrap "darkly")
         self.fig = Figure(figsize=(6, 4), dpi=67, facecolor='#222222')
         self.ax = self.fig.add_subplot(111)
         self.ax.set_facecolor('#2b3e50')
 
+        # Embed the matplotlib figure into tkinter
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graph_frame)
         self.canvas_widget = self.canvas.get_tk_widget()
 
-        # Initial plot
         self.plot_data()
-
-        # Place the canvas
         self.canvas_widget.grid(row=0, column=0, pady=(0, 10))
 
-        # Frame for Download and Back to Dashboard buttons initialised
+        # Button bar under the graph
         self.button_frame = tb.Frame(self.graph_frame)
         self.button_frame.grid(row=1, column=0, pady=(0, 20))
 
-        self.save_btn = tb.Button(
-            self.button_frame,
-            text="Download",
-            command=self.save_graph
-        )
+        self.save_btn = tb.Button(self.button_frame, text="Download", command=self.save_graph)
         self.save_btn.grid(row=0, column=0, padx=(0, 5))
 
         self.dash_button = tb.Button(
@@ -205,56 +200,45 @@ class SleepGraph:
 
     def plot_data(self):
         """
-        Fetches sleep data and plots it on the graph
+        Fetches the last 7 days of sleep hours and redraws the line plot.
         """
         self.ax.clear()
 
         days, sleep_hours = get_last_7_days_sleep_convert(self.user.user_id)
 
-        # Plot the data
-        self.ax.plot(days, sleep_hours, marker='o', color='#4e73df',
-                     linewidth=2, markersize=8)
+        self.ax.plot(days, sleep_hours, marker='o', color='#4e73df', linewidth=2, markersize=8)
 
         self.ax.set_xlabel('Days', color='#adb5bd')
         self.ax.set_ylabel('Hours', color='#adb5bd')
         self.ax.set_title('Sleep Over Time', color='#ffffff')
 
-        # Graph styling
+        # Styling for readability on a dark background
         self.ax.tick_params(colors='#adb5bd')
         for spine in self.ax.spines.values():
             spine.set_color('#adb5bd')
 
         self.ax.grid(True, alpha=0.2, color='#adb5bd')
-
-        # Redraw the canvas
         self.canvas.draw()
 
     def refresh_graph(self):
-        """
-        Refreshes the graph with updated data
-        """
+        """Replots data after a new sleep record is saved."""
         self.plot_data()
 
     def save_graph(self):
         """
-        Saves image of graph to images folder
+        Exports the current graph image to the project's /images folder.
         """
         try:
-            images_folder = os.path.join(
-                os.path.dirname(__file__),
-                "..",
-                "images"
-            )
+            images_folder = os.path.join(os.path.dirname(__file__), "..", "images")
             images_folder = os.path.abspath(images_folder)
 
+            # Ensure export folder exists before saving
             if not os.path.exists(images_folder):
                 os.makedirs(images_folder)
 
-            filename = os.path.join(
-                images_folder,
-                f'{self.user.username}_sleep_graph_week.png'
-            )
+            filename = os.path.join(images_folder, f'{self.user.username}_sleep_graph_week.png')
 
+            # facecolor keeps the dark theme in the saved file
             self.fig.savefig(filename, dpi=100, facecolor='#222222')
 
             messagebox.showinfo("Success", f"Graph saved to {filename}")
@@ -262,9 +246,7 @@ class SleepGraph:
             messagebox.showerror("Error", f"Failed to save graph: {str(e)}")
 
     def return_to_dash(self):
-        """
-        Returns to the dashboard screen
-        """
+        """Returns to the dashboard screen."""
         return_to_dashboard(self.sleepframe, self.root, self.user)
 
 
