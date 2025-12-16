@@ -1,3 +1,5 @@
+"""Dashboard Module - ReHealth"""
+
 import ttkbootstrap as tb
 
 from db.dashboard_data import get_sleep, get_steps, get_calories
