@@ -1,4 +1,4 @@
-""" Login Module - ReHealth"""
+"""Login Module - ReHealth"""
 
 import random
 import re
@@ -13,7 +13,7 @@ from logic.user import User
 from ui.dashboard import Dashboard
 
 
-def quote_maker():
+def get_random_quote():
     """
     Returns a random motivational quote for the login screen.
 
@@ -30,28 +30,147 @@ def quote_maker():
     return random.choice(quote_list)
 
 
+def validate_username(username: str) -> tuple[bool, str]:
+    """
+    Validates the username input.
+
+    Args:
+        username: Raw username input.
+
+    Returns:
+        A tuple of (is_valid, error_message).
+        If valid, error_message is empty.
+    """
+    if not re.match(r"^[A-Za-z0-9_.]{3,20}$", username):
+        return False, "Username must be 3-20 characters, letters, numbers, underscores, or dots."
+    return True, ""
+
+
+def validate_password(password: str) -> tuple[bool, str]:
+    """
+    Validates the password strength.
+
+    Args:
+        password: Raw password input.
+
+    Returns:
+        A tuple of (is_valid, error_message).
+        If valid, error_message is empty.
+    """
+    if len(password) < 8 or len(password) > 20:
+        return False, "Password must be between 8 and 20 characters."
+
+    password_score = 0
+    if re.search(r"[A-Z]", password):
+        password_score += 1
+    if re.search(r"[a-z]", password):
+        password_score += 1
+    if re.search(r"[0-9]", password):
+        password_score += 1
+    if re.search(r"[^A-Za-z0-9]", password):
+        password_score += 1
+
+    if password_score < 3:
+        return False, "Password should mix uppercase, lowercase, numbers, and special characters."
+
+    return True, ""
+
+
+def validate_sex(sex: str) -> tuple[bool, str]:
+    """
+    Validates the biological sex selection.
+
+    Args:
+        sex: Selected sex value.
+
+    Returns:
+        A tuple of (is_valid, error_message).
+        If valid, error_message is empty.
+    """
+    if not sex or sex not in ("Male", "Female"):
+        return False, "Please select a biological sex."
+    return True, ""
+
+
+def validate_date_of_birth(day: int, month: int, year: int) -> tuple[bool, date, str]:
+    """
+    Validates and constructs a date of birth.
+
+    Args:
+        day: Day of birth (1-31).
+        month: Month of birth (1-12).
+        year: Year of birth.
+
+    Returns:
+        A tuple of (is_valid, dob_date, error_message).
+        If valid, error_message is empty.
+    """
+    try:
+        dob_date = date(year, month, day)
+
+        if dob_date > date.today():
+            return False, None, "Date of birth cannot be in the future."
+
+        return True, dob_date, ""
+    except ValueError:
+        return False, None, "Please enter a valid date of birth."
+
+
+def check_username_exists(username: str) -> bool:
+    """
+    Checks if a username already exists in the database.
+
+    Args:
+        username: Username to check.
+
+    Returns:
+        True if username exists, False otherwise.
+    """
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+    cursor.execute("SELECT Username FROM User WHERE Username = ?", (username,))
+    exists = cursor.fetchone() is not None
+    connection.close()
+    return exists
+
+
 class App:
     """Login + registration screen controller. Creates widgets and handles user authentication."""
 
-    def __init__(self, root):
+    def __init__(self, root: tb.Window) -> None:
         """
         Args:
             root: Main application window.
         """
         self.root = root
+
+        self._configure_window()
+        self._create_main_frame()
+        self._create_widgets()
+        self._show_login_view()
+
+    def _configure_window(self) -> None:
+        """Configure the main window."""
         self.root.title("ReHealth")
         self.root.geometry("490x630")
-
         self.root.grid_rowconfigure(0, weight=1)
         self.root.grid_columnconfigure(0, weight=1)
 
+    def _create_main_frame(self) -> None:
+        """Create and configure the main frame."""
         self.mainframe = tb.Frame(self.root)
         self.mainframe.grid(row=0, column=0, sticky="nsew")
-
         self.mainframe.grid_rowconfigure((2, 4, 6), weight=0)
         self.mainframe.grid_columnconfigure(0, weight=1)
 
-        # Login widgets (Shown by default)
+    def _create_widgets(self) -> None:
+        """Create all widgets (both login and registration)."""
+        self._create_header_widgets()
+        self._create_login_widgets()
+        self._create_registration_widgets()
+
+    def _create_header_widgets(self) -> None:
+        """Create the header label and quote."""
         self.login_label = tb.Label(
             self.mainframe,
             text="ReHealth Login",
@@ -59,10 +178,13 @@ class App:
         )
         self.quote_label = tb.Label(
             self.mainframe,
-            text=quote_maker(),
+            text=get_random_quote(),
             font=("roboto", 11, "italic"),
             justify="center"
         )
+
+    def _create_login_widgets(self) -> None:
+        """Create username and password input widgets."""
         self.username_label = tb.Label(
             self.mainframe,
             text="Username",
@@ -83,7 +205,9 @@ class App:
             command=self.login_func
         )
 
-        # Registration widgets (only shown after user chooses to register)
+    def _create_registration_widgets(self) -> None:
+        """Create biological sex and date of birth input widgets."""
+        # Sex selection
         self.sex_label = tb.Label(
             self.mainframe,
             text="Biological Sex",
@@ -96,6 +220,7 @@ class App:
             width=27
         )
 
+        # Date of birth selection
         self.dob_label = tb.Label(
             self.mainframe,
             text="Date of Birth",
@@ -140,7 +265,8 @@ class App:
             command=self.register_submit
         )
 
-        # Initial layout: login-only view
+    def _show_login_view(self) -> None:
+        """Display the initial login-only view."""
         self.login_label.grid(row=0, column=0, pady=(10, 5))
         self.quote_label.grid(row=1, column=0, pady=(0, 15), padx=10)
 
@@ -152,7 +278,7 @@ class App:
 
         self.login_button.grid(row=6, column=0, padx=10, pady=10, sticky="ew")
 
-    def login_func(self):
+    def login_func(self) -> None:
         """
         Checks credentials against the database and loads the dashboard on success.
         """
@@ -187,11 +313,11 @@ class App:
                 self.mainframe.grid_forget()
                 Dashboard(self.root, fetched_user)
             else:
-                self.login_failed()
+                self._login_failed()
         else:
-            self.login_failed()
+            self._login_failed()
 
-    def login_failed(self):
+    def _login_failed(self) -> None:
         """Handles failed login attempts."""
         response = messagebox.askretrycancel(
             "Login Failed",
@@ -204,21 +330,19 @@ class App:
             self.password_entry.delete(0, 'end')
             self.username_entry.focus()
         else:
-            self.show_register_fields()
+            self._show_register_view()
 
-    def show_register_fields(self):
+    def _show_register_view(self) -> None:
         """Switches the UI from login mode into registration mode."""
         messagebox.showinfo("Register", "Please fill in the fields to register a new account.")
 
-        self.username_entry.delete(0, 'end')
-        self.password_entry.delete(0, 'end')
-        self.sex_combobox.set('')
-        self.day_spinbox.set(1)
-        self.month_combobox.current(0)
-        self.year_spinbox.set(2000)
+        # Clear all fields
+        self._clear_all_fields()
 
+        # Configure grid
         self.mainframe.grid_rowconfigure((1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), weight=0)
 
+        # Display all widgets including registration fields
         self.login_label.grid(row=0, column=0, pady=(10, 5))
         self.quote_label.grid(row=1, column=0, pady=(0, 15), padx=10)
 
@@ -234,6 +358,7 @@ class App:
         self.dob_label.grid(row=9, column=0, sticky="w", padx=10, pady=(15, 0))
         self.dob_frame.grid(row=10, column=0, padx=10, pady=(0, 25), sticky="ew")
 
+        # Grid date of birth components
         self.day_label.grid(row=0, column=0, padx=(0, 5))
         self.day_spinbox.grid(row=1, column=0, padx=(0, 10))
 
@@ -243,91 +368,85 @@ class App:
         self.year_label.grid(row=0, column=2, padx=(0, 5))
         self.year_spinbox.grid(row=1, column=2)
 
+        # Swap login button for register button
         self.login_button.grid_forget()
         self.register_button.grid(row=11, column=0, padx=10, pady=10, sticky="ew")
 
-    def register_submit(self):
+    def register_submit(self) -> None:
         """
         Validates registration inputs and creates a new user record.
-
-        Raises:
-            None. Validation failures and database errors are shown via messageboxes.
         """
         username_input = self.username_entry.get().strip()
         password_input = self.password_entry.get().strip()
         sex_input = self.sex_combobox.get().strip()
 
-        if not re.match(r"^[A-Za-z0-9_.]{3,20}$", username_input):
-            messagebox.showerror(
-                "Error",
-                "Username must be 3-20 characters, letters, numbers, underscores, or dots."
-            )
+        # Validate username
+        username_valid, username_error = validate_username(username_input)
+        if not username_valid:
+            messagebox.showerror("Error", username_error)
             return
 
-        if len(password_input) < 8 or len(password_input) > 20:
-            messagebox.showerror("Error", "Password must be between 8 and 20 characters.")
+        # Validate password
+        password_valid, password_error = validate_password(password_input)
+        if not password_valid:
+            messagebox.showerror("Error", password_error)
             return
 
-        password_score = 0
-        if re.search(r"[A-Z]", password_input):
-            password_score += 1
-        if re.search(r"[a-z]", password_input):
-            password_score += 1
-        if re.search(r"[0-9]", password_input):
-            password_score += 1
-        if re.search(r"[^A-Za-z0-9]", password_input):
-            password_score += 1
-
-        if password_score < 3:
-            messagebox.showerror(
-                "Error",
-                "Password should mix uppercase, lowercase, numbers, and special characters."
-            )
+        # Validate sex
+        sex_valid, sex_error = validate_sex(sex_input)
+        if not sex_valid:
+            messagebox.showerror("Error", sex_error)
             return
 
-        if not sex_input or sex_input not in ("Male", "Female"):
-            messagebox.showerror("Error", "Please select a biological sex.")
-            return
-
+        # Validate date of birth
         try:
             day = int(self.day_spinbox.get())
             month = self.month_combobox.current() + 1
             year = int(self.year_spinbox.get())
-
-            dob_date = date(year, month, day)
-
-            if dob_date > date.today():
-                messagebox.showerror("Error", "Date of birth cannot be in the future.")
-                return
-
         except ValueError:
-            messagebox.showerror("Error", "Please enter a valid date of birth.")
+            messagebox.showerror("Error", "Please enter valid date values.")
             return
 
-        today = date.today()
-        hashed_password = User.password_hasher(password_input)
+        dob_valid, dob_date, dob_error = validate_date_of_birth(day, month, year)
+        if not dob_valid:
+            messagebox.showerror("Error", dob_error)
+            return
 
-        connection = sqlite3.connect(db_path)
-        cursor = connection.cursor()
-        cursor.execute("SELECT Username FROM User WHERE Username = ?", (username_input,))
-        if cursor.fetchone():
+        # Check if username already exists
+        if check_username_exists(username_input):
             messagebox.showerror("Error", "Username already exists. Please choose another.")
-            connection.close()
             return
-
-        new_user = User(username_input, hashed_password, sex_input, dob_date, today)
 
         try:
-            save_user_to_db(new_user)
+            self._create_user(username_input, password_input, sex_input, dob_date)
         except Exception as e:
             messagebox.showerror("Error", f"Failed to register user: {e}")
-            connection.close()
-            return
 
-        connection.close()
+    def _create_user(self, username: str, password: str, sex: str, dob: date) -> None:
+        """
+        Creates a new user and saves to database.
+
+        Args:
+            username: User's chosen username.
+            password: User's password (will be hashed).
+            sex: User's biological sex.
+            dob: User's date of birth.
+        """
+        today = date.today()
+        hashed_password = User.password_hasher(password)
+
+        new_user = User(username, hashed_password, sex, dob, today)
+        save_user_to_db(new_user)
 
         messagebox.showinfo("Success", "Registration complete! You can now log in.")
 
+        # Return to login view
+        self._hide_registration_fields()
+        self._clear_all_fields()
+        self.username_entry.focus()
+
+    def _hide_registration_fields(self) -> None:
+        """Hides registration-specific fields and shows login button."""
         self.sex_label.grid_forget()
         self.sex_combobox.grid_forget()
         self.dob_label.grid_forget()
@@ -336,13 +455,14 @@ class App:
 
         self.login_button.grid(row=6, column=0, pady=10, padx=10, sticky="ew")
 
+    def _clear_all_fields(self) -> None:
+        """Clears all input fields."""
         self.username_entry.delete(0, 'end')
         self.password_entry.delete(0, 'end')
         self.sex_combobox.set('')
         self.day_spinbox.set(1)
         self.month_combobox.current(0)
         self.year_spinbox.set(2000)
-        self.username_entry.focus()
 
 
 if __name__ == "__main__":

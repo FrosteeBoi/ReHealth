@@ -284,11 +284,11 @@ class SleepGraph:
     """Embedded matplotlib graph showing the user's last 7 days of sleep hours with export + navigation buttons."""
 
     def __init__(
-        self,
-        graph_frame: tb.Frame,
-        user: User,
-        sleepframe: tb.Frame,
-        root: tb.Window
+            self,
+            graph_frame: tb.Frame,
+            user: User,
+            sleepframe: tb.Frame,
+            root: tb.Window
     ) -> None:
         """
         Args:
