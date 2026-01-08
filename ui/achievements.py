@@ -8,7 +8,7 @@ from db.db_handler import (
 )
 from logic.calculations import get_rehealth_level, calculate_lifetime_score
 from logic.user import User
-from ui.ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard, BasePage
 
 rank_colours = {
     "Bronze Beginner": "warning",
@@ -58,7 +58,7 @@ def _get_progress_to_next_level(score):
     return None, 0.0
 
 
-class Achievements:
+class Achievements(BasePage):
     """
     Class created to view user achievements.
     """
@@ -67,27 +67,17 @@ class Achievements:
         """
         Main window for achievements initialised.
         """
-        self.root = root
-        self.user = user
+        self._load_user_stats_before_ui(user)
 
-        self._configure_window()
-        self._create_main_frame()
-        self._load_user_stats()
-        self._build_ui()
+        # Call parent constructor
+        super().__init__(root, user, "Achievements")
 
-    def _configure_window(self):
-        self.root.geometry("490x630")
-        self.root.title("ReHealth")
-
-    def _create_main_frame(self):
-        self.achieveframe = tb.Frame(self.root)
-        self.achieveframe.place(relx=0.5, rely=0, anchor="n")
-
-    def _load_user_stats(self):
-        self.total_steps = get_total_steps(self.user.user_id)
-        self.total_cals = get_total_calories(self.user.user_id)
-        self.total_sleep = get_total_sleep_hours(self.user.user_id)
-        self.total_weight = get_total_weight_lifted(self.user.user_id)
+    def _load_user_stats_before_ui(self, user):
+        """Load user stats that are needed before building UI"""
+        self.total_steps = get_total_steps(user.user_id)
+        self.total_cals = get_total_calories(user.user_id)
+        self.total_sleep = get_total_sleep_hours(user.user_id)
+        self.total_weight = get_total_weight_lifted(user.user_id)
 
         self.user_score = calculate_lifetime_score(
             self.total_steps,
@@ -103,14 +93,14 @@ class Achievements:
         bar_colour = _get_progress_bar_colour(self.user_rank)
 
         self.achieve_label = tb.Label(
-            self.achieveframe,
+            self.frame,
             text=f"{self.user.username}'s Hall of Fame",
             font=("roboto", 18, "bold"),
         )
         self.achieve_label.grid(row=0, column=0, pady=(20, 30), sticky="n")
 
         self.ranking_label = tb.Label(
-            self.achieveframe,
+            self.frame,
             text=f"Current Rank: {self.user_rank}",
             font=("roboto", 14, "bold"),
         )
@@ -118,14 +108,14 @@ class Achievements:
 
         if next_rank_name is not None:
             self.progress_text_label = tb.Label(
-                self.achieveframe,
+                self.frame,
                 text=f"Progress to {next_rank_name}: {progress_percent:.1f}%",
                 font=("roboto", 12),
             )
             self.progress_text_label.grid(row=2, column=0, pady=(5, 5), sticky="n")
 
             self.progress_bar = tb.Progressbar(
-                self.achieveframe,
+                self.frame,
                 orient="horizontal",
                 mode="determinate",
                 length=300,
@@ -136,55 +126,55 @@ class Achievements:
             self.progress_bar["value"] = progress_percent
         else:
             self.progress_text_label = tb.Label(
-                self.achieveframe,
+                self.frame,
                 text="You are the #1 ReHealth User!",
                 font=("roboto", 12, "bold"),
             )
             self.progress_text_label.grid(row=2, column=0, pady=(5, 20), sticky="n")
 
         self.steps_label = tb.Label(
-            self.achieveframe,
+            self.frame,
             text=f"Total Steps Taken: {self.total_steps:,}",
             font=("roboto", 14, "bold"),
         )
         self.steps_label.grid(row=5, column=0, pady=10, sticky="n")
 
         self.cals_label = tb.Label(
-            self.achieveframe,
+            self.frame,
             text=f"Total Calories Burnt: {self.total_cals:,}",
             font=("roboto", 14, "bold"),
         )
         self.cals_label.grid(row=6, column=0, pady=10, sticky="n")
 
         self.sleep_label = tb.Label(
-            self.achieveframe,
+            self.frame,
             text=f"Total Hours Slept: {self.total_sleep:.0f}",
             font=("roboto", 14, "bold"),
         )
         self.sleep_label.grid(row=7, column=0, pady=10, sticky="n")
 
         self.weight_label = tb.Label(
-            self.achieveframe,
+            self.frame,
             text=f"Total weight lifted: {self.total_weight:.0f}kg",
             font=("roboto", 14, "bold"),
         )
         self.weight_label.grid(row=8, column=0, pady=10, sticky="n")
 
         self.dash_button = tb.Button(
-            self.achieveframe,
+            self.frame,
             text="Back to Dashboard",
             command=self.return_to_dash,
             width=22,
         )
         self.dash_button.grid(row=9, column=0, pady=(200, 10), sticky="n")
 
-        self.achieveframe.grid_rowconfigure(9, minsize=200)
+        self.frame.grid_rowconfigure(9, minsize=200)
 
     def return_to_dash(self):
         """
         Returns to the dashboard screen.
         """
-        return_to_dashboard(self.achieveframe, self.root, self.user)
+        return_to_dashboard(self.frame, self.root, self.user)
 
 
 if __name__ == "__main__":

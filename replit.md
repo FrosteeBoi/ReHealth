@@ -50,7 +50,7 @@ The application is configured to run as a desktop app in the Replit environment:
 
 - Main command: `python main.py`
 - The workflow "ReHealth Desktop App" is configured for console output
-- Database is automatically initialized on first run
+- Database is automatically initialised on first run
 
 ## Dependencies
 

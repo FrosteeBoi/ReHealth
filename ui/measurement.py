@@ -11,7 +11,7 @@ import ttkbootstrap as tb
 from db.db_handler import save_metrics, get_all_days_metrics
 from logic.calculations import bmi_calc, bmi_status
 from logic.user import User
-from ui.ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard, BasePage
 
 
 def _validate_positive_float(raw: str, field_name: str, unit_hint: str) -> tuple[bool, float, str]:
@@ -52,13 +52,11 @@ def _make_metric_logs_dir() -> str:
     return directory
 
 
-def _build_metrics_filename(username: str) -> str:
+def _build_metrics_filename() -> str:
     """
     Build a dated metrics log filename.
     """
     current_date = datetime.now().strftime("%d-%m-%Y")
-    # Keep your original naming, but you can include username if you want:
-    # return os.path.join(_make_metric_logs_dir(), f"{username}_metric_log_{current_date}.txt")
     return os.path.join(_make_metric_logs_dir(), f"metric_log_{current_date}.txt")
 
 
@@ -78,7 +76,7 @@ def _write_metrics_log(filename: str, username: str, records: list[tuple]) -> No
 
         for record in records:
             date, height, weight = record
-            bmi = bmi_calc(str(weight), str(height))
+            bmi = bmi_calc(weight, height)
             status = bmi_status(bmi)
 
             file.write(f"Date: {date}\n")
@@ -88,30 +86,17 @@ def _write_metrics_log(filename: str, username: str, records: list[tuple]) -> No
             file.write("-" * 60 + "\n")
 
 
-class Measurement:
+class Measurement(BasePage):
     """GUI screen for recording height/weight and calculating BMI + exporting history."""
 
     def __init__(self, root: tb.Window, user: User) -> None:
-        self.root = root
-        self.user = user
-
-        self._configure_window()
-        self._create_main_frame()
-        self._initialize_state()
-        self._build_ui()
-
-    def _configure_window(self) -> None:
-        self.root.geometry("490x630")
-        self.root.title("ReHealth")
-
-    def _create_main_frame(self) -> None:
-        self.measureframe = tb.Frame(self.root)
-        self.measureframe.place(relx=0.5, rely=0, anchor="n")
-
-    def _initialize_state(self) -> None:
+        # Initialise state
         self.height_val: float = 0.0
         self.weight_val: float = 0.0
         self.bmi_val: float = 0.0
+
+        # Call parent constructor
+        super().__init__(root, user, "Measurement")
 
     def _build_ui(self) -> None:
         self._create_labels()
@@ -120,28 +105,28 @@ class Measurement:
 
     def _create_labels(self) -> None:
         self.measure_label = tb.Label(
-            self.measureframe,
+            self.frame,
             text=f"{self.user.username}'s Measurements",
             font=("roboto", 18, "bold"),
         )
         self.measure_label.grid(row=0, column=0, pady=(20, 30), columnspan=3, padx=20)
 
         self.height_value_label = tb.Label(
-            self.measureframe,
+            self.frame,
             text="Height: 0 cm",
             font=("roboto", 14),
         )
         self.height_value_label.grid(row=1, column=0, columnspan=3, pady=(10, 10), padx=20)
 
         self.weight_value_label = tb.Label(
-            self.measureframe,
+            self.frame,
             text="Weight: 0 kg",
             font=("roboto", 14),
         )
         self.weight_value_label.grid(row=2, column=0, columnspan=3, pady=(10, 10), padx=20)
 
         self.bmi_label = tb.Label(
-            self.measureframe,
+            self.frame,
             text="BMI: 0",
             font=("roboto", 14),
         )
@@ -149,42 +134,42 @@ class Measurement:
 
     def _create_input_section(self) -> None:
         self.height_label = tb.Label(
-            self.measureframe,
+            self.frame,
             text="Record Your Height (cm):",
             font=("roboto", 14),
         )
         self.height_label.grid(row=4, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
-        self.height_entry = tb.Entry(self.measureframe, width=15)
+        self.height_entry = tb.Entry(self.frame, width=15)
         self.height_entry.grid(row=4, column=1, padx=(10, 10), pady=(10, 10), columnspan=2)
 
         self.weight_label = tb.Label(
-            self.measureframe,
+            self.frame,
             text="Record Your Weight (kg):",
             font=("roboto", 14),
         )
         self.weight_label.grid(row=5, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
-        self.weight_entry = tb.Entry(self.measureframe, width=15)
+        self.weight_entry = tb.Entry(self.frame, width=15)
         self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10), columnspan=2)
 
     def _create_buttons(self) -> None:
         self.bmi_calc_button = tb.Button(
-            self.measureframe,
+            self.frame,
             text="Calculate BMI",
             command=self.calculate_and_save_bmi,
         )
         self.bmi_calc_button.grid(row=6, column=0, columnspan=1, pady=(30, 10), padx=10)
 
         self.download_button = tb.Button(
-            self.measureframe,
+            self.frame,
             text="Download Measurement History",
             command=self.download_records,
         )
         self.download_button.grid(row=6, column=1, columnspan=2, pady=(30, 10), padx=10)
 
         self.dash_button = tb.Button(
-            self.measureframe,
+            self.frame,
             text="Back to Dashboard",
             command=self.return_to_dash,
         )
@@ -222,7 +207,7 @@ class Measurement:
         self.height_val = height_cm
         self.weight_val = weight_kg
 
-        bmi_value = bmi_calc(str(weight_kg), str(height_cm))
+        bmi_value = bmi_calc(weight_kg, height_cm)
         self.bmi_val = bmi_value
 
         self.height_value_label.config(text=f"Height: {self.height_val} cm")
@@ -247,7 +232,7 @@ class Measurement:
                 messagebox.showinfo("No Records", "No measurement records found for this user.")
                 return
 
-            filename = _build_metrics_filename(self.user.username)
+            filename = _build_metrics_filename()
             _write_metrics_log(filename, self.user.username, records)
 
             messagebox.showinfo("Success", f"Records downloaded successfully to {filename}")
@@ -257,7 +242,7 @@ class Measurement:
 
     def return_to_dash(self) -> None:
         """Returns to the dashboard screen."""
-        return_to_dashboard(self.measureframe, self.root, self.user)
+        return_to_dashboard(self.frame, self.root, self.user)
 
 
 if __name__ == "__main__":

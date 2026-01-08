@@ -17,9 +17,9 @@ def main():
     """
     Main function to launch the ReHealth application
     """
-    # Initialize the database
-    from db.db_make import initialize_db
-    initialize_db()
+    # Initialise the database
+    from db.db_make import initialise_db
+    initialise_db()
 
     # Create the main window and start the application
     root = tb.Window(themename="darkly")

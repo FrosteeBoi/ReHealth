@@ -3,11 +3,10 @@
 from tkinter import messagebox
 
 import ttkbootstrap as tb
-from matplotlib.figure import Figure
 
 from db.db_handler import save_food, get_last_7_days_calories_convert
 from logic.user import User
-from ui.ui_handler import return_to_dashboard, GraphTemplate
+from ui.ui_handler import return_to_dashboard, GraphTemplate, BasePage
 
 
 MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack"]
@@ -69,8 +68,7 @@ def validate_meal_type(meal_type: str) -> tuple[bool, str]:
     return True, ""
 
 
-
-class Food:
+class Food(BasePage):
     """Food tracking screen: validates meal input, saves calories to the database, and displays a 7-day graph."""
 
     def __init__(self, root: tb.Window, user: User) -> None:
@@ -79,22 +77,8 @@ class Food:
             root: Main application window.
             user: Logged-in user (used for user_id and username).
         """
-        self.root = root
-        self.user = user
-
-        self._configure_window()
-        self._create_main_frame()
-        self._build_ui()
-
-    def _configure_window(self) -> None:
-        """Configure window size and title."""
-        self.root.geometry("490x630")
-        self.root.title("ReHealth")
-
-    def _create_main_frame(self) -> None:
-        """Create and position the main frame."""
-        self.foodframe = tb.Frame(self.root)
-        self.foodframe.place(relx=0.5, rely=0, anchor="n")
+        # Call parent constructor
+        super().__init__(root, user, "Food")
 
     def _build_ui(self) -> None:
         """Build all UI components."""
@@ -106,7 +90,7 @@ class Food:
     def _create_title(self) -> None:
         """Create the main title label."""
         self.food_label = tb.Label(
-            self.foodframe,
+            self.frame,
             text=f"{self.user.username}'s Food",
             font=("roboto", 18, "bold")
         )
@@ -116,36 +100,36 @@ class Food:
         """Create the food name, calorie, and meal type input fields."""
         # Food name input
         self.food_entry_label = tb.Label(
-            self.foodframe,
+            self.frame,
             text="Food Name:",
             font=("roboto", 14)
         )
         self.food_entry_label.grid(row=1, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
-        self.food_textbox = tb.Entry(self.foodframe, width=25)
+        self.food_textbox = tb.Entry(self.frame, width=25)
         self.food_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 20), sticky="w")
 
         # Calorie input
         self.calorie_label = tb.Label(
-            self.foodframe,
+            self.frame,
             text="Calorie Amount:",
             font=("roboto", 14)
         )
         self.calorie_label.grid(row=2, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
-        self.calorie_textbox = tb.Entry(self.foodframe, width=25)
+        self.calorie_textbox = tb.Entry(self.frame, width=25)  # Changed from self.foodframe
         self.calorie_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 20), sticky="w")
 
         # Meal type selection
         self.meal_type_label = tb.Label(
-            self.foodframe,
+            self.frame,
             text="Meal Type:",
             font=("roboto", 14)
         )
         self.meal_type_label.grid(row=3, column=0, pady=(10, 10), padx=(20, 10), sticky="e")
 
         self.meal_type_combobox = tb.Combobox(
-            self.foodframe,
+            self.frame,
             values=MEAL_TYPE_OPTIONS,
             width=23
         )
@@ -154,21 +138,21 @@ class Food:
     def _create_add_button(self) -> None:
         """Create the button to add food to database."""
         self.db_add_button = tb.Button(
-            self.foodframe,
+            self.frame,
             text="Add to Database",
             command=self.database_inc
         )
         self.db_add_button.grid(row=4, column=0, pady=(30, 10), columnspan=2)
 
     def _create_graph_section(self) -> None:
-        """Create the graph frame and initialize the graph widget."""
-        self.graph_frame = tb.Frame(self.foodframe)
+        """Create the graph frame and initialise the graph widget."""
+        self.graph_frame = tb.Frame(self.frame)
         self.graph_frame.grid(row=5, column=0, columnspan=2, pady=0, padx=20)
 
         self.calorie_graph = CalorieGraph(
             self.graph_frame,
             self.user,
-            self.foodframe,
+            self.frame,
             self.root
         )
 
@@ -202,11 +186,11 @@ class Food:
             return
 
         try:
-            self.__save_and_update(foodname, calorie_amount, meal_type)
+            self._save_and_update(foodname, calorie_amount, meal_type)
         except Exception as e:
             messagebox.showerror("Database Error", f"Failed to save to database: {str(e)}")
 
-    def __save_and_update(self, foodname: str, calorie_amount: str, meal_type: str) -> None:
+    def _save_and_update(self, foodname: str, calorie_amount: str, meal_type: str) -> None:
         """
         Saves food entry to database and updates UI.
 

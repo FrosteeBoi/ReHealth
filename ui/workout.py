@@ -8,7 +8,7 @@ import ttkbootstrap as tb
 
 from db.db_handler import save_workout, get_all_workouts
 from logic.user import User
-from ui.ui_handler import return_to_dashboard
+from ui.ui_handler import return_to_dashboard, BasePage
 
 
 def validate_exercise_name(exercise_name: str) -> tuple[bool, str]:
@@ -105,7 +105,7 @@ def validate_reps(reps_input: str) -> tuple[bool, int, str]:
     return True, reps_val, ""
 
 
-class Workouts:
+class Workouts(BasePage):
     """Workout tracking screen: validates exercise input, saves to database, and exports workout history."""
 
     def __init__(self, root: tb.Window, user: User) -> None:
@@ -114,30 +114,14 @@ class Workouts:
             root: Main application window.
             user: Logged-in user (used for user_id and username).
         """
-        self.root = root
-        self.user = user
-
-        self._configure_window()
-        self._create_main_frame()
-        self._initialize_state()
-        self._build_ui()
-
-    def _configure_window(self) -> None:
-        """Configure window size and title."""
-        self.root.geometry("490x630")
-        self.root.title("ReHealth")
-
-    def _create_main_frame(self) -> None:
-        """Create and position the main frame."""
-        self.workoutframe = tb.Frame(self.root)
-        self.workoutframe.place(relx=0.5, rely=0, anchor="n")
-
-    def _initialize_state(self) -> None:
-        """Initialize instance variables for tracking exercise data."""
+        # Initialise state
         self.exercise_name = None
         self.exercise_weight = None
         self.exercise_reps = None
         self.exercise_sets = None
+
+        # Call parent constructor
+        super().__init__(root, user, "Workouts")
 
     def _build_ui(self) -> None:
         """Build all UI components."""
@@ -149,7 +133,7 @@ class Workouts:
     def _create_title(self) -> None:
         """Create the main title label."""
         self.workout_label = tb.Label(
-            self.workoutframe,
+            self.frame,
             text=f"{self.user.username}'s Workouts",
             font=("roboto", 18, "bold")
         )
@@ -159,51 +143,51 @@ class Workouts:
         """Create all input fields for exercise data."""
         # Exercise Name Section
         self.name_label = tb.Label(
-            self.workoutframe,
+            self.frame,
             text="Exercise Name:",
             font=("roboto", 14)
         )
         self.name_label.grid(row=1, column=0, pady=(10, 10), sticky="e", padx=(20, 10))
 
-        self.name_textbox = tb.Entry(self.workoutframe, width=20)
+        self.name_textbox = tb.Entry(self.frame, width=20)
         self.name_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 20), columnspan=2)
 
         # Weight Section
         self.weight_label = tb.Label(
-            self.workoutframe,
+            self.frame,
             text="Weight (Kg):",
             font=("roboto", 14)
         )
         self.weight_label.grid(row=2, column=0, pady=(10, 10), sticky="e", padx=(20, 10))
 
-        self.weight_textbox = tb.Entry(self.workoutframe, width=20)
+        self.weight_textbox = tb.Entry(self.frame, width=20)
         self.weight_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 20), columnspan=2)
 
         # Sets Section
         self.sets_label = tb.Label(
-            self.workoutframe,
+            self.frame,
             text="Sets:",
             font=("roboto", 14)
         )
         self.sets_label.grid(row=3, column=0, pady=(10, 10), sticky="e", padx=(20, 10))
 
-        self.sets_textbox = tb.Entry(self.workoutframe, width=20)
+        self.sets_textbox = tb.Entry(self.frame, width=20)
         self.sets_textbox.grid(row=3, column=1, pady=(10, 10), padx=(10, 20), columnspan=2)
 
         # Reps Section
         self.reps_label = tb.Label(
-            self.workoutframe,
+            self.frame,
             text="Reps:",
             font=("roboto", 14)
         )
         self.reps_label.grid(row=4, column=0, pady=(10, 10), sticky="e", padx=(20, 10))
 
-        self.reps_textbox = tb.Entry(self.workoutframe, width=20)
+        self.reps_textbox = tb.Entry(self.frame, width=20)
         self.reps_textbox.grid(row=4, column=1, pady=(10, 10), padx=(10, 10), columnspan=2)
 
     def _create_action_buttons(self) -> None:
         """Create the log workout and download buttons."""
-        self.button_frame = tb.Frame(self.workoutframe)
+        self.button_frame = tb.Frame(self.frame)
         self.button_frame.grid(row=5, column=0, columnspan=3, pady=(30, 10))
 
         self.exercise_add_button = tb.Button(
@@ -223,7 +207,7 @@ class Workouts:
     def _create_dashboard_button(self) -> None:
         """Create the back to dashboard button."""
         self.dash_button = tb.Button(
-            self.workoutframe,
+            self.frame,
             text="Back to Dashboard",
             command=self.return_to_dash
         )
@@ -375,7 +359,7 @@ class Workouts:
         """
         Returns to the dashboard screen.
         """
-        return_to_dashboard(self.workoutframe, self.root, self.user)
+        return_to_dashboard(self.frame, self.root, self.user)
 
 
 if __name__ == "__main__":

@@ -10,37 +10,24 @@ from ui.sleep import Sleep
 from ui.steps import Steps
 from ui.workout import Workouts
 from ui.achievements import Achievements
+from ui.ui_handler import BasePage
 
 
-class Dashboard:
+class Dashboard(BasePage):
     """
     Dashboard class that displays user metrics and allows navigation to other windows.
     """
 
     def __init__(self, root: tb.Window, user: User) -> None:
         """
-        Initializes the dashboard GUI.
+        Initialises the dashboard GUI.
 
         Args:
             root: Main application window.
             user: Logged-in user (used for user_id and username).
         """
-        self.root = root
-        self.user = user
-
-        self._configure_window()
-        self._create_main_frame()
-        self._build_ui()
-
-    def _configure_window(self) -> None:
-        """Configure window size and title."""
-        self.root.geometry("490x630")
-        self.root.title("ReHealth")
-
-    def _create_main_frame(self) -> None:
-        """Create and position the main frame."""
-        self.dashframe = tb.Frame(self.root)
-        self.dashframe.place(relx=0.5, rely=0, anchor="n")
+        # Call parent constructor
+        super().__init__(root, user, "Dashboard")
 
     def _build_ui(self) -> None:
         """Build all UI components."""
@@ -52,7 +39,7 @@ class Dashboard:
     def _create_welcome_label(self) -> None:
         """Create the welcome label with username."""
         self.dash_label = tb.Label(
-            self.dashframe,
+            self.frame,
             text=f"Hello {self.user.username}",
             font=("roboto", 18, "bold")
         )
@@ -67,7 +54,7 @@ class Dashboard:
 
         # Steps display
         self.dash_steps = tb.Label(
-            self.dashframe,
+            self.frame,
             text=f"Steps: {steps}",
             font=("roboto", 14)
         )
@@ -75,7 +62,7 @@ class Dashboard:
 
         # Calories display
         self.dash_cals = tb.Label(
-            self.dashframe,
+            self.frame,
             text=f"Calories: {calories}",
             font=("roboto", 14)
         )
@@ -83,7 +70,7 @@ class Dashboard:
 
         # Sleep score display
         self.dash_sleep = tb.Label(
-            self.dashframe,
+            self.frame,
             text=f"SleepScore: {round(sleep, 2) * 100}%",
             font=("roboto", 14)
         )
@@ -92,7 +79,7 @@ class Dashboard:
     def _create_achievements_button(self) -> None:
         """Create the achievements button."""
         self.achievements_button = tb.Button(
-            self.dashframe,
+            self.frame,
             text="Achievements",
             command=self.show_achievements,
             width=13
@@ -102,7 +89,7 @@ class Dashboard:
     def _create_navigation_tabs(self) -> None:
         """Create the navigation tab buttons at the bottom."""
         # Create tab frame
-        self.tab_frame = tb.Frame(self.dashframe)
+        self.tab_frame = tb.Frame(self.frame)
         self.tab_frame.grid(row=4, column=0, pady=(390, 20))
 
         # Create individual tab buttons
@@ -150,32 +137,32 @@ class Dashboard:
 
     def show_measurements(self) -> None:
         """Opens the measurement tab."""
-        self.dashframe.destroy()
+        self.frame.destroy()
         Measurement(self.root, self.user)
 
     def show_food(self) -> None:
         """Opens the Food tab."""
-        self.dashframe.destroy()
+        self.frame.destroy()
         Food(self.root, self.user)
 
     def show_workouts(self) -> None:
         """Display the Workouts tab."""
-        self.dashframe.destroy()
+        self.frame.destroy()
         Workouts(self.root, self.user)
 
     def show_sleep(self) -> None:
         """Opens the Sleep tab."""
-        self.dashframe.destroy()
+        self.frame.destroy()
         Sleep(self.root, self.user)
 
     def show_steps(self) -> None:
         """Opens the steps tab."""
-        self.dashframe.destroy()
+        self.frame.destroy()
         Steps(self.root, self.user)
 
     def show_achievements(self) -> None:
         """Opens the Achievements tab."""
-        self.dashframe.destroy()
+        self.frame.destroy()
         Achievements(self.root, self.user)
 
 

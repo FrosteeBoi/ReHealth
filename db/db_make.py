@@ -21,7 +21,7 @@ import sqlite3
 from db.db_handler import get_db_connection
 
 
-def initialize_db():
+def initialise_db():
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
@@ -99,4 +99,4 @@ def initialize_db():
 
 
 if __name__ == "__main__":
-    initialize_db()
+    initialise_db()
