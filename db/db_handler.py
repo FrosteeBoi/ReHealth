@@ -433,6 +433,7 @@ def get_total_sleep_hours(user_id):
 
     return float(result[0]) if result and result[0] is not None else 0.0
 
+
 def get_total_weight_lifted(user_id):
     """
     Returns lifetime weight lifted.
@@ -441,7 +442,7 @@ def get_total_weight_lifted(user_id):
     cursor = connection.cursor()
 
     cursor.execute("""
-            SELECT SUM(Weight)
+            SELECT SUM(Weight * Sets * Reps)
             FROM Exercises
             WHERE UserID = ?
         """, (user_id,))

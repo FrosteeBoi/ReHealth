@@ -376,4 +376,95 @@ class App:
         """
         Validates registration inputs and creates a new user record.
         """
-        username_input = self.username_
+        username_input = self.username_entry.get().strip()
+        password_input = self.password_entry.get().strip()
+        sex_input = self.sex_combobox.get().strip()
+
+        # Validate username
+        username_valid, username_error = validate_username(username_input)
+        if not username_valid:
+            messagebox.showerror("Error", username_error)
+            return
+
+        # Validate password
+        password_valid, password_error = validate_password(password_input)
+        if not password_valid:
+            messagebox.showerror("Error", password_error)
+            return
+
+        # Validate sex
+        sex_valid, sex_error = validate_sex(sex_input)
+        if not sex_valid:
+            messagebox.showerror("Error", sex_error)
+            return
+
+        # Validate date of birth
+        try:
+            day = int(self.day_spinbox.get())
+            month = self.month_combobox.current() + 1
+            year = int(self.year_spinbox.get())
+        except ValueError:
+            messagebox.showerror("Error", "Please enter valid date values.")
+            return
+
+        dob_valid, dob_date, dob_error = validate_date_of_birth(day, month, year)
+        if not dob_valid:
+            messagebox.showerror("Error", dob_error)
+            return
+
+        # Check if username already exists
+        if check_username_exists(username_input):
+            messagebox.showerror("Error", "Username already exists. Please choose another.")
+            return
+
+        try:
+            self._create_user(username_input, password_input, sex_input, dob_date)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to register user: {e}")
+
+    def _create_user(self, username: str, password: str, sex: str, dob: date) -> None:
+        """
+        Creates a new user and saves to database.
+
+        Args:
+            username: User's chosen username.
+            password: User's password (will be hashed).
+            sex: User's biological sex.
+            dob: User's date of birth.
+        """
+        today = date.today()
+        hashed_password = User.password_hasher(password)
+
+        new_user = User(username, hashed_password, sex, dob, today)
+        save_user_to_db(new_user)
+
+        messagebox.showinfo("Success", "Registration complete! You can now log in.")
+
+        # Return to login view
+        self._hide_registration_fields()
+        self._clear_all_fields()
+        self.username_entry.focus()
+
+    def _hide_registration_fields(self) -> None:
+        """Hides registration-specific fields and shows login button."""
+        self.sex_label.grid_forget()
+        self.sex_combobox.grid_forget()
+        self.dob_label.grid_forget()
+        self.dob_frame.grid_forget()
+        self.register_button.grid_forget()
+
+        self.login_button.grid(row=6, column=0, pady=10, padx=10, sticky="ew")
+
+    def _clear_all_fields(self) -> None:
+        """Clears all input fields."""
+        self.username_entry.delete(0, 'end')
+        self.password_entry.delete(0, 'end')
+        self.sex_combobox.set('')
+        self.day_spinbox.set(1)
+        self.month_combobox.current(0)
+        self.year_spinbox.set(2000)
+
+    if __name__ == "__main__":
+        root = tb.Window(themename="darkly")
+        app = App(root)
+        root.mainloop()
