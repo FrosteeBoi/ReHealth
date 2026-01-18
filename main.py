@@ -21,6 +21,7 @@ def main():
     from db.db_make import initialise_db
     initialise_db()
 
+
     # Create the main window and start the application
     root = tb.Window(themename="darkly")
     app = App(root)

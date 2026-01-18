@@ -91,7 +91,7 @@ def calories_burnt(steps, weight_kg):
     if weight_kg == 0.0:
         calories = distance_km * 50
     else:
-        calories = weight_kg * distance_km * 1
+        calories = weight_kg * distance_km
 
     return round(calories, 2)
 
@@ -116,9 +116,9 @@ def calculate_lifetime_score(lifetime_steps, lifetime_sleep_hours, lifetime_weig
     sleep_points = lifetime_sleep_hours / sleep_ratio
     weight_points = lifetime_weight / weight_ratio
 
-    step_weight = 0.4  # Steps: 40%
-    sleep_weight = 0.3  # Sleep: 30%
-    weight_weight = 0.3  # Weight lifting: 30%
+    step_weight = 0.45  # Steps: 45%
+    sleep_weight = 0.45  # Sleep: 45%
+    weight_weight = 0.1  # Weight lifting: 10%
 
     # Calculate weighted score
     raw_score = (
