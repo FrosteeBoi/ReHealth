@@ -105,6 +105,7 @@ class GraphTemplate(ABC):
         """Return to dashboard"""
         return_to_dashboard(self.parent_frame, self.root, self.user)
 
+
 class BasePage(ABC):
     """Base class for ui in Rehealth pages"""
 

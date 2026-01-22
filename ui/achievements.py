@@ -2,11 +2,10 @@ import ttkbootstrap as tb
 
 from db.db_handler import (
     get_total_steps,
-    get_total_calories,
     get_total_sleep_hours,
     get_total_weight_lifted,
 )
-from logic.calculations import get_rehealth_level, calculate_lifetime_score
+from logic.calculations import get_rehealth_level, calculate_lifetime_score, calories_burnt
 from logic.user import User
 from ui.ui_handler import return_to_dashboard, BasePage
 
