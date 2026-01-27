@@ -26,7 +26,7 @@ def sleep_calc(sleep_duration, sleep_quality):
     Calculates a balanced sleep rating between 0 and 1.
     Args:
         sleep_duration (float): Hours slept (0-24).
-        sleep_quality (int): Subjective quality rating (1-5).
+        sleep_quality (float): Subjective quality rating (1-5).
             1 = Poor sleep
             5 = Excellent sleep
 

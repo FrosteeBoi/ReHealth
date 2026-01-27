@@ -24,14 +24,10 @@ def _validate_step_input(steps_text: str) -> tuple[bool, int, str]:
     if not steps_text:
         return False, 0, "Please enter your steps."
 
-    if not steps_text.isdigit():
-        return False, 0, "Please enter your steps as a whole number."
+    if not steps_text.isdigit() or int(steps_text) > 500000:
+        return False, 0, "Please enter your steps as a realistic, positive whole number."
 
     steps_value = int(steps_text)
-
-    if steps_value < 0:
-        return False, 0, "Steps cannot be negative."
-
     return True, steps_value, ""
 
 

@@ -4,6 +4,7 @@ from db.db_handler import (
     get_total_steps,
     get_total_sleep_hours,
     get_total_weight_lifted,
+    get_weight
 )
 from logic.calculations import get_rehealth_level, calculate_lifetime_score, calories_burnt
 from logic.user import User
@@ -74,7 +75,7 @@ class Achievements(BasePage):
     def _load_user_stats_before_ui(self, user):
         """Load user stats that are needed before building UI"""
         self.total_steps = get_total_steps(user.user_id)
-        self.total_cals = get_total_calories(user.user_id)
+        self.total_cals = round(calories_burnt(self.total_steps, get_weight(user.user_id)))
         self.total_sleep = get_total_sleep_hours(user.user_id)
         self.total_weight = get_total_weight_lifted(user.user_id)
 

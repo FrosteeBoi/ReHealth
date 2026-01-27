@@ -8,7 +8,6 @@ from db.db_handler import save_food, get_last_7_days_calories_convert
 from logic.user import User
 from ui.ui_handler import return_to_dashboard, GraphTemplate, BasePage
 
-
 MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack"]
 
 
@@ -44,6 +43,9 @@ def validate_calorie_amount(calorie_input: str) -> tuple[bool, str]:
 
     if not calorie_input.isdigit():
         return False, "Calorie amount must be a number."
+
+    if int(calorie_input) > 10000:
+        return False, "Calorie amount must be under 10,000 calories"
 
     return True, ""
 

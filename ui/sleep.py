@@ -33,7 +33,7 @@ def validate_sleep_hours(hours_input: str) -> tuple[bool, float, str]:
         return False, 0.0, "Please enter a valid number of hours (0-24)."
 
 
-def validate_sleep_quality(quality_input: str) -> tuple[bool, int, str]:
+def validate_sleep_quality(quality_input: str) -> tuple[bool, float, str]:
     """
     Validates the sleep quality input from the user.
 
@@ -48,15 +48,15 @@ def validate_sleep_quality(quality_input: str) -> tuple[bool, int, str]:
         return False, 0, "Please enter a valid sleep quality (1-5)."
 
     try:
-        quality = int(quality_input)
+        quality = float(quality_input)
         if quality < 1 or quality > 5:
-            return False, 0, "Please enter a valid sleep quality (1-5)."
+            return False, 0, "Please enter a valid positive sleep quality (1-5)."
         return True, quality, ""
     except ValueError:
         return False, 0, "Please enter a valid sleep quality (1-5)."
 
 
-def calculate_sleep_rating(duration: float, quality: int) -> float:
+def calculate_sleep_rating(duration: float, quality: float) -> float:
     """
     Calculates a sleep rating based on duration and quality.
 

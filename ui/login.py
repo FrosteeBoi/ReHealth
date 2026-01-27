@@ -42,7 +42,7 @@ def validate_username(username: str) -> tuple[bool, str]:
         If valid, error_message is empty.
     """
     if not re.match(r"^[A-Za-z0-9_.]{3,20}$", username):
-        return False, "Username must be 3-20 characters, letters, numbers, underscores, or dots."
+        return False, "Username must be between 3-20 characters inclusive, letters, numbers, underscores, or dots."
     return True, ""
 
 
@@ -58,7 +58,7 @@ def validate_password(password: str) -> tuple[bool, str]:
         If valid, error_message is empty.
     """
     if len(password) < 8 or len(password) > 20:
-        return False, "Password must be between 8 and 20 characters."
+        return False, "Password must be between 8 and 20 characters inclusive."
 
     password_score = 0
     if re.search(r"[A-Z]", password):

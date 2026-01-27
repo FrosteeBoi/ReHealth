@@ -52,12 +52,13 @@ def _make_metric_logs_dir() -> str:
     return directory
 
 
-def _build_metrics_filename() -> str:
+def _build_metrics_filename(username: str) -> str:
     """
-    Build a dated metrics log filename.
+    Args:
+        username: The user's username to include in the filename.
     """
     current_date = datetime.now().strftime("%d-%m-%Y")
-    return os.path.join(_make_metric_logs_dir(), f"metric_log_{current_date}.txt")
+    return os.path.join(_make_metric_logs_dir(), f"{username}_metric_log_{current_date}.txt")
 
 
 def _write_metrics_log(filename: str, username: str, records: list[tuple]) -> None:
@@ -183,14 +184,14 @@ class Measurement(BasePage):
         weight_text = self.weight_entry.get()
 
         ok_h, height, err_h = _validate_positive_float(height_text, "height", "cm")
-        if not ok_h:
-            messagebox.showerror("Invalid Input", err_h)
+        if not ok_h or height > 300 or height < 1:
+            messagebox.showerror("Invalid Input", "Height must be a positive number between 1cm and 300cm")
             self.height_entry.focus()
             return
 
         ok_w, weight, err_w = _validate_positive_float(weight_text, "weight", "kg")
-        if not ok_w:
-            messagebox.showerror("Invalid Input", err_w)
+        if not ok_w or weight > 750 or weight < 1:
+            messagebox.showerror("Invalid Input", "Weight must be a positive number between 1kg and 750kg.")
             self.weight_entry.focus()
             return
 
@@ -232,7 +233,7 @@ class Measurement(BasePage):
                 messagebox.showinfo("No Records", "No measurement records found for this user.")
                 return
 
-            filename = _build_metrics_filename()
+            filename = _build_metrics_filename(self.user.username)
             _write_metrics_log(filename, self.user.username, records)
 
             messagebox.showinfo("Success", f"Records downloaded successfully to {filename}")
