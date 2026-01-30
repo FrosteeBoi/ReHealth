@@ -71,7 +71,7 @@ def validate_sets(sets_input: str) -> tuple[bool, int, str]:
         return False, 0, "Sets cannot be empty."
 
     if not sets_input.isdigit():
-        return False, 0, "Enter an integer, numerical value for sets."
+        return False, 0, "Enter an integer, numerical and positive value for sets."
 
     sets_val = int(sets_input)
     if sets_val < 1 or sets_val > 50:
@@ -95,7 +95,7 @@ def validate_reps(reps_input: str) -> tuple[bool, int, str]:
         return False, 0, "Reps cannot be empty."
 
     if not reps_input.isdigit():
-        return False, 0, "Enter an integer, numerical value for reps."
+        return False, 0, "Enter an integer, numerical and positive value for reps."
 
     reps_val = int(reps_input)
     if reps_val <1 or reps_val > 50:

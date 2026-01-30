@@ -6,7 +6,7 @@ db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "r
 
 
 def get_db_connection(enable_foreign_keys=False):
-    """Get a database connection with optional foreign key support"""
+    """Sets up database connection"""
     connection = sqlite3.connect(db_path)
     if enable_foreign_keys:
         connection.execute("PRAGMA foreign_keys = ON")
@@ -17,10 +17,12 @@ def save_user_to_db(user):
     """
     Saves a new user to the database
 
-    :param user: User object containing username, password, sex, date of birth, and join date
+    Args: user_id (int): The user's ID.
     """
     connection = get_db_connection()
     cursor = connection.cursor()
+
+    # Sets up database connection
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS User (
@@ -41,8 +43,9 @@ def save_user_to_db(user):
             """, (user.username, user.password, user.sex, user.dob, user.join_date))
             connection.commit()
             print("User successfully saved to database.")
-            break  # Exit loop on success
+            break  # Exit loop if user successfully saved
         except sqlite3.IntegrityError:
+            # Check for duplicate username
             print("Error: Username already exists. Please choose a different username.")
 
     connection.close()
@@ -52,9 +55,11 @@ def save_metrics(user_id, height, weight):
     """
     Saves user metrics to the database.
 
-    :param user_id: ID of the user
-    :param height: User's height
-    :param weight: User's weight
+    Args:
+
+    user_id: The user's ID.
+    height: The user's height
+    weight: The user's weight
     """
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
@@ -70,11 +75,13 @@ def save_metrics(user_id, height, weight):
 
 def save_steps(user_id, step_count, step_goal):
     """
-    Save the user's daily step data.
+    Save the user's daily step data to the database.
 
-    :param user_id: ID of the user
-    :param step_count: Number of steps taken
-    :param step_goal: Daily step goal
+    Args:
+
+    user_id: The user's ID.
+    step_count: Number of steps taken by the user
+    step_goal: Daily step goal
     """
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
@@ -92,9 +99,11 @@ def save_sleep(user_id, sleep_hours, sleep_quality=None):
     """
     Save the user's daily sleep data.
 
-    :param user_id: ID of the user
-    :param sleep_hours: Hours slept
-    :param sleep_quality: Optional rating of sleep quality
+    Args:
+
+    user_id: The user's ID
+    sleep_hours: Hours slept by the user
+    sleep_quality: User's objective sleep quality
     """
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
@@ -112,10 +121,12 @@ def save_food(user_id, food_name, calories, meal_type):
     """
     Save a user's food entry to the database.
 
-    :param user_id: ID of the user
-    :param food_name: Name of the food
-    :param calories: Number of calories
-    :param meal_type: Type of meal (e.g., breakfast, lunch, dinner, snack)
+    Args:
+
+    user_id: The user's ID
+    food_name: Name of the food
+    calories: Number of calories
+    meal_type: Type of meal
     """
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
@@ -133,11 +144,13 @@ def save_workout(user_id, exercise_name, weight, sets, reps):
     """
     Save a user's workout entry to the database.
 
-    :param user_id: ID of the user
-    :param exercise_name: Name of the exercise
-    :param weight: Weight lifted in kg
-    :param sets: Number of sets performed
-    :param reps: Number of reps per set
+    Args:
+
+    user_id: The user's ID
+    exercise_name: Name of the exercise
+    weight: Amount of weight lifted
+    sets: Number of sets performed
+    reps: Number of reps performed
     """
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
@@ -154,8 +167,11 @@ def save_workout(user_id, exercise_name, weight, sets, reps):
 def get_weight(user_id):
     """
     Fetches weight from the database
-    :param user_id:  ID of the user
-    :return: The weight the user recorded in the datbase
+
+    Args:
+    user_id:  The user's ID
+
+    Returns: The weight the user recorded in the database
     """
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -173,12 +189,12 @@ def get_weight(user_id):
 
 def get_last_7_days_steps(user_id):
     """
-    Fetches steps data for the last 7 days for a given user.
+    Fetches steps data for the last 7 days for the user
     """
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Gets today's date and calculate 7 days ago
+    # Gets today's date and calculates when 7 days ago was
     today = datetime.now().date()
     seven_days_ago = today - timedelta(days=6)
 
@@ -194,13 +210,13 @@ def get_last_7_days_steps(user_id):
     results = cursor.fetchall()
     connection.close()
 
-    # Creates a dictionary of dates and steps from database results
+    # Creates a dictionary and places dates and corresponding step counts
     steps_dict = {}
     for row in results:
         date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
         steps_dict[date_obj] = row[1]
 
-    # Fill in all 7 days (including days with no data)
+    # list of dates and steps each filled from dictionary
     dates = []
     steps = []
 
@@ -225,11 +241,17 @@ def get_last_7_days_steps_convert(user_id):
 def get_last_7_days_sleep(user_id):
     """
     Fetches sleep data for the last 7 days for a given user.
+
+    Args:
+        user_id: The user's ID
+
+    Returns:
+        numbers (1-7) and sleep
     """
     connection = get_db_connection()
     cursor = connection.cursor()
 
-    # Gets today's date and calculate 7 days ago
+    # Calculates the date that that was 7 days ago
     today = datetime.now().date()
     seven_days_ago = today - timedelta(days=6)
 
@@ -250,7 +272,7 @@ def get_last_7_days_sleep(user_id):
         date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
         sleep_dict[date_obj] = row[1]
 
-    # Fill in all 7 days (including days with no data)
+    # places dictionary values in two lists
     dates = []
     sleep_hours = []
 
@@ -264,7 +286,7 @@ def get_last_7_days_sleep(user_id):
 
 def get_last_7_days_sleep_convert(user_id):
     """
-    Converts dates to numbers for graph
+    Converts dates to numbers for the graph
     Returns day numbers (1-7) and sleep hours.
     """
     dates, sleep_hours = get_last_7_days_sleep(user_id)
@@ -275,6 +297,7 @@ def get_last_7_days_sleep_convert(user_id):
 def get_last_7_days_calories(user_id):
     """
     Fetches calorie data for the last 7 days for a given user.
+    Returns days 1-7 and calories
     """
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -301,7 +324,7 @@ def get_last_7_days_calories(user_id):
         date_obj = datetime.strptime(row[0], '%Y-%m-%d').date()
         calories_dict[date_obj] = row[1]
 
-    # Fill in all 7 days (including days with no data)
+    # Dictionary values are placed in two lists
     dates = []
     calories = []
 
@@ -329,7 +352,6 @@ def get_all_days_metrics(user_id):
     stored by the user from the database
     """
     try:
-        # Connect to database
         connection = get_db_connection()
         cursor = connection.cursor()
 
@@ -355,7 +377,6 @@ def get_all_workouts(user_id):
     stored by the user from the database
     """
     try:
-        # Connect to database
         connection = get_db_connection()
         cursor = connection.cursor()
 

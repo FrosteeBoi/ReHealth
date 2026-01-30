@@ -7,20 +7,18 @@ import sqlite3
 from db.db_handler import get_db_connection
 
 db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
+# database path set up
 
 
 def get_steps(user_id: int) -> int:
     """
-    Get the total number of steps recorded today for a specific user.
+    Fetch the user's total steps for today's date from the database.
 
-    Args:
-        user_id (int): The unique ID of the user.
+    Args: user_id (int): The user's ID.
 
-    Returns:
-        int: The total number of steps taken today. Returns 0 if no data exists.
+    Returns: The total number of steps the user took today.
 
-    Raises:
-        DatabaseError: If a database access error occurs.
+    Raises: DatabaseError: If a database error occurs.
     """
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -30,21 +28,22 @@ def get_steps(user_id: int) -> int:
     )
     result = cursor.fetchone()
     connection.close()
-    return result[0] if result and result[0] else 0
+    if result[0] is None:
+        return 0
+    else:
+        return result[0]
+    # Return zero if no results are found
 
 
 def get_calories(user_id: int) -> int:
     """
-    Get the total number of calories consumed today for a specific user.
+    Fetch the user's calories for today's date from the database.
 
-    Args:
-        user_id (int): The unique ID of the user.
+    Args: user_id (int): The user's ID.
 
-    Returns:
-        int: The total calories consumed today. Returns 0 if no data exists.
+    Returns: The total amount of calories the user logged  today.
 
-    Raises:
-        DatabaseError: If a database access error occurs.
+    Raises: DatabaseError: If a database error occurs.
     """
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -54,21 +53,21 @@ def get_calories(user_id: int) -> int:
     )
     result = cursor.fetchone()
     connection.close()
-    return result[0] if result and result[0] is not None else 0
+    if result[0] is None:
+        return 0
+    else:
+        return result[0]
 
 
 def get_sleep(user_id: int) -> int:
     """
-    Get the sleep rating recorded today for a specific user.
+    Fetch the user's sleep rating that they logged today.
 
-    Args:
-        user_id (int): The unique ID of the user.
+    Args: user_id (int): The user's ID.
 
-    Returns:
-        int: The sleep rating for today. Returns 0 if no data exists.
+    Returns: The sleep rating that the user recorded on today's date.
 
-    Raises:
-        DatabaseError: If a database access error occurs.
+    Raises: DatabaseError: If a database error occurs.
     """
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -78,4 +77,7 @@ def get_sleep(user_id: int) -> int:
     )
     result = cursor.fetchone()
     connection.close()
-    return result[0] if result and result[0] else 0
+    if result[0] is None:
+        return 0
+    else:
+        return result[0]

@@ -33,7 +33,8 @@ def sleep_calc(sleep_duration, sleep_quality):
     Returns:
         float: Sleep rating between 0.0 and 1.0, where 1.0 is optimal.
     """
-
+    if sleep_duration < 1:
+        return 0
     if sleep_duration < 7:
         duration_score = sleep_duration / 7.0
     elif 7 <= sleep_duration <= 9:
