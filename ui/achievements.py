@@ -10,7 +10,7 @@ from logic.calculations import get_rehealth_level, calculate_lifetime_score, cal
 from logic.user import User
 from ui.ui_handler import return_to_dashboard, BasePage
 
-rank_colours = {
+rank_colours: dict[str, str] = {
     "Bronze Beginner": "warning",
     "Silver Strider": "secondary",
     "Golden Grinder": "success",
@@ -33,24 +33,25 @@ rank_thresholds = [
 ]
 
 
-def _get_progress_bar_colour(rank):
+def _get_progress_bar_colour(rank: str) -> str:
     """
-    Returns the colour based on user rank.
+    Returns a colour based on user rank.
     """
     return rank_colours.get(rank, "primary")
 
 
-def _get_progress_to_next_level(score):
+def _get_progress_to_next_level(score: int):
     """
-    returns how close the user is to the next rank
+    returns a value representing how close the user is to the next rank.
     """
     if score >= 10000:
         return None, 100.0
-
+    # Loop through ranks to find upper and lower bounds for rank the user is in.
     for i, (_, lower, upper) in enumerate(rank_thresholds):
         if upper is None:
             continue
         if lower <= score < upper:
+            # Identifies the next rank for the user and how close they are to it.
             next_rank_name, _, _ = rank_thresholds[i + 1]
             progress = (score - lower) / (upper - lower) * 100
             return next_rank_name, progress
@@ -67,13 +68,13 @@ class Achievements(BasePage):
         """
         Main window for achievements initialised.
         """
-        self._load_user_stats_before_ui(user)
+        self._obtain_stats(user)
 
         # Call parent constructor
         super().__init__(root, user, "Achievements")
 
-    def _load_user_stats_before_ui(self, user):
-        """Load user stats that are needed before building UI"""
+    def _obtain_stats(self, user: User) -> None:
+        """Load user stats that are needed before building the UI"""
         self.total_steps = get_total_steps(user.user_id)
         self.total_cals = round(calories_burnt(self.total_steps, get_weight(user.user_id)))
         self.total_sleep = get_total_sleep_hours(user.user_id)
@@ -86,7 +87,12 @@ class Achievements(BasePage):
         )
         self.user_rank = get_rehealth_level(self.user_score)
 
-    def _build_ui(self):
+    def _build_ui(self) -> None:
+        """
+        Builds the window's ui.
+        """
+
+        # Find the name of the next rank and how close the user is to it
         next_rank_name, progress_percent = _get_progress_to_next_level(
             self.user_score
         )
@@ -114,6 +120,7 @@ class Achievements(BasePage):
             )
             self.progress_text_label.grid(row=2, column=0, pady=(5, 5), sticky="n")
 
+            # Style the progress bar
             self.progress_bar = tb.Progressbar(
                 self.frame,
                 orient="horizontal",
@@ -132,6 +139,7 @@ class Achievements(BasePage):
             )
             self.progress_text_label.grid(row=2, column=0, pady=(5, 20), sticky="n")
 
+        # Labels for the user's stats are created and placed.
         self.steps_label = tb.Label(
             self.frame,
             text=f"Total Steps Taken: {self.total_steps:,}",
@@ -170,7 +178,7 @@ class Achievements(BasePage):
 
         self.frame.grid_rowconfigure(9, minsize=200)
 
-    def return_to_dash(self):
+    def return_to_dash(self) -> None:
         """
         Returns to the dashboard screen.
         """

@@ -41,7 +41,7 @@ def get_calories(user_id: int) -> int:
 
     Args: user_id (int): The user's ID.
 
-    Returns: The total amount of calories the user logged  today.
+    Returns: The total amount of calories the user logged today.
 
     Raises: DatabaseError: If a database error occurs.
     """

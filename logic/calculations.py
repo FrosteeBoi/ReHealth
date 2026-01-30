@@ -1,16 +1,16 @@
 """Calculations Module - ReHealth"""
 
 
-def bmi_calc(kg_weight, cm_height):
+def bmi_calc(kg_weight: float, cm_height: float) -> float:
     """
-    Calculates Body Mass Index (BMI) from weight and height.
+    Calculates user bmi
 
     Args:
-        kg_weight (float): Weight in kilograms.
-        cm_height (float): Height in centimeters.
+        kg_weight (float): The user's weight.
+        cm_height (float): The user's height.
 
     Returns:
-        float: BMI value rounded to 1 decimal place.
+        float: The user's bmi value
 
     Raises:
         ValueError: If height is zero or negative.
@@ -21,17 +21,15 @@ def bmi_calc(kg_weight, cm_height):
     return round(float(kg_weight) / (m_height ** 2), 1)
 
 
-def sleep_calc(sleep_duration, sleep_quality):
+def sleep_calc(sleep_duration: float, sleep_quality: float) -> float:
     """
     Calculates a balanced sleep rating between 0 and 1.
     Args:
-        sleep_duration (float): Hours slept (0-24).
-        sleep_quality (float): Subjective quality rating (1-5).
-            1 = Poor sleep
-            5 = Excellent sleep
+        sleep_duration (float): Hours slept by the user.
+        sleep_quality (float): Subjective sleep rating logged by the user.
 
     Returns:
-        float: Sleep rating between 0.0 and 1.0, where 1.0 is optimal.
+        float: Final sleep rating for user ranging from 0 to 1.
     """
     if sleep_duration < 1:
         return 0
@@ -41,6 +39,8 @@ def sleep_calc(sleep_duration, sleep_quality):
         duration_score = 1.0
     else:
         duration_score = max(0.7, 1.0 - (sleep_duration - 9) * 0.1)
+        # Increasingly penalise the user for each hour of sleep above 9
+        # Ensure that this penalisation does not result in a duration score < 0.7
 
     quality_score = sleep_quality / 5.0
 
@@ -49,19 +49,15 @@ def sleep_calc(sleep_duration, sleep_quality):
     return sleep_rating
 
 
-def bmi_status(bmi):
+def bmi_status(bmi: float) -> str:
     """
-    Classifies BMI value into health categories.
+    Provides the user with a description of their bmi.
 
     Args:
-        bmi (float): BMI value.
+        bmi (float):The user's bmi.
 
     Returns:
-        str: Classification category:
-            - "Underweight": BMI < 18.5
-            - "Healthy": 18.5 ≤ BMI < 25
-            - "Overweight": 25 ≤ BMI < 30
-            - "Obese": BMI ≥ 30
+        str: A value from the options: Underweight, Healthy, Overweight and Obese.
     """
     if bmi < 18.5:
         return "Underweight"
@@ -73,22 +69,22 @@ def bmi_status(bmi):
         return "Obese"
 
 
-def calories_burnt(steps, weight_kg):
+def calories_burnt(steps: int, weight_kg: float) -> float:
     """
-    Estimates calories burnt from walking based on steps and body weight.
+    Estimates calories burnt by the user based on steps and body weight.
 
     Args:
-        steps (int): Number of steps taken.
-        weight_kg (float): Body weight in kilograms.
+        steps (int): Number of steps taken by the user.
+        weight_kg (float): The user's weight
 
     Returns:
-        float: Estimated calories burnt, rounded to 2 decimal places.
+        float: Estimated calories burnt by the user rounded.
     """
-    # Calculate distance walked
+    # Estimate distance walked by the user
     distance_m = steps * 0.78
     distance_km = distance_m / 1000
 
-    # Calculate calories (default to 50 kcal/km if weight unknown)
+    # Estimate cals burnt (default to 50 kcal/km if no weight provided by user)
     if weight_kg == 0.0:
         calories = distance_km * 50
     else:
@@ -97,7 +93,11 @@ def calories_burnt(steps, weight_kg):
     return round(calories, 2)
 
 
-def calculate_lifetime_score(lifetime_steps, lifetime_sleep_hours, lifetime_weight):
+def calculate_lifetime_score(
+    lifetime_steps: int,
+    lifetime_sleep_hours: float,
+    lifetime_weight: float
+) -> int:
     """
     Calculate an overall ReHealth achievement score from lifetime activity.
     Args:
@@ -106,9 +106,9 @@ def calculate_lifetime_score(lifetime_steps, lifetime_sleep_hours, lifetime_weig
         lifetime_weight (float): Total weight lifted in kg across all time.
 
     Returns:
-        int: ReHealth score (typically 0-10000+), where higher is better.
+        int: ReHealth score in the range of 0 to 10,000.
     """
-    # Define conversion ratios for each metric and implement weights
+
     step_ratio = 10_000  # 10,000 steps = 1 point
     sleep_ratio = 8  # 8 hours = 1 point
     weight_ratio = 1_000  # 1,000 kg = 1 point
@@ -117,11 +117,12 @@ def calculate_lifetime_score(lifetime_steps, lifetime_sleep_hours, lifetime_weig
     sleep_points = lifetime_sleep_hours / sleep_ratio
     weight_points = lifetime_weight / weight_ratio
 
-    step_weight = 0.45  # Steps: 45%
-    sleep_weight = 0.45  # Sleep: 45%
-    weight_weight = 0.1  # Weight lifting: 10%
+    # Create a weighted score using steps, sleep and weight lifted
+    # Each metric is factored appropriately.
+    step_weight = 0.45
+    sleep_weight = 0.45
+    weight_weight = 0.1
 
-    # Calculate weighted score
     raw_score = (
             step_points * step_weight +
             sleep_points * sleep_weight +
@@ -134,23 +135,23 @@ def calculate_lifetime_score(lifetime_steps, lifetime_sleep_hours, lifetime_weig
     return int(round(scaled_score))
 
 
-def get_rehealth_level(score):
+def get_rehealth_level(score: int) -> str:
     """
-    Convert a ReHealth score into a rank/achievement level.
+    Convert a ReHealth score into a rank/achievement level using the user's score.
 
     Args:
         score (int): ReHealth score from calculate_lifetime_score().
 
     Returns:
         str: Rank name corresponding to the score:
-            - "Bronze Beginner": 0-499
-            - "Silver Strider": 500-999
-            - "Golden Grinder": 1000-1999
-            - "Platinum Pro": 2000-3499
-            - "Diamond Elite": 3500-4999
-            - "Athlete": 5000-6999
-            - "Olympian": 7000-9999
-            - "#1 ReHealth User": 10000+
+            "Bronze Beginner"
+            "Silver Strider"
+            "Golden Grinder"
+            "Platinum Pro"
+            "Diamond Elite"
+            "Athlete"
+            "Olympian"
+            "#1 ReHealth User"
     """
     if score < 500:
         return "Bronze Beginner"

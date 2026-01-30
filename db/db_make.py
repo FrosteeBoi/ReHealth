@@ -22,6 +22,9 @@ from db.db_handler import get_db_connection
 
 
 def initialise_db():
+    """
+    Initialises the ReHealth database, creating every table and placing rows in them
+    """
     connection = get_db_connection(enable_foreign_keys=True)
     cursor = connection.cursor()
 
@@ -99,4 +102,8 @@ def initialise_db():
 
 
 if __name__ == "__main__":
+    """
+    Prevents the function from being run unless the file is run directly.
+    Otherwise the database could be recreated accidentally for no reason.
+    """
     initialise_db()
