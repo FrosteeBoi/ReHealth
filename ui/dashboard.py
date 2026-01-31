@@ -24,7 +24,7 @@ class Dashboard(BasePage):
 
         Args:
             root: Main application window.
-            user: Logged-in user (used for user_id and username).
+            user: Logged-in user
         """
         # Call parent constructor
         super().__init__(root, user, "Dashboard")
@@ -37,7 +37,7 @@ class Dashboard(BasePage):
         self._create_navigation_tabs()
 
     def _create_welcome_label(self) -> None:
-        """Create the welcome label with username."""
+        """Create a welcome label to initially greet the user."""
         self.dash_label = tb.Label(
             self.frame,
             text=f"Hello {self.user.username}",
@@ -46,7 +46,7 @@ class Dashboard(BasePage):
         self.dash_label.grid(row=0, column=0, pady=(20, 30))
 
     def _create_metric_displays(self) -> None:
-        """Create the metric display labels (steps, calories, sleep)."""
+        """Create labels for the user's: steps, calories, sleep."""
         # Fetch current metrics
         steps = get_steps(self.user.user_id)
         calories = get_calories(self.user.user_id)
@@ -77,7 +77,7 @@ class Dashboard(BasePage):
         self.dash_sleep.grid(row=3, column=0, pady=(5, 5))
 
     def _create_achievements_button(self) -> None:
-        """Create the achievements button."""
+        """Create the button to go to achievements in the menu."""
         self.achievements_button = tb.Button(
             self.frame,
             text="Achievements",

@@ -14,27 +14,28 @@ from logic.user import User
 from ui.ui_handler import return_to_dashboard, BasePage
 
 
-def _validate_positive_float(raw: str, field_name: str, unit_hint: str) -> tuple[bool, float, str]:
+def _validate_positive_float(metric_input: str, field_name: str, desired_unit: str) -> tuple[bool, float, str]:
     """
-    Validate a positive float input (e.g. height/weight).
-
+    Validates for a positive float input.
+.
     Args:
-        raw: Raw entry text.
-        field_name: Human-readable field name (e.g. "height").
-        unit_hint: Unit hint used in the error message (e.g. "cm", "kg").
+        metric_input: Metric input from the user.
+        field_name: Name of field that the user inputs a metric into e.g. height.
+        desired_unit: "cm" or "kg" shown to describe desired input in error message.
 
     Returns:
         (is_valid, value, error_message)
+        True or False for validity of the input, the value inputted by the user, and an appropriate error message
     """
-    text = raw.strip()
+    text = metric_input.strip()
 
     if not text:
-        return False, 0.0, f"Please enter your {field_name} as a number in {unit_hint}."
+        return False, 0.0, f"Please enter your {field_name} as a number in {desired_unit}."
 
     try:
         value = float(text)
     except ValueError:
-        return False, 0.0, f"Please enter your {field_name} as a number in {unit_hint}."
+        return False, 0.0, f"Please enter your {field_name} as a number in {desired_unit}."
 
     if value <= 0:
         return False, 0.0, f"{field_name.capitalize()} must be a positive number."

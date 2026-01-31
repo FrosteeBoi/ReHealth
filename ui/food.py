@@ -11,16 +11,15 @@ from ui.ui_handler import return_to_dashboard, GraphTemplate, BasePage
 MEAL_TYPE_OPTIONS = ["breakfast", "lunch", "dinner", "snack"]
 
 
-def validate_food_name(food_name: str) -> tuple[bool, str]:
+def check_empty_foodname(food_name: str) -> tuple[bool, str]:
     """
-    Validates the food name input.
+    Checks if the user actually inputs a value into the foodname field.
 
     Args:
-        food_name: Raw text input from the food name entry field.
+        food_name: The user's input into the "food name: " field.
 
     Returns:
-        A tuple of (is_valid, error_message).
-        If valid, error_message is empty.
+        A tuple describing the input's validity attached by a possible error message.
     """
     if not food_name:
         return False, "Please enter the food name."
@@ -32,11 +31,10 @@ def validate_calorie_amount(calorie_input: str) -> tuple[bool, str]:
     Validates the calorie amount input.
 
     Args:
-        calorie_input: Raw text input from the calorie entry field.
+        calorie_input: The user's input into the calorie entry field.
 
     Returns:
-        A tuple of (is_valid, error_message).
-        If valid, error_message is empty.
+        A tuple describing the input's validity attached by a possible error message.
     """
     if not calorie_input:
         return False, "Please enter a calorie amount."
@@ -55,11 +53,10 @@ def validate_meal_type(meal_type: str) -> tuple[bool, str]:
     Validates the meal type selection.
 
     Args:
-        meal_type: Selected meal type from combobox.
+        meal_type: The type of meal the user selects from the dropdown list.
 
     Returns:
-        A tuple of (is_valid, error_message).
-        If valid, error_message is empty.
+        A tuple describing the input's validity attached by a possible error message.
     """
     if not meal_type:
         return False, "Please select a meal type."
@@ -71,26 +68,26 @@ def validate_meal_type(meal_type: str) -> tuple[bool, str]:
 
 
 class Food(BasePage):
-    """Food tracking screen: validates meal input, saves calories to the database, and displays a 7-day graph."""
+    """Food Class that validates meal input and saves food information to a database"""
 
     def __init__(self, root: tb.Window, user: User) -> None:
         """
         Args:
             root: Main application window.
-            user: Logged-in user (used for user_id and username).
+            user: Logged-in user
         """
         # Call parent constructor
         super().__init__(root, user, "Food")
 
     def _build_ui(self) -> None:
-        """Build all UI components."""
+        """Build UI components."""
         self._create_title()
         self._create_input_section()
         self._create_add_button()
         self._create_graph_section()
 
     def _create_title(self) -> None:
-        """Create the main title label."""
+        """Create main title for the user."""
         self.food_label = tb.Label(
             self.frame,
             text=f"{self.user.username}'s Food",
@@ -166,27 +163,25 @@ class Food(BasePage):
         calorie_amount = self.calorie_textbox.get().strip()
         meal_type = self.meal_type_combobox.get().strip()
 
-        # Validate food name
-        name_valid, name_error = validate_food_name(foodname)
+        # Validate food, calorie and meal type inputs
+        name_valid, name_error = check_empty_foodname(foodname)
         if not name_valid:
             messagebox.showerror("Missing Information", name_error)
             self.food_textbox.focus()
             return
 
-        # Validate calorie amount
         calorie_valid, calorie_error = validate_calorie_amount(calorie_amount)
         if not calorie_valid:
             messagebox.showerror("Invalid Input", calorie_error)
             self.calorie_textbox.focus()
             return
 
-        # Validate meal type
         meal_valid, meal_error = validate_meal_type(meal_type)
         if not meal_valid:
             messagebox.showerror("Invalid Input", meal_error)
             self.meal_type_combobox.focus()
             return
-
+        # Catch any possible database errors
         try:
             self._save_and_update(foodname, calorie_amount, meal_type)
         except Exception as e:
@@ -199,32 +194,41 @@ class Food(BasePage):
         Args:
             foodname: Name of the food item.
             calorie_amount: Calorie count as a string.
-            meal_type: Type of meal (breakfast, lunch, dinner, snack).
+            meal_type: Meal chosen from a predefined list
         """
-        # Save to database
+        # Save food to the database
         save_food(self.user.user_id, foodname, calorie_amount, meal_type.lower())
 
-        # Show success message
         messagebox.showinfo(
             "Success",
             f"{foodname} ({calorie_amount} cals) saved as {meal_type}!"
         )
 
-        # Clear inputs for next entry
+        # Clear user entries
+
         self.food_textbox.delete(0, 'end')
         self.calorie_textbox.delete(0, 'end')
         self.meal_type_combobox.set('')
         self.food_textbox.focus()
 
-        # Refresh graph to show new data
+        # Update the user's graph with any new data
+
         self.calorie_graph.refresh_graph()
         self.root.update_idletasks()
 
 
 class CalorieGraph(GraphTemplate):
+    """
+    Class plots and displays a 7 day graph depicting the user's calorie count.
+    """
+
     def plot_data(self) -> None:
+        # Clear graph and replace it with updated information from the last 7 days.
+
         self.ax.clear()
         days, calories = get_last_7_days_calories_convert(self.user.user_id)
+
+        # Plot and style graph
 
         self.ax.plot(
             days,
