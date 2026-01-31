@@ -15,14 +15,16 @@ def validate_sleep_hours(hours_input: str) -> tuple[bool, float, str]:
     Validates the sleep hours input from the user.
 
     Args:
-        hours_input: Raw text input from the hours entry field.
+        hours_input: The amount of hours inputted by the user representing how much they slept.
 
     Returns:
         A tuple of (is_valid, hours_value, error_message).
-        If valid, error_message is empty.
+        Represents the validity of input, the value they inputted and a possible appropriate error message.
     """
     if not hours_input:
         return False, 0.0, "Please enter a valid number of hours (0-24)."
+
+    # Check if input is a valid float value offer an appropriate response
 
     try:
         hours = float(hours_input)
@@ -38,10 +40,11 @@ def validate_sleep_quality(quality_input: str) -> tuple[bool, float, str]:
     Validates the sleep quality input from the user.
 
     Args:
-        quality_input: Raw text input from the quality entry field.
+        quality_input: The subjective value entered by the user into the sleep quality field.
 
     Returns:
         A tuple of (is_valid, quality_value, error_message).
+        Represents the validity of input, the value they inputted and a possible error message.
         If valid, error_message is empty.
     """
     if not quality_input:
@@ -84,15 +87,15 @@ def format_rating_percentage(rating: float) -> str:
 
 
 class Sleep(BasePage):
-    """Sleep tracking screen: records sleep inputs, calculates a rating, saves to DB, and displays a 7-day graph."""
+    """Sleep tracking screen: records sleep inputs, calculates a rating and saves to the database."""
 
     def __init__(self, root: tb.Window, user: User) -> None:
         """
         Args:
-            root: Main application window.
-            user: Logged-in user (used for user_id and username).
+            root: Main Sleep application window.
+            user: Logged-in user
         """
-        # Initialise attributes
+        # Initialise 3 main attributes
         self.sleep_duration = None
         self.sleep_quality = None
         self.rating = None
@@ -178,14 +181,13 @@ class Sleep(BasePage):
         hours_input = self.sleep_entry.get().strip()
         quality_input = self.refresh_entry.get().strip()
 
-        # Validate hours input
+        # Validate hours and sleep quality inputted by user
         hours_valid, hours_value, hours_error = validate_sleep_hours(hours_input)
         if not hours_valid:
             messagebox.showerror("Error", hours_error)
             self.sleep_entry.focus()
             return
 
-        # Validate quality input
         quality_valid, quality_value, quality_error = validate_sleep_quality(quality_input)
         if not quality_valid:
             messagebox.showerror("Error", quality_error)
@@ -205,33 +207,34 @@ class Sleep(BasePage):
         """
         Calculates the sleep rating, saves to database, and updates UI.
         """
-        # Calculate rating
+        # Calculate rating and update the display accordingly
         self.rating = calculate_sleep_rating(self.sleep_duration, self.sleep_quality)
-
-        # Update rating display
         self.rating_label.config(text=format_rating_percentage(self.rating))
 
         # Save to database
         save_sleep(self.user.user_id, self.sleep_duration, self.rating)
-
-        # Show success message
         messagebox.showinfo(
             "Success",
             f"Sleep data saved! Rating: {round(self.rating * 100)}%"
         )
 
-        # Clear inputs and prepare for next entry
+        # Clear inputs, refresh graph and prepare for next entry
         self.sleep_entry.delete(0, 'end')
         self.refresh_entry.delete(0, 'end')
         self.sleep_entry.focus()
 
-        # Refresh graph to show new data
         self.sleep_graph.refresh_graph()
         self.root.update_idletasks()
 
 
 class SleepGraph(GraphTemplate):
+    """
+    Class for plotting a graph showing the user's sleep over the course of the last 7 years.
+    """
     def plot_data(self) -> None:
+        """
+        Fetches sleep values and plot/style the graph
+        """
         self.ax.clear()
         days, sleep_hours = get_last_7_days_sleep_convert(self.user.user_id)
 
@@ -258,6 +261,10 @@ class SleepGraph(GraphTemplate):
 
 
 if __name__ == "__main__":
+    """
+    Allows testing to be made on this specific window.
+    Only runs if the file is executed directly (not through imports)
+    """
     root = tb.Window(themename="darkly")
     test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Sleep(root, test_user)

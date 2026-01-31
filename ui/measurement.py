@@ -64,17 +64,20 @@ def _build_metrics_filename(username: str) -> str:
 
 def _write_metrics_log(filename: str, username: str, records: list[tuple]) -> None:
     """
-    Write measurement records to a text file.
+    Writes measurement records to a text file.
 
     Args:
-        filename: Full output path.
-        username: Username for header.
+        filename: Full file path for the user metrics.
+        username: Username for the title of the file.
         records: DB records in form (date, height, weight).
     """
     with open(filename, "w", encoding="utf-8") as file:
+        # Label the metrics file
         file.write(f"Measurement Records for {username}\n")
         file.write(f"Downloaded on: {datetime.now().strftime('%d-%m-%Y %H:%M')}\n")
         file.write("=" * 60 + "\n\n")
+
+        # Unpack records tuple and place contents in the file
 
         for record in records:
             date, height, weight = record
@@ -92,7 +95,6 @@ class Measurement(BasePage):
     """GUI screen for recording height/weight and calculating BMI + exporting history."""
 
     def __init__(self, root: tb.Window, user: User) -> None:
-        # Initialise state
         self.height_val: float = 0.0
         self.weight_val: float = 0.0
         self.bmi_val: float = 0.0
@@ -100,12 +102,17 @@ class Measurement(BasePage):
         # Call parent constructor
         super().__init__(root, user, "Measurement")
 
+    # Build ui of the measurement page
+
     def _build_ui(self) -> None:
         self._create_labels()
         self._create_input_section()
         self._create_buttons()
 
     def _create_labels(self) -> None:
+        """
+        Creates and places measurement labels
+        """
         self.measure_label = tb.Label(
             self.frame,
             text=f"{self.user.username}'s Measurements",
@@ -135,6 +142,11 @@ class Measurement(BasePage):
         self.bmi_label.grid(row=3, column=0, pady=(10, 30), columnspan=3, padx=20)
 
     def _create_input_section(self) -> None:
+        """
+        Creates a section for the user to input measurement section
+        """
+
+        # Create and place height and weight labels and entries
         self.height_label = tb.Label(
             self.frame,
             text="Record Your Height (cm):",
@@ -156,6 +168,9 @@ class Measurement(BasePage):
         self.weight_entry.grid(row=5, column=1, padx=(10, 10), pady=(10, 10), columnspan=2)
 
     def _create_buttons(self) -> None:
+        """
+        Creates buttons to calculate bmi, return to the dashboard and to download past user measurements
+        """
         self.bmi_calc_button = tb.Button(
             self.frame,
             text="Calculate BMI",
@@ -209,6 +224,8 @@ class Measurement(BasePage):
         self.height_val = height_cm
         self.weight_val = weight_kg
 
+        # Dynamically calculate bmi from height and weight and display it to user
+
         bmi_value = bmi_calc(weight_kg, height_cm)
         self.bmi_val = bmi_value
 
@@ -230,6 +247,7 @@ class Measurement(BasePage):
         try:
             records = get_all_days_metrics(self.user.user_id)
 
+            # Attempt to fetch records and return an appropriate error message if one occurs
             if not records:
                 messagebox.showinfo("No Records", "No measurement records found for this user.")
                 return

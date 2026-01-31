@@ -167,6 +167,10 @@ class Dashboard(BasePage):
 
 
 if __name__ == "__main__":
+    """
+    Allows testing to be made on this specific window.
+    Only runs if the file is executed directly (not through imports)
+    """
     root = tb.Window(themename="darkly")
     test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Dashboard(root, test_user)

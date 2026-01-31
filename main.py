@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 ReHealth - Health Tracking Application
 Main entry point for the application
@@ -21,7 +20,6 @@ def main():
     from db.db_make import initialise_db
     initialise_db()
 
-
     # Create the main window and start the application
     root = tb.Window(themename="darkly")
     app = App(root)
@@ -29,4 +27,7 @@ def main():
 
 
 if __name__ == "__main__":
+    """
+    Ensures file will not be ran if imported to a different file
+    """
     main()

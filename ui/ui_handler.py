@@ -34,6 +34,9 @@ class GraphTemplate(ABC):
         self.graph_frame.grid_columnconfigure(0, weight=1)
 
     def _create_graph(self):
+        """
+        "Creates main blueprint for later graphs
+        """
         self.fig = Figure(figsize=(6, 4), dpi=67, facecolor='#222222')
         self.ax = self.fig.add_subplot(111)
         self.ax.set_facecolor('#2b3e50')
@@ -86,6 +89,9 @@ class GraphTemplate(ABC):
             messagebox.showerror("Error", f"Failed to save graph: {e}")
 
     def _create_buttons(self):
+        """
+        Creates necessary navigation buttons ("Download" and "Back to Dashboard")
+        """
         button_frame = tb.Frame(self.graph_frame)
         button_frame.grid(row=1, column=0, pady=(0, 20))
 
@@ -119,18 +125,18 @@ class BasePage(ABC):
         self._build_ui()
 
     def _configure_window(self):
-        """Standard window configuration"""
+        """Sets up a standard window configuration"""
         self.root.geometry("490x630")
         self.root.title("ReHealth")
 
     def _create_main_frame(self):
-        """Create the main frame - can be overridden"""
+        """Create the main frame - can be overridden by children classes"""
         self.frame = tb.Frame(self.root)
         self.frame.place(relx=0.5, rely=0, anchor="n")
 
     @abstractmethod
     def _build_ui(self):
-        """Build UI components - must be implemented by subclasses"""
+        """Build UI components - must be implemented by children classes"""
         pass
 
     def create_title_label(self, text):

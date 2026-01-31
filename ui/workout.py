@@ -13,15 +13,18 @@ from ui.ui_handler import return_to_dashboard, BasePage
 
 def validate_exercise_name(exercise_name: str) -> tuple[bool, str]:
     """
-    Validates the exercise name input.
+    Validates the exercise name inputted by the user.
 
     Args:
-        exercise_name: Raw text input from the exercise name entry field.
+        exercise_name: name of the exercise inputted by the user.
 
     Returns:
         A tuple of (is_valid, error_message).
+        Represents the validity of input and a possible error message.
         If valid, error_message is empty.
     """
+
+    # Check if field is empty or contains invalid characters
     if not exercise_name:
         return False, "Exercise name cannot be empty."
 
@@ -36,10 +39,11 @@ def validate_weight(weight_input: str) -> tuple[bool, float, str]:
     Validates the weight input.
 
     Args:
-        weight_input: Raw text input from the weight entry field.
+        weight_input: The text input received from the weight entry field.
 
     Returns:
         A tuple of (is_valid, weight_value, error_message).
+        Represents the validity of input, value the user inputted and a possible error message.
         If valid, error_message is empty.
     """
     if not weight_input:
@@ -61,12 +65,15 @@ def validate_sets(sets_input: str) -> tuple[bool, int, str]:
     Validates the sets input.
 
     Args:
-        sets_input: Raw text input from the sets entry field.
+        sets_input: The text input received from the sets entry field.
 
     Returns:
         A tuple of (is_valid, sets_value, error_message).
+        Represents input validity, value the user inputted and a possible error message.
         If valid, error_message is empty.
     """
+
+    # Check if field is empty, too large, too big or negative
     if not sets_input:
         return False, 0, "Sets cannot be empty."
 
@@ -85,12 +92,15 @@ def validate_reps(reps_input: str) -> tuple[bool, int, str]:
     Validates the reps input.
 
     Args:
-        reps_input: Raw text input from the reps entry field.
+        reps_input: The text input received from the reps entry field.
 
     Returns:
         A tuple of (is_valid, reps_value, error_message).
+        Represents validity of user input, value the user inputted and a possible error message
         If valid, error_message is empty.
     """
+
+    # Check if field is empty, negative or too large/big
     if not reps_input:
         return False, 0, "Reps cannot be empty."
 
@@ -98,7 +108,7 @@ def validate_reps(reps_input: str) -> tuple[bool, int, str]:
         return False, 0, "Enter an integer, numerical and positive value for reps."
 
     reps_val = int(reps_input)
-    if reps_val <1 or reps_val > 50:
+    if reps_val < 1 or reps_val > 50:
         return False, 0, "The amount of reps entered must be a positive number between 1 and 50 inclusive."
 
     return True, reps_val, ""
@@ -111,9 +121,9 @@ class Workouts(BasePage):
         """
         Args:
             root: Main application window.
-            user: Logged-in user (used for user_id and username).
+            user: Logged-in user.
         """
-        # Initialise state
+        # Initialise attributes
         self.exercise_name = None
         self.exercise_weight = None
         self.exercise_reps = None
@@ -130,7 +140,7 @@ class Workouts(BasePage):
         self._create_dashboard_button()
 
     def _create_title(self) -> None:
-        """Create the main title label."""
+        """Create and place the main title label."""
         self.workout_label = tb.Label(
             self.frame,
             text=f"{self.user.username}'s Workouts",
@@ -140,7 +150,7 @@ class Workouts(BasePage):
 
     def _create_input_section(self) -> None:
         """Create all input fields for exercise data."""
-        # Exercise Name Section
+        # Set up exercise_name input
         self.name_label = tb.Label(
             self.frame,
             text="Exercise Name:",
@@ -151,7 +161,7 @@ class Workouts(BasePage):
         self.name_textbox = tb.Entry(self.frame, width=20)
         self.name_textbox.grid(row=1, column=1, pady=(10, 10), padx=(10, 20), columnspan=2)
 
-        # Weight Section
+        # Create and place weight and sets labels/entries
         self.weight_label = tb.Label(
             self.frame,
             text="Weight (Kg):",
@@ -162,7 +172,6 @@ class Workouts(BasePage):
         self.weight_textbox = tb.Entry(self.frame, width=20)
         self.weight_textbox.grid(row=2, column=1, pady=(10, 10), padx=(10, 20), columnspan=2)
 
-        # Sets Section
         self.sets_label = tb.Label(
             self.frame,
             text="Sets:",
@@ -173,7 +182,7 @@ class Workouts(BasePage):
         self.sets_textbox = tb.Entry(self.frame, width=20)
         self.sets_textbox.grid(row=3, column=1, pady=(10, 10), padx=(10, 20), columnspan=2)
 
-        # Reps Section
+        # Create and place reps labels/entries
         self.reps_label = tb.Label(
             self.frame,
             text="Reps:",
@@ -185,7 +194,7 @@ class Workouts(BasePage):
         self.reps_textbox.grid(row=4, column=1, pady=(10, 10), padx=(10, 10), columnspan=2)
 
     def _create_action_buttons(self) -> None:
-        """Create the log workout and download buttons."""
+        """Create the add_workout and download buttons."""
         self.button_frame = tb.Frame(self.frame)
         self.button_frame.grid(row=5, column=0, columnspan=3, pady=(30, 10))
 
@@ -222,34 +231,31 @@ class Workouts(BasePage):
         exercise_sets = self.sets_textbox.get().strip()
         exercise_reps = self.reps_textbox.get().strip()
 
-        # Validate exercise name
+        # Validate exercise name, weight, sets and reps
         name_valid, name_error = validate_exercise_name(exercise_name)
         if not name_valid:
             messagebox.showerror("Error", name_error)
             self.name_textbox.focus()
             return
 
-        # Validate weight
         weight_valid, weight_val, weight_error = validate_weight(exercise_weight)
         if not weight_valid:
             messagebox.showerror("Error", weight_error)
             self.weight_textbox.focus()
             return
 
-        # Validate sets
         sets_valid, sets_val, sets_error = validate_sets(exercise_sets)
         if not sets_valid:
             messagebox.showerror("Error", sets_error)
             self.sets_textbox.focus()
             return
 
-        # Validate reps
         reps_valid, reps_val, reps_error = validate_reps(exercise_reps)
         if not reps_valid:
             messagebox.showerror("Error", reps_error)
             self.reps_textbox.focus()
             return
-
+        # Check for database errors
         try:
             self._save_and_clear(exercise_name, exercise_weight, exercise_sets, exercise_reps)
         except Exception as e:
@@ -265,7 +271,7 @@ class Workouts(BasePage):
             sets: Number of sets performed.
             reps: Number of reps per set.
         """
-        # Save to database
+        # Save to database and display a detailed success message
         save_workout(
             self.user.user_id,
             exercise_name,
@@ -274,7 +280,6 @@ class Workouts(BasePage):
             reps
         )
 
-        # Show success message
         messagebox.showinfo(
             "Success",
             f"{exercise_name}: {weight}kg x {sets} sets x {reps} reps logged successfully!"
@@ -337,13 +342,14 @@ class Workouts(BasePage):
             filename: Path to the output file.
             records: List of workout records from database.
         """
+        # Open and label the workout text file with dates and username
         with open(filename, 'w') as file:
             file.write(f"Workout Records for {self.user.username}\n")
             file.write(
                 f"Downloaded on: {datetime.now().strftime('%d-%m-%Y %H:%M')}\n"
             )
             file.write("=" * 60 + "\n\n")
-
+            # Unpack workout tuple from database and write each field to file
             for record in records:
                 date, exercise_name, weight, sets, reps = record
 
@@ -362,6 +368,10 @@ class Workouts(BasePage):
 
 
 if __name__ == "__main__":
+    """
+    Allows testing to be made on this specific window.
+    Only runs if the file is executed directly (not through imports)
+    """
     root = tb.Window(themename="darkly")
     test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Workouts(root, test_user)

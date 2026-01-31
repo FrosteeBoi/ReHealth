@@ -471,6 +471,10 @@ class App:
 
 
 if __name__ == "__main__":
+    """
+    Allows testing to be made on this specific window.
+    Only runs if the file is executed directly (not through imports)
+    """
     root = tb.Window(themename="darkly")
     app = App(root)
     root.mainloop()

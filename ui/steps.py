@@ -15,12 +15,14 @@ def _validate_step_input(steps_text: str) -> tuple[bool, int, str]:
     Validates the step input from the user.
 
     Args:
-        steps_text: Raw text input from the step entry field.
+        steps_text: Amount of steps inputted by the user into the entry field.
 
     Returns:
         A tuple of (is_valid, steps_value, error_message).
+        Represents the validity of input, the amount of steps taken by the user and an error message
         If valid, error_message is empty.
     """
+    # Check if field is empty, if step count is too large or if it's a non-numerical value
     if not steps_text:
         return False, 0, "Please enter your steps."
 
@@ -53,7 +55,7 @@ class Steps(BasePage):
         """
         Args:
             root: Main application window.
-            user: Logged-in user (used for user_id and username).
+            user: Logged-in user.
         """
         # Initialise attributes
         self.step_count: int = 0
@@ -69,12 +71,14 @@ class Steps(BasePage):
         self._create_graph_section()
 
     def _create_labels(self) -> None:
-        """Create the title and display labels."""
+        """Create the title and steps/calorie count labels."""
+        # Set up the main title
         self.steps_label = tb.Label(
             self.frame,
             text=f"{self.user.username}'s Steps",
             font=("roboto", 18, "bold"),
         )
+        # Create and grid steps and calorie labels
         self.steps_label.grid(row=0, column=0, pady=(20, 30), padx=20, columnspan=2)
 
         self.count_label = tb.Label(
@@ -99,7 +103,7 @@ class Steps(BasePage):
         self.step_button = tb.Button(
             self.frame,
             text="Add Steps",
-            command=self.steps_and_calories
+            command=self.retrieve_steps
         )
         self.step_button.grid(row=3, column=1, pady=(10, 10), padx=(10, 20))
 
@@ -115,14 +119,15 @@ class Steps(BasePage):
             self.root
         )
 
-    def steps_and_calories(self) -> None:
+    def retrieve_steps(self) -> None:
         """
-        Validates step input, saves to DB, updates UI, and refreshes the graph.
-        Also shows an achievement message for 10,000+ steps.
+        Retrieves and validates step input from user.
         """
         steps_text = self.step_entry.get().strip()
 
         is_valid, steps_value, error_msg = _validate_step_input(steps_text)
+
+        # Specifically display an error message or a special 10,000 steps message depending on user input
 
         if not is_valid:
             messagebox.showerror("Invalid Input", error_msg)
@@ -133,6 +138,7 @@ class Steps(BasePage):
             self._save_and_update(steps_value)
             _check_milestone_achievement(steps_value, self.user.username)
 
+        # Catch possible database errors
         except Exception as exc:
             messagebox.showerror("Database Error", f"Failed to save to database: {exc}")
             self.step_entry.focus()
@@ -144,17 +150,20 @@ class Steps(BasePage):
         Args:
             steps_value: Number of steps to save.
         """
+
+        # Save steps data to database and update steps label
         save_steps(self.user.user_id, str(steps_value), 10000)
 
         self.step_count = steps_value
         self.count_label.config(text=f"Step Count: {self.step_count}")
-
+        # Estimate calories burnt and update calorie label
         weight = get_weight(self.user.user_id)
         self.calorie_count = calories_burnt(steps_value, weight)
         self.calorie_label.config(
             text=f"Calories Burnt: {round(self.calorie_count)} kcal"
         )
 
+        # Display success message, reset entries if steps are saved correctly
         messagebox.showinfo("Success", f"Steps saved! {self.step_count} steps recorded.")
 
         self.step_entry.delete(0, "end")
@@ -164,10 +173,13 @@ class Steps(BasePage):
 
 
 class StepGraph(GraphTemplate):
+    """Class created to plot a graph conveying user steps over the course of the past  days"""
     def plot_data(self) -> None:
+
+        # Clear old graph and fetch steps from database
         self.ax.clear()
         days, steps = get_last_7_days_steps_convert(self.user.user_id)
-
+        # Plot and style the graph
         self.ax.plot(days, steps, marker='o', color='#4e73df',
                      linewidth=2, markersize=8)
         self.style_axes('Days', 'Steps', 'Steps Over Time')
@@ -184,6 +196,10 @@ class StepGraph(GraphTemplate):
 
 
 if __name__ == "__main__":
+    """
+    Allows testing to be made on this specific window.
+    Only runs if the file is executed directly (not through imports)
+    """
     root = tb.Window(themename="darkly")
     test_user = User("TestUser", "1234567", "Male", "26/12/2007", "29/08/2025")
     app = Steps(root, test_user)
