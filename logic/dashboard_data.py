@@ -77,7 +77,5 @@ def get_sleep(user_id: int) -> int:
     )
     result = cursor.fetchone()
     connection.close()
-    if result[0] is None:
-        return 0
-    else:
-        return result[0]
+    return result[0] if result and result[0] else 0
+

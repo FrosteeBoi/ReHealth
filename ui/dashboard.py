@@ -2,7 +2,7 @@
 
 import ttkbootstrap as tb
 
-from db.dashboard_data import get_sleep, get_steps, get_calories
+from logic.dashboard_data import get_sleep, get_steps, get_calories
 from logic.user import User
 from ui.food import Food
 from ui.measurement import Measurement
