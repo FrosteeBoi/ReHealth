@@ -133,7 +133,7 @@ def check_username_exists(username: str) -> bool:
 
 
 class App:
-    """Class for authenticating users and validating inputs so they can login or register."""
+    """Class for authenticating users and validating input so they can login or register."""
 
     def __init__(self, root: tb.Window) -> None:
         """
