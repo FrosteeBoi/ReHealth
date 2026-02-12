@@ -80,7 +80,7 @@ class Food(BasePage):
         super().__init__(root, user, "Food")
 
     def _build_ui(self) -> None:
-        """Build UI components."""
+        """Builds UI components."""
         self._create_title()
         self._create_input_section()
         self._create_add_button()

@@ -2,12 +2,7 @@
 Dashboard_Data Module - ReHealth
 """
 
-import os
-import sqlite3
 from db.db_handler import get_db_connection
-
-db_path = os.path.join(os.path.dirname(__file__), "rehealth_db.db")
-# database path set up
 
 
 def get_steps(user_id: int) -> int:

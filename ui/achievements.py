@@ -10,7 +10,7 @@ from logic.calculations import get_rehealth_level, calculate_lifetime_score, cal
 from logic.user import User
 from ui.ui_handler import return_to_dashboard, BasePage
 
-rank_colours: dict[str, str] = {
+RANK_COLOURS: dict[str, str] = {
     "Bronze Beginner": "warning",
     "Silver Strider": "secondary",
     "Golden Grinder": "success",
@@ -21,7 +21,7 @@ rank_colours: dict[str, str] = {
     "#1 ReHealth User": "primary",
 }
 
-rank_thresholds = [
+RANK_THRESHOLDS = [
     ("Bronze Beginner", 0, 500),
     ("Silver Strider", 500, 1000),
     ("Golden Grinder", 1000, 2000),
@@ -37,7 +37,7 @@ def _get_progress_bar_colour(rank: str) -> str:
     """
     Returns a colour based on user rank.
     """
-    return rank_colours.get(rank, "primary")
+    return RANK_COLOURS.get(rank, "primary")
 
 
 def _get_progress_to_next_level(score: int):
@@ -47,12 +47,12 @@ def _get_progress_to_next_level(score: int):
     if score >= 10000:
         return None, 100.0
     # Loop through ranks to find upper and lower bounds for rank the user is in.
-    for i, (_, lower, upper) in enumerate(rank_thresholds):
+    for i, (_, lower, upper) in enumerate(RANK_THRESHOLDS):
         if upper is None:
             continue
         if lower <= score < upper:
             # Identifies the next rank for the user and how close they are to it.
-            next_rank_name, _, _ = rank_thresholds[i + 1]
+            next_rank_name, _, _ = RANK_THRESHOLDS[i + 1]
             progress = (score - lower) / (upper - lower) * 100
             return next_rank_name, progress
 
@@ -74,7 +74,7 @@ class Achievements(BasePage):
         super().__init__(root, user, "Achievements")
 
     def _obtain_stats(self, user: User) -> None:
-        """Load user stats that are needed before building the UI"""
+        """Loads user stats that are needed before building the UI"""
         self.total_steps = get_total_steps(user.user_id)
         self.total_cals = round(calories_burnt(self.total_steps, get_weight(user.user_id)))
         self.total_sleep = get_total_sleep_hours(user.user_id)
@@ -88,16 +88,15 @@ class Achievements(BasePage):
         self.user_rank = get_rehealth_level(self.user_score)
 
     def _build_ui(self) -> None:
-        """
-        Builds the window's ui.
-        """
+        """Builds all UI components."""
+        self._create_title()
+        self._create_rank_display()
+        self._create_progress_section()
+        self._create_statistics_labels()
+        self._create_dashboard_button()
 
-        # Find the name of the next rank and how close the user is to it
-        next_rank_name, progress_percent = _get_progress_to_next_level(
-            self.user_score
-        )
-        bar_colour = _get_progress_bar_colour(self.user_rank)
-
+    def _create_title(self) -> None:
+        """Creates the main title label."""
         self.achieve_label = tb.Label(
             self.frame,
             text=f"{self.user.username}'s Hall of Fame",
@@ -105,6 +104,8 @@ class Achievements(BasePage):
         )
         self.achieve_label.grid(row=0, column=0, pady=(20, 30), sticky="n")
 
+    def _create_rank_display(self) -> None:
+        """Creates the current rank label."""
         self.ranking_label = tb.Label(
             self.frame,
             text=f"Current Rank: {self.user_rank}",
@@ -112,34 +113,60 @@ class Achievements(BasePage):
         )
         self.ranking_label.grid(row=1, column=0, pady=(5, 5), sticky="n")
 
+    def _create_progress_section(self) -> None:
+        """Creates the progress bar and text showing progress to next rank."""
+        # Find the name of the next rank and how close the user is to it
+        next_rank_name, progress_percent = _get_progress_to_next_level(
+            self.user_score
+        )
+
         if next_rank_name is not None:
-            self.progress_text_label = tb.Label(
-                self.frame,
-                text=f"Progress to {next_rank_name}: {progress_percent:.1f}%",
-                font=("roboto", 12),
-            )
-            self.progress_text_label.grid(row=2, column=0, pady=(5, 5), sticky="n")
-
-            # Style the progress bar
-            self.progress_bar = tb.Progressbar(
-                self.frame,
-                orient="horizontal",
-                mode="determinate",
-                length=300,
-                maximum=100,
-                bootstyle=f"{bar_colour}-striped",
-            )
-            self.progress_bar.grid(row=3, column=0, pady=(0, 20), sticky="n")
-            self.progress_bar["value"] = progress_percent
+            self._create_progress_display(next_rank_name, progress_percent)
         else:
-            self.progress_text_label = tb.Label(
-                self.frame,
-                text="You are the #1 ReHealth User!",
-                font=("roboto", 12, "bold"),
-            )
-            self.progress_text_label.grid(row=2, column=0, pady=(5, 20), sticky="n")
+            self._create_max_rank_display()
 
-        # Labels for the user's stats are created and placed.
+    def _create_progress_display(self, next_rank_name: str, progress_percent: float) -> None:
+        """
+        Creates progress text and bar for users working toward next rank.
+
+        Args:
+            next_rank_name: Name of the next rank to achieve.
+            progress_percent: Percentage progress toward next rank (0-100).
+        """
+        # Progress text
+        self.progress_text_label = tb.Label(
+            self.frame,
+            text=f"Progress to {next_rank_name}: {progress_percent:.1f}%",
+            font=("roboto", 12),
+        )
+        self.progress_text_label.grid(row=2, column=0, pady=(5, 5), sticky="n")
+
+        # Progress bar with color based on current rank
+        bar_colour = _get_progress_bar_colour(self.user_rank)
+
+        self.progress_bar = tb.Progressbar(
+            self.frame,
+            orient="horizontal",
+            mode="determinate",
+            length=300,
+            maximum=100,
+            bootstyle=f"{bar_colour}-striped",
+        )
+        self.progress_bar.grid(row=3, column=0, pady=(0, 20), sticky="n")
+        self.progress_bar["value"] = progress_percent
+
+    def _create_max_rank_display(self) -> None:
+        """Creates congratulatory message for users at maximum rank."""
+        self.progress_text_label = tb.Label(
+            self.frame,
+            text="You are the #1 ReHealth User!",
+            font=("roboto", 12, "bold"),
+        )
+        self.progress_text_label.grid(row=2, column=0, pady=(5, 20), sticky="n")
+
+    def _create_statistics_labels(self) -> None:
+        """Creates labels displaying lifetime statistics."""
+        # Total steps
         self.steps_label = tb.Label(
             self.frame,
             text=f"Total Steps Taken: {self.total_steps:,}",
@@ -147,6 +174,7 @@ class Achievements(BasePage):
         )
         self.steps_label.grid(row=5, column=0, pady=10, sticky="n")
 
+        # Total calories
         self.cals_label = tb.Label(
             self.frame,
             text=f"Total Calories Burnt: {self.total_cals:,}",
@@ -154,6 +182,7 @@ class Achievements(BasePage):
         )
         self.cals_label.grid(row=6, column=0, pady=10, sticky="n")
 
+        # Total sleep
         self.sleep_label = tb.Label(
             self.frame,
             text=f"Total Hours Slept: {self.total_sleep:.0f}",
@@ -161,6 +190,7 @@ class Achievements(BasePage):
         )
         self.sleep_label.grid(row=7, column=0, pady=10, sticky="n")
 
+        # Total weight lifted
         self.weight_label = tb.Label(
             self.frame,
             text=f"Total weight lifted: {self.total_weight:.0f}kg",
@@ -168,6 +198,8 @@ class Achievements(BasePage):
         )
         self.weight_label.grid(row=8, column=0, pady=10, sticky="n")
 
+    def _create_dashboard_button(self) -> None:
+        """Create the back to dashboard button."""
         self.dash_button = tb.Button(
             self.frame,
             text="Back to Dashboard",

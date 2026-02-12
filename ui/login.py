@@ -8,7 +8,7 @@ from tkinter import messagebox
 
 import ttkbootstrap as tb
 
-from db.db_handler import save_user_to_db, db_path, get_db_connection
+from db.db_handler import save_user_to_db, DB_PATH, get_db_connection
 from logic.user import User
 from ui.dashboard import Dashboard
 
@@ -124,7 +124,7 @@ def check_username_exists(username: str) -> bool:
     """
 
     # Set up a db connection and look for a matching user
-    connection = sqlite3.connect(db_path)
+    connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
     cursor.execute("SELECT Username FROM User WHERE Username = ?", (username,))
     exists = cursor.fetchone() is not None

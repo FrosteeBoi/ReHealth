@@ -11,10 +11,6 @@ def bmi_calc(kg_weight: float, cm_height: float) -> float:
 
     Returns:
         float: The user's bmi value
-
-    Raises:
-        ValueError: If height is zero or negative.
-        TypeError: If inputs cannot be converted to float.
     """
     m_height = float(cm_height) / 100
 

@@ -2,12 +2,12 @@ import os
 import sqlite3
 from datetime import date, datetime, timedelta
 
-db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db"))
+DB_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "db", "rehealth_db.db"))
 
 
 def get_db_connection(enable_foreign_keys=False):
     """Sets up database connection"""
-    connection = sqlite3.connect(db_path)
+    connection = sqlite3.connect(DB_PATH)
     if enable_foreign_keys:
         connection.execute("PRAGMA foreign_keys = ON")
     return connection
